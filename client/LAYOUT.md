@@ -20,6 +20,7 @@ pedals-app/
 │   │
 │   ├── app/
 │   │   └── auth/
+            ├── page.tsx            # Login page
 │   │       ├── login.tsx            # Login page
 │   │       ├── login.test.tsx       # Tests for login page
 │   │       ├── register.tsx         # Registration page
@@ -32,9 +33,11 @@ pedals-app/
 │   │       │   │   └── register.test.ts # Tests for registration logic
 │   │       │   └── logout.ts            # Handles user logout
 │   │       │   └── logout.test.ts       # Tests for logout logic
-│   │
-│   └── index.tsx               # Landing page
-│
+│   |   └── api/
+            ├── connect.tsx            # Login page
+│   │       ├── connect.test.tsx       # Tests for valid connection
+│   |   └── page.tsx               # Landing page
+│           layout.tsx #import footer , header
 │   ├── styles/                 # Styles directory
 │   │   ├── globals.css         # Global styles
 │   │   └── tailwind.css        # Tailwind entry point
