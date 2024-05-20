@@ -52,3 +52,4 @@ pedals-app/
 ├── .eslintrc.js                # ESLint configuration
 ├── .gitignore                  # Specifies intentionally untracked files to ignore
 └── package.json                # Node.js dependencies and scripts
+```
