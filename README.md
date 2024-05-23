@@ -14,7 +14,7 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) along wi
 - [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 - [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
 
-`./vscode/settings.json` has been configured to ensure these extensions work seamlessly together. ESLint will catch and warn about all style errors, and Prettier will format your code on save.
+`./vscode/settings.json` has been configured to ensure these extensions work seamlessly together. ESLint will catch and warn about all style errors, and Prettier will format your code on save. Make sure to use Prettier as your default formatter in user settings.
 
 ## Getting Started
 
