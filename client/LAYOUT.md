@@ -46,10 +46,10 @@ pedals-app/
 │   ├── hooks/                  # React hooks
 │   └── types/                  # TypeScript types and interfaces
 │
-├── tailwind.config.js          # Tailwind CSS configuration
-├── postcss.config.js           # PostCSS configuration
+├── tailwind.config.mjs         # Tailwind CSS configuration
 ├── tsconfig.json               # TypeScript configuration
-├── .eslintrc.js                # ESLint configuration
+├── .eslintrc                   # ESLint configuration
+├── .prettierrc                 # Prettier configuration
 ├── .gitignore                  # Specifies intentionally untracked files to ignore
 └── package.json                # Node.js dependencies and scripts
 ```
