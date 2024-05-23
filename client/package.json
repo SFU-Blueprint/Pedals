@@ -38,7 +38,7 @@
   "postcss": {
     "plugins": {
       "tailwindcss": {
-        "config": "./tailwind.config.mjs"
+        "config": "tailwind.config.mjs"
       }
     }
   }
