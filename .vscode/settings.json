@@ -1,0 +1,10 @@
+{
+    "eslint.workingDirectories": [
+        "./client"
+    ],
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "explorer.sortOrder": "type",
+    "editor.formatOnSave": true
+}
