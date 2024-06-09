@@ -1,5 +1,5 @@
 // login.test.ts
-import { login } from "./login";
+import login from "./login";
 
 // Mock the global fetch function
 global.fetch = jest.fn();
@@ -24,7 +24,6 @@ describe("login", () => {
     });
 
     const result = await login("test@example.com", "password123");
-    console.log(result);
     expect(result).toEqual(mockResponse);
   });
 

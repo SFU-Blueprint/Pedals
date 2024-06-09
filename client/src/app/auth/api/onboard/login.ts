@@ -1,6 +1,6 @@
 // login.ts
 
-export async function login(email: string, password: string) {
+export default async function login(email: string, password: string) {
   const response = await fetch("/auth/login", {
     method: "POST",
     headers: {
@@ -15,13 +15,10 @@ export async function login(email: string, password: string) {
     // Handle specific HTTP status codes
     switch (response.status) {
       case 401:
-        console.log(response);
         throw new Error("Invalid credentials");
       case 500:
-        console.log(response);
         throw new Error("Server error");
       default:
-        console.log(response);
         throw new Error("Login failed");
     }
   }
