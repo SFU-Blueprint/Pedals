@@ -59,3 +59,7 @@ jobs:
       - name: Annotate test errors
         if: steps.test.outcome != 'success'
         run: echo "::warning file=client::Test errors found"
+
+      - name: Fail the job if any checks failed
+        if: steps.format.outcome != 'success' || steps.lint.outcome != 'success' || steps.test.outcome != 'success'
+        run: exit 1
