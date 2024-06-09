@@ -14,9 +14,10 @@ interface RegistrationResponse {
 	}
 	data?: {
 		user: {
-			id: number
+			id: string
 		}
 	}
+	message?: string
 }
 
 export async function registration(
@@ -39,10 +40,12 @@ export async function registration(
 	//If the database failed return 400, else 200
 	
 	return {
-		status: "error",
-		error: {
-			code: 400,
-			message: "Duplicate email"
-		}
+		status: "success",
+		data: {
+			user: {
+				id: "123"
+			},
+		},
+		message: "Duplicate email"
 	}
 }
