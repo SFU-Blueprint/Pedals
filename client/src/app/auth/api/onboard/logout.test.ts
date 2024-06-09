@@ -89,5 +89,73 @@ describe('POST /auth/logout', () => {
         });
     });
 
+    // invalid token type test case
+    it('should return success when we have a valid token', async () => {
+
+        // invalid token
+
+        const req = mockRequest({token: {real: "Valid Token"}});
+        const res = mockResponse();
+
+        // call handler with mock req and res
+        await handler(req, res); 
+
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'error',
+            error: { code: 401, message: 'Invalid token' }
+        });
+    });
+
+    // invalid token type test case 2
+    it('should return success when we have a valid token', async () => {
+
+        // invalid token
+
+        const req = mockRequest({token: {token: "Valid Token"}});
+        const res = mockResponse();
+
+        // call handler with mock req and res
+        await handler(req, res); 
+
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'error',
+            error: { code: 401, message: 'Invalid token' }
+        });
+    });
+
+        // invalid token type test case 2
+    it('should return success when we have a valid token', async () => {
+
+        // invalid token
+
+        const req = mockRequest({token: {token: "Valid Token"}});
+        const res = mockResponse();
+
+        // call handler with mock req and res
+        await handler(req, res); 
+
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'error',
+            error: { code: 401, message: 'Invalid token' }
+        });
+    });
+
+    // invalid token type test case 3
+    it('should return success when we have a valid token', async () => {
+
+        // invalid token
+
+        const req = mockRequest({token: 123});
+        const res = mockResponse();
+
+        // call handler with mock req and res
+        await handler(req, res); 
+
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'error',
+            error: { code: 401, message: 'Invalid token' }
+        });
+    });
+
 
 })
