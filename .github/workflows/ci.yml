@@ -34,6 +34,7 @@ jobs:
         run: npm ci
 
       - name: Check formatting
+<<<<<<< HEAD
         run: npx prettier . --check
 
       - name: Run linter
@@ -41,3 +42,34 @@ jobs:
 
       - name: Run tests
         run: npm test
+=======
+        id: format
+        run: npx prettier . --check
+        continue-on-error: true
+
+      - name: Run linter
+        id: lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Run tests
+        id: test
+        run: npm test
+        continue-on-error: true
+
+      - name: Annotate formatting errors
+        if: steps.format.outcome != 'success'
+        run: echo "::warning file=client::Formatting errors found"
+
+      - name: Annotate linter errors
+        if: steps.lint.outcome != 'success'
+        run: echo "::warning file=client::Linter errors found"
+
+      - name: Annotate test errors
+        if: steps.test.outcome != 'success'
+        run: echo "::warning file=client::Test errors found"
+
+      - name: Fail the job if any checks failed
+        if: steps.format.outcome != 'success' || steps.lint.outcome != 'success' || steps.test.outcome != 'success'
+        run: exit 1
+>>>>>>> origin
