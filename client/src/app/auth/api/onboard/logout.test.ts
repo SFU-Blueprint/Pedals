@@ -20,7 +20,7 @@ jest.mock('./logout', () => ({
 }));
 
 describe('POST /auth/logout', () => {
-    const mockRequest = () => ({});
+    const mockRequest = (body: any) => ({body});
     const mockResponse = () => {
         const res = {
             status: jest.fn().mockReturnThis(),
@@ -33,7 +33,7 @@ describe('POST /auth/logout', () => {
 
         // no token
 
-        const req = mockRequest();
+        const req = mockRequest({});
         const res = mockResponse();
 
         await handler(req, res); 
@@ -41,6 +41,21 @@ describe('POST /auth/logout', () => {
         expect(res.json).toHaveBeenCalledWith({
             status: 'error',
             error: { code: 401, message: 'Invalid token' }
+        });
+    });
+
+    it('should return success when we have a valid token', async () => {
+
+        // token
+
+        const req = mockRequest({token: 'Valid Token'});
+        const res = mockResponse();
+
+        await handler(req, res); 
+
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'success',
+            message: 'Logout successful'
         });
     });
 
