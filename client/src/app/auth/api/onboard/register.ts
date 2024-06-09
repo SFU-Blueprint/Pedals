@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { warn } from "console"
 
 export function findDuplicateUserEmail(
@@ -47,6 +46,3 @@ export async function registration(
 		}
 	}
 }
-=======
-// Write your register.ts tests in a new register.test.ts file
->>>>>>> 491814c (Deleted tests file for CI to pass)
