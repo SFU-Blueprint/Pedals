@@ -1,7 +1,7 @@
 import {registration}  from "./register";
 
 
-jest.mock('./register.ts', () => ({
+jest.mock('./register', () => ({
 	...(jest.requireActual('./register')),
 	findDuplicateUserEmail: jest.fn().mockReturnValue(false)
 }))
