@@ -34,15 +34,6 @@ jobs:
         run: npm ci
 
       - name: Check formatting
-<<<<<<< HEAD
-        run: npx prettier . --check
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Run tests
-        run: npm test
-=======
         id: format
         run: npx prettier . --check
         continue-on-error: true
@@ -72,4 +63,3 @@ jobs:
       - name: Fail the job if any checks failed
         if: steps.format.outcome != 'success' || steps.lint.outcome != 'success' || steps.test.outcome != 'success'
         run: exit 1
->>>>>>> origin
