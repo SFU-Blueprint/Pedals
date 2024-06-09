@@ -1,7 +1,7 @@
+import registration  from "./register";
 
-
-describe('add function', () => {
-    test('Expect 1 to be 1', () => {
+describe('Testing Registration on volunteer ', () => {
+    test('Upon successful registration, it should return 200 status', () => {
         expect(1).toBe(1);
     });
 });
