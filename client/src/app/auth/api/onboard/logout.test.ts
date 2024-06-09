@@ -73,7 +73,7 @@ describe('POST /auth/logout', () => {
     });
 
     // invalid token test case
-    it('should return success when we have a valid token', async () => {
+    it('should return error when we have an invalid token', async () => {
 
         // invalid token
 
@@ -90,7 +90,7 @@ describe('POST /auth/logout', () => {
     });
 
     // invalid token type test case
-    it('should return success when we have a valid token', async () => {
+    it('should return error when we have a fake token', async () => {
 
         // invalid token
 
@@ -107,24 +107,7 @@ describe('POST /auth/logout', () => {
     });
 
     // invalid token type test case 2
-    it('should return success when we have a valid token', async () => {
-
-        // invalid token
-
-        const req = mockRequest({token: {token: "Valid Token"}});
-        const res = mockResponse();
-
-        // call handler with mock req and res
-        await handler(req, res); 
-
-        expect(res.json).toHaveBeenCalledWith({
-            status: 'error',
-            error: { code: 401, message: 'Invalid token' }
-        });
-    });
-
-        // invalid token type test case 2
-    it('should return success when we have a valid token', async () => {
+    it('should return error when we have someone trying to maliciously hack the system with a fake valid token', async () => {
 
         // invalid token
 
@@ -141,7 +124,7 @@ describe('POST /auth/logout', () => {
     });
 
     // invalid token type test case 3
-    it('should return success when we have a valid token', async () => {
+    it('should return error when we have an invalid token of different type', async () => {
 
         // invalid token
 
@@ -154,6 +137,40 @@ describe('POST /auth/logout', () => {
         expect(res.json).toHaveBeenCalledWith({
             status: 'error',
             error: { code: 401, message: 'Invalid token' }
+        });
+    });
+
+        // invalid token -- became null
+        it('should return error when we have a token that became null', async () => {
+
+            // invalid token
+    
+            const req = mockRequest({token: null});
+            const res = mockResponse();
+    
+            // call handler with mock req and res
+            await handler(req, res); 
+    
+            expect(res.json).toHaveBeenCalledWith({
+                status: 'error',
+                error: { code: 401, message: 'Invalid token' }
+            });
+        });
+
+    // valid token with useless data in request should still return success
+    it('should return success when we have a valid token with additional data', async () => {
+
+        // valid token and useless data
+
+        const req = mockRequest({token: "Valid Token", data: "useless data"});
+        const res = mockResponse();
+
+        // call handler with mock req and res
+        await handler(req, res); 
+
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'success',
+            message: 'Logout successful'
         });
     });
 
