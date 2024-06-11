@@ -11,16 +11,18 @@ export default async function login(email: string, password: string) {
 
   const data = await response.json();
 
+  // If there is a networking issues
   if (!response.ok) {
-    // Handle specific HTTP status codes
-    switch (response.status) {
-      case 401:
-        throw new Error("Invalid credentials");
-      case 500:
-        throw new Error("Server error");
-      default:
-        throw new Error("Login failed");
+    if (response.status === 500) {
+      throw new Error("Server error");
+    } else {
+      throw new Error("Login Failed");
     }
+  }
+
+  // If there is a user related issue
+  if (data.message !== "Login successful") {
+    throw new Error(data.message);
   }
 
   return data;
