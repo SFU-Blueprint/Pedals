@@ -9,8 +9,6 @@ export default async function login(email: string, password: string) {
     body: JSON.stringify({ email, password })
   });
 
-  const data = await response.json();
-
   // If there is a networking issues
   if (!response.ok) {
     if (response.status === 500) {
@@ -19,6 +17,8 @@ export default async function login(email: string, password: string) {
       throw new Error("Login Failed");
     }
   }
+
+  const data = await response.json();
 
   // If there is a user related issue
   if (data.message !== "Login successful") {
