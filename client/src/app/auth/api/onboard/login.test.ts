@@ -34,8 +34,8 @@ describe("login", () => {
     };
 
     (fetch as jest.Mock).mockResolvedValueOnce({
-      ok: false,
-      status: 401,
+      ok: true,
+      status: 200,
       json: async () => mockResponse
     });
     expect(() => login("test@example.com", "wrongpassword")).rejects.toThrow(
