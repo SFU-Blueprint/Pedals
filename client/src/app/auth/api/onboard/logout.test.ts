@@ -17,12 +17,10 @@ jest.mock("./logout", () => ({
   default: jest.fn().mockImplementation(async (req: any, res: Response) => {
     // if no token return error
     if (!req.body || !req.body.token || req.body.token !== "Valid Token") {
-      res
-        .status(401)
-        .json({
-          status: "error",
-          error: { code: 401, message: "Invalid token" }
-        });
+      res.status(401).json({
+        status: "error",
+        error: { code: 401, message: "Invalid token" }
+      });
     } else {
       res.status(200).json({ status: "success", message: "Logout successful" });
     }
