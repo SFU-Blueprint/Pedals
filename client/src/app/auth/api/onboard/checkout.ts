@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { NextApiRequest, NextApiResponse } from "next";
 
 // access environment variables
+// No access to process.env to know identifiers for the environment variables
 const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '') as string;
 const supabaseKey = (process.env.NEXT_PUBLIC_SUPABASE_KEY || '') as string;
 
