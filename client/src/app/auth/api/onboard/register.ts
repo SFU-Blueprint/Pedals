@@ -33,7 +33,7 @@ export default async function register(
       .insert([{ name, dob: dateOfBirth, pronoun, email }]);
 
     if (error) {
-      throw error;
+      throw Error(error.message);
     }
 
     res.status(201).json({ message: "User registered successfully", data });

@@ -1,10 +1,9 @@
 // src/app/auth/api/register.test.ts
 
 import { createMocks } from "node-mocks-http";
-import register from "./register";
-import { NextApiRequest, NextApiResponse } from "next";
-import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import { NextApiRequest, NextApiResponse } from "next";
+import register from "./register";
 
 // Load environment variables for testing
 dotenv.config();
@@ -18,11 +17,13 @@ jest.mock("@supabase/supabase-js", () => ({
 
 describe("/api/register", () => {
   let req: NextApiRequest;
+  // eslint-disable-next-line no-underscore-dangle
   let res: NextApiResponse & { _getJSONData: () => any };
 
   beforeEach(() => {
     const { req: mockReq, res: mockRes } = createMocks();
     req = mockReq as unknown as NextApiRequest;
+    // eslint-disable-next-line no-underscore-dangle
     res = mockRes as unknown as NextApiResponse & { _getJSONData: () => any };
   });
 
@@ -32,6 +33,7 @@ describe("/api/register", () => {
     await register(req, res);
 
     expect(res.statusCode).toBe(405);
+    // eslint-disable-next-line no-underscore-dangle
     expect(res._getJSONData()).toEqual({ error: "Method not allowed" });
   });
 
@@ -45,6 +47,7 @@ describe("/api/register", () => {
     await register(req, res);
 
     expect(res.statusCode).toBe(400);
+    // eslint-disable-next-line no-underscore-dangle
     expect(res._getJSONData()).toEqual({ error: "Missing required fields" });
   });
 
@@ -60,6 +63,7 @@ describe("/api/register", () => {
     await register(req, res);
 
     expect(res.statusCode).toBe(201);
+    // eslint-disable-next-line no-underscore-dangle
     expect(res._getJSONData()).toEqual({
       message: "User registered successfully",
       data: []
