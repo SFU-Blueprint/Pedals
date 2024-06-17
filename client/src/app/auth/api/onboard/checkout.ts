@@ -24,14 +24,14 @@ const supabase = createClient(supabaseUrl, supabaseKey);
  * @param {NextApiRequest} req - The incoming request object. Expects a POST request with the user's email in the body.
  * @param {NextApiResponse} res - The outgoing response object. Returns a JSON object with a success or error message.
  *
- * @returns {void} This function does not return a value directly, but sends a response to the client.
+ * @returns {promise<void>} This function does not return a value directly, but sends a response to the client.
  *
  * @throws {Error} Will throw an error if updating the user's status fails.
  */
 export default async function checkout(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
