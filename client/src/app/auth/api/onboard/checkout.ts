@@ -1,10 +1,10 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 import { NextApiRequest, NextApiResponse } from "next";
 
 // access environment variables
 // No access to process.env to know identifiers for the environment variables
-const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '') as string;
-const supabaseKey = (process.env.NEXT_PUBLIC_SUPABASE_KEY || '') as string;
+const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || "") as string;
+const supabaseKey = (process.env.NEXT_PUBLIC_SUPABASE_KEY || "") as string;
 
 // make sure we have the required environment variables
 // if (!supabaseUrl) {
@@ -32,8 +32,8 @@ export default async function checkout(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed" });
     return;
   }
 
@@ -41,21 +41,22 @@ export default async function checkout(
   const { email } = req.body;
 
   if (!email) {
-    res.status(400).json({ error: 'Email is required' });
+    res.status(400).json({ error: "Email is required" });
     return;
   }
 
   try {
     // Update the user status and timestamp
     const { data, error } = await supabase
-      .from('users') // select the users table
-      .update({ // update the user's status and timestamp
-        status: 'checked out',
+      .from("users") // select the users table
+      .update({
+        // update the user's status and timestamp
+        status: "checked out",
 
         // i don't know what the column name is for the timestamp
-        checked_out_at: new Date().toISOString(), // set the timestamp to the current date and time
+        checked_out_at: new Date().toISOString() // set the timestamp to the current date and time
       })
-      .eq('email', email); // find the user by their email
+      .eq("email", email); // find the user by their email
 
     // credit to register.ts for the error handling
     if (error) {
@@ -63,19 +64,19 @@ export default async function checkout(
       return;
     }
 
-    res.status(200).json({ message: 'User checked out successfully', data });
+    res.status(200).json({ message: "User checked out successfully", data });
   } catch (error) {
-    let errorMessage = 'An unknown error occurred';
+    let errorMessage = "An unknown error occurred";
 
     // Handle known error types
     if (error instanceof Error) {
       errorMessage = error.message;
-    } else if (typeof error === 'string') {
+    } else if (typeof error === "string") {
       errorMessage = error;
     } else if (
-      typeof error === 'object' &&
+      typeof error === "object" &&
       error !== null &&
-      'message' in error
+      "message" in error
     ) {
       errorMessage = (error as { message: string }).message;
     }
