@@ -28,84 +28,88 @@ const supabase = createClient(supabaseUrl, supabaseKey);
  * @throws {Error} Will throw an error if updating the user's status fails.
  */
 export default async function checkin(
-    req: NextApiRequest,
-    res: NextApiResponse
+  req: NextApiRequest,
+  res: NextApiResponse
 ): Promise<void> {
-    if (req.method !== "POST") {
-      res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed" });
+    return;
+  }
+
+  // Extract user email and shift ID from the request body
+  const { email, shiftId } = req.body;
+
+  if (!email || !shiftId) {
+    res.status(400).json({ error: "Email and Shift ID are required" });
+    return;
+  }
+
+  try {
+    // Fetch user ID from the users table using the email
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("sid")
+      .eq("email", email)
+      .single();
+
+    if (userError || !userData) {
+      res.status(500).json({ error: userError?.message || "User not found" });
       return;
     }
-  
-    // Extract user email and shift ID from the request body
-    const { email, shiftId } = req.body;
-  
-    if (!email || !shiftId) {
-      res.status(400).json({ error: "Email and Shift ID are required" });
+
+    const userId = userData.sid;
+
+    // Fetch volunteer ID from the volunteers table using the user ID
+    const { data: volunteerData, error: volunteerError } = await supabase
+      .from("volunteers")
+      .select("vid")
+      .eq("user_id", userId)
+      .single();
+
+    if (volunteerError || !volunteerData) {
+      res
+        .status(500)
+        .json({ error: volunteerError?.message || "Volunteer not found" });
       return;
     }
-  
-    try {
-      // Fetch user ID from the users table using the email
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("sid")
-        .eq("email", email)
-        .single();
-  
-      if (userError || !userData) {
-        res.status(500).json({ error: userError?.message || "User not found" });
-        return;
-      }
-  
-      const userId = userData.sid;
-  
-      // Fetch volunteer ID from the volunteers table using the user ID
-      const { data: volunteerData, error: volunteerError } = await supabase
-        .from("volunteers")
-        .select("vid")
-        .eq("user_id", userId)
-        .single();
-  
-      if (volunteerError || !volunteerData) {
-        res.status(500).json({ error: volunteerError?.message || "Volunteer not found" });
-        return;
-      }
-  
-      const volunteerId = volunteerData.vid;
-  
-      // Update the volunteer status and timestamp in the volunteer_shifts table
-      const { data, error } = await supabase
-        .from("volunteer_shifts")
-        .update({
-          status: "checked in",
-          checked_in_at: new Date().toISOString()
-        })
-        .eq("volunteer_id", volunteerId)
-        .eq("shift_id", shiftId);
-  
-      // Error handling
-      if (error) {
-        res.status(500).json({ error: error.message });
-        return;
-      }
-  
-      res.status(200).json({ message: "Volunteer checked in successfully", data });
-    } catch (error) {
-      let errorMessage = "An unknown error occurred";
-  
-      // Handle known error types
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === "string") {
-        errorMessage = error;
-      } else if (
-        typeof error === "object" &&
-        error !== null &&
-        "message" in error
-      ) {
-        errorMessage = (error as { message: string }).message;
-      }
-  
-      res.status(500).json({ error: errorMessage });
+
+    const volunteerId = volunteerData.vid;
+
+    // Update the volunteer status and timestamp in the volunteer_shifts table
+    const { data, error } = await supabase
+      .from("volunteer_shifts")
+      .update({
+        status: "checked in",
+        checked_in_at: new Date().toISOString()
+      })
+      .eq("volunteer_id", volunteerId)
+      .eq("shift_id", shiftId);
+
+    // Error handling
+    if (error) {
+      res.status(500).json({ error: error.message });
+      return;
     }
+
+    res
+      .status(200)
+      .json({ message: "Volunteer checked in successfully", data });
+  } catch (error) {
+    let errorMessage = "An unknown error occurred";
+
+    // Handle known error types
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === "string") {
+      errorMessage = error;
+    } else if (
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error
+    ) {
+      errorMessage = (error as { message: string }).message;
+    }
+
+    res.status(500).json({ error: errorMessage });
+  }
 }

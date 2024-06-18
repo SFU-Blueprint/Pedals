@@ -47,6 +47,8 @@ describe("/api/checkout", () => {
 
     expect(res.statusCode).toBe(400);
     // eslint-disable-next-line no-underscore-dangle
-    expect(res._getJSONData()).toEqual({ error: "Email and Shift ID are required" });
+    expect(res._getJSONData()).toEqual({
+      error: "Email and Shift ID are required"
+    });
   });
 });

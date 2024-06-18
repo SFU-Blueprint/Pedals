@@ -7,7 +7,9 @@ jest.mock("@supabase/supabase-js", () => ({
     from: jest.fn().mockReturnThis(),
     select: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
-    single: jest.fn().mockResolvedValue({ data: { sid: "user_id" }, error: null }),
+    single: jest
+      .fn()
+      .mockResolvedValue({ data: { sid: "user_id" }, error: null }),
     update: jest.fn().mockResolvedValue({ data: [], error: null })
   }))
 }));
@@ -52,5 +54,3 @@ describe("/api/checkin", () => {
 
   // Add more tests as necessary to cover other scenarios
 });
-
-

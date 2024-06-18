@@ -68,7 +68,9 @@ export default async function checkout(
       .single();
 
     if (volunteerError || !volunteerData) {
-      res.status(500).json({ error: volunteerError?.message || "Volunteer not found" });
+      res
+        .status(500)
+        .json({ error: volunteerError?.message || "Volunteer not found" });
       return;
     }
 
@@ -90,7 +92,9 @@ export default async function checkout(
       return;
     }
 
-    res.status(200).json({ message: "Volunteer checked out successfully", data });
+    res
+      .status(200)
+      .json({ message: "Volunteer checked out successfully", data });
   } catch (error) {
     let errorMessage = "An unknown error occurred";
 
@@ -110,4 +114,3 @@ export default async function checkout(
     res.status(500).json({ error: errorMessage });
   }
 }
-
