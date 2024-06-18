@@ -37,34 +37,60 @@ export default async function checkout(
     return;
   }
 
-  // Extract user email from the request body
-  const { email } = req.body;
+  // Extract user email and shift ID from the request body
+  const { email, shiftId } = req.body;
 
-  if (!email) {
-    res.status(400).json({ error: "Email is required" });
+  if (!email || !shiftId) {
+    res.status(400).json({ error: "Email and Shift ID are required" });
     return;
   }
 
   try {
-    // Update the user status and timestamp
+    // Fetch user ID from the users table using the email
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("sid")
+      .eq("email", email)
+      .single();
+
+    if (userError || !userData) {
+      res.status(500).json({ error: userError?.message || "User not found" });
+      return;
+    }
+
+    const userId = userData.sid;
+
+    // Fetch volunteer ID from the volunteers table using the user ID
+    const { data: volunteerData, error: volunteerError } = await supabase
+      .from("volunteers")
+      .select("vid")
+      .eq("user_id", userId)
+      .single();
+
+    if (volunteerError || !volunteerData) {
+      res.status(500).json({ error: volunteerError?.message || "Volunteer not found" });
+      return;
+    }
+
+    const volunteerId = volunteerData.vid;
+
+    // Update the volunteer status and timestamp in the volunteer_shifts table
     const { data, error } = await supabase
-      .from("users") // select the users table
+      .from("volunteer_shifts")
       .update({
-        // update the user's status and timestamp
         status: "checked out",
-
-        // i don't know what the column name is for the timestamp
-        checked_out_at: new Date().toISOString() // set the timestamp to the current date and time
+        checked_out_at: new Date().toISOString()
       })
-      .eq("email", email); // find the user by their email
+      .eq("volunteer_id", volunteerId)
+      .eq("shift_id", shiftId);
 
-    // credit to register.ts for the error handling
+    // Error handling
     if (error) {
       res.status(500).json({ error: error.message });
       return;
     }
 
-    res.status(200).json({ message: "User checked out successfully", data });
+    res.status(200).json({ message: "Volunteer checked out successfully", data });
   } catch (error) {
     let errorMessage = "An unknown error occurred";
 
@@ -84,3 +110,4 @@ export default async function checkout(
     res.status(500).json({ error: errorMessage });
   }
 }
+
