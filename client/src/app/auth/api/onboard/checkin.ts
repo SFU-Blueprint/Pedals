@@ -1,8 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextApiRequest, NextApiResponse } from "next";
 
-// access environment variables
-// No access to process.env to know identifiers for the environment variables
+// Access environment variables
 const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || "") as string;
 const supabaseKey = (process.env.NEXT_PUBLIC_SUPABASE_KEY || "") as string;
 
@@ -19,16 +18,16 @@ const supabaseKey = (process.env.NEXT_PUBLIC_SUPABASE_KEY || "") as string;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 /**
- * API route handler to check out a user by updating their status and recording the timestamp.
+ * API route handler to check in a user by updating their status and recording the timestamp.
  *
  * @param {NextApiRequest} req - The incoming request object. Expects a POST request with the user's email in the body.
  * @param {NextApiResponse} res - The outgoing response object. Returns a JSON object with a success or error message.
  *
- * @returns {promise<void>} This function does not return a value directly, but sends a response to the client.
+ * @returns {Promise<void>} This function does not return a value directly, but sends a response to the client.
  *
  * @throws {Error} Will throw an error if updating the user's status fails.
  */
-export default async function checkout(
+export default async function checkin(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
@@ -80,8 +79,8 @@ export default async function checkout(
     const { data, error } = await supabase
       .from("volunteer_shifts")
       .update({
-        status: "checked out",
-        checked_out_at: new Date().toISOString()
+        status: "checked in",
+        checked_in_at: new Date().toISOString()
       })
       .eq("volunteer_id", volunteerId)
       .eq("shift_id", shiftId);
@@ -94,7 +93,7 @@ export default async function checkout(
 
     res
       .status(200)
-      .json({ message: "Volunteer checked out successfully", data });
+      .json({ message: "Volunteer checked in successfully", data });
   } catch (error) {
     let errorMessage = "An unknown error occurred";
 
