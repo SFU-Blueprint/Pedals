@@ -1,9 +1,24 @@
-import Image from "next/image";
 
 export default function Home() {
 
 	function getTime() {
-		return ["Monday", "June", "10", "5:06", "PM"]
+		const currentTime = new Date();
+		let daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+		let currentDay = daysOfWeek[currentTime.getDay()];
+
+		// Get current month (0 = January, 1 = February, ..., 11 = December)
+		let monthsOfYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+		let currentMonth = monthsOfYear[currentTime.getMonth()];
+		let hour = currentTime.getHours();
+		let minute = currentTime.getMinutes();
+		
+		let period = hour >= 12 ? 'PM' : 'AM';
+		hour = hour % 12;
+		hour = hour ? hour : 12; 
+		let formattedTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+
+		return [currentDay, currentMonth, currentTime.getDate(), formattedTime, period]
 	}
 
 	const data = getTime();
@@ -17,12 +32,13 @@ export default function Home() {
 				<h1 className="font-supplyMono text-[64px]">{data[3]} {data[4]}</h1>
 			</div>
 			<div>
-				<ul className="flex flex-row">
+				<ul className="flex flex-row w-[50%] justify-between">
 					<li>Check-in</li>
 					<li>Register</li>
 					<li>Manage</li>
 				</ul>
 			</div>
+
 		</div>
 	</nav>
   );
