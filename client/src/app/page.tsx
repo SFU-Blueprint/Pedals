@@ -1,6 +1,33 @@
+'use client'
+
+import { useEffect } from "react";
 import Image from "next/image";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY as string;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function Home() {
+
+
+
+  async function loginWithGoogle() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
+    if (error) {
+      console.error("Error logging in with Google:", error.message);
+    }
+  }
+
+  async function logout() {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error logging out:", error.message);
+    }
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
@@ -103,10 +130,19 @@ export default function Home() {
               -&gt;
             </span>
           </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
+          <p className="m-0 max-w-[30ch] text-sm opacity-50">
             Instantly deploy your Next.js site to a shareable URL with Vercel.
           </p>
         </a>
+      </div>
+
+      <div className="flex space-x-4">
+        <button onClick={loginWithGoogle} className="px-4 py-2 bg-blue-500 text-white rounded">
+          Login with Google
+        </button>
+        <button onClick={logout} className="px-4 py-2 bg-red-500 text-white rounded">
+          Logout
+        </button>
       </div>
     </main>
   );
