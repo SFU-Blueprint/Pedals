@@ -10,9 +10,10 @@ export default {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))"
       },
-	  fontFamily: {
-		"supplyMono": ["Supply Mono", "sans-serif"]
-		}
+      fontFamily: {
+        supplyMono: ["Supply Mono", "sans-serif"],
+        supplyMonoRegular: ["Supply Mono Regular", "sans-serif"]
+      }
     }
   },
   plugins: []

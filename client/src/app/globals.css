@@ -5,12 +5,15 @@
 /* @import url('../../public/fonts/PPSupplyMono-Ultralight.otf') */
 
 @layer base {
-	@font-face {
-		font-family: "Supply Mono";
-		src: url(../../public/fonts/PPSupplyMono-Ultralight.otf) format("opentype");
-	}
+  @font-face {
+    font-family: "Supply Mono";
+    src: url(../../public/fonts/PPSupplyMono-Ultralight.otf) format("opentype");
+  }
+  @font-face {
+    font-family: "Supply Mono Regular";
+    src: url(../../public/fonts/PPSupplyMono-Regular.otf) format("opentype");
+  }
 }
-
 
 /* :root { */
 /*   --foreground-rgb: 0, 0, 0; */
