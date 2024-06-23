@@ -1,9 +1,4 @@
-"use Client";
-
-import { useState } from "react";
 export default function Home() {
-  const [pfp, setPfp] = useState(false);
-  const [wtf, setWTQ] = useState(false);
   function getTime() {
     const currentTime = new Date();
     const daysOfWeek = [
