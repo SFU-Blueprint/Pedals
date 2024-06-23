@@ -1,4 +1,9 @@
+"use Client";
+
+import { useState } from "react";
 export default function Home() {
+  const [pfp, setPfp] = useState(false);
+  const [wtf, setWTQ] = useState(false);
   function getTime() {
     const currentTime = new Date();
     const daysOfWeek = [
@@ -50,60 +55,66 @@ export default function Home() {
 
   return (
     <nav className="w-full bg-[#E9E9E9]">
-      <div className="flex flex-row justify-around">
-        <div className="flex flex-col text-start">
-          <h1 className="font-supplyMono text-[24px]">
-            {data[0]}, {data[1]} {data[2]}
-          </h1>
-          <h1 className="font-supplyMono text-[64px]">
-            {data[3]} {data[4]}
-          </h1>
+      <div className="mx-20 flex flex-col justify-start pb-10 pt-20">
+        <div className="mb-7 flex flex-row justify-between">
+          <div className="flex flex-col text-start">
+            <h1 className="font-supplyMono text-[24px]">
+              {data[0]}, {data[1]} {data[2]}
+            </h1>
+            <h1 className="font-supplyMono text-[64px]">
+              {data[3]} {data[4]}
+            </h1>
+          </div>
+
+          <div>
+            <ul className="flex w-[50%] flex-row justify-between">
+              <li className="m-4 text-nowrap font-supplyMonoRegular hover:font-bold">
+                Check-in
+              </li>
+              <li className="m-4 text-nowrap font-supplyMonoRegular hover:font-bold">
+                Register
+              </li>
+              <li className="m-4 text-nowrap font-supplyMonoRegular hover:font-bold">
+                Manage
+              </li>
+            </ul>
+          </div>
         </div>
+        {/* Container */}
+        <div className="grid grid-cols-7">
+          {/* Username */}
+          <div className="col-span-2">
+            <h1 className="mb-2 text-[18px]">Username</h1>{" "}
+            <input type="text" placeholder="TYPE" className="rounded-[3px]" />
+          </div>
 
-        <div>
-          <ul className="flex w-[50%] flex-row justify-between">
-            <li className="m-4 text-nowrap font-supplyMonoRegular hover:font-bold">
-              Check-in
-            </li>
-            <li className="m-4 text-nowrap font-supplyMonoRegular hover:font-bold">
-              Register
-            </li>
-            <li className="m-4 text-nowrap font-supplyMonoRegular hover:font-bold">
-              Manage
-            </li>
-          </ul>
+          {/* Shift Type */}
+          <div className="col-span-3 flex flex-col">
+            {" "}
+            <h1 className="mb-2 text-[18px]">ShiftName</h1>
+            <div className="flex flex-row">
+              <button className="mr-10">PFTP</button>
+              <button className="mr-10">WTQ</button>
+              <div className="mr-10">
+                <select>
+                  <option> Option 1 </option>
+                  <option> Option 2 </option>
+                  <option> Option 3 </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Check In */}
+          <div className="col-span-2 flex justify-self-end">
+            <button
+              type="button"
+              className="self-end rounded-[50px] bg-[#FFD030] px-5 font-supplyMonoRegular text-[20px]"
+            >
+              Check In
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="flex flex-row w-full justify-between">
-
-        <ul className="flex flex-row items-end">
-          <li className="flex flex-col">
-            <h1 className="text-[18px]">Username</h1>
-            <input type="text" className="rounded-[3px]" />
-          </li>
-          <li className="m-3">
-            <button type="button">PFTP</button>
-          </li>
-          <li className="m-3">
-            <button type="button">WTQ</button>
-          </li>
-          <li className="m-3">
-            <select>
-				<option> Option 1 </option>
-				<option> Option 2 </option>
-				<option> Option 3 </option>
-			</select>
-          </li>
-			<button 
-				type="button"
-				className="bg-[#FFD030] rounded-[30px] text-[24px] font-supplyMonoRegular"
-			>
-				Check In
-			</button>
-        </ul>
-
-
       </div>
     </nav>
   );
