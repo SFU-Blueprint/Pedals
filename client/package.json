@@ -22,7 +22,6 @@
     "ts-jest": "^29.1.4"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.24.7",
     "@next/eslint-plugin-next": "14.2.3",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.2",
