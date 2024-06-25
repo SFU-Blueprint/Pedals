@@ -88,10 +88,10 @@ export default function Home() {
             {" "}
             <h1 className="mb-2 text-[18px]">ShiftName</h1>
             <div className="flex flex-row">
-              <button className="mr-10 bg-white px-3 py-1">PFTP</button>
-              <button className="mr-10 bg-white px-3 py-1">WTQ</button>
-              <div className="flex mr-10 bg-white justify-center align-middle px-3 py-1">
-                <select className = "bg-white">
+              <button type = "button" className="mr-10 bg-white px-3 py-1">PFTP</button>
+              <button type = "button" className="mr-10 bg-white px-3 py-1">WTQ</button>
+              <div className="mr-10 flex justify-center bg-white px-3 py-1 align-middle">
+                <select className="bg-white">
                   <option> Option 1 </option>
                   <option> Option 2 </option>
                   <option> Option 3 </option>
