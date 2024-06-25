@@ -31,7 +31,6 @@ export default function Home() {
     const currentMonth = monthsOfYear[currentTime.getMonth()];
     let hour = currentTime.getHours();
     const minute = currentTime.getMinutes();
-
     const period = hour >= 12 ? "PM" : "AM";
     hour %= 12;
     hour = hour || 12;
