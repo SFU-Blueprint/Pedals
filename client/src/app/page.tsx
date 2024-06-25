@@ -1,30 +1,55 @@
-'use client'
+'use client';
 
-import { useEffect } from "react";
-import Image from "next/image";
-import { createClient } from "@supabase/supabase-js";
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function Home() {
+  const router = useRouter();
 
+  const checkUser = async (userId: string) => {
+    try {
+      const res = await fetch(`/auth/api/login?userId=${userId}`);
+      const result = await res.json();
 
+      if (res.status === 404) {
+        router.push('/register');
+      } else if (res.status !== 200) {
+        throw new Error(`Error fetching custom user: ${result.error}`);
+      }
+    } catch (err) {
+      throw new Error(`Internal server error: ${err}`);
+    }
+  };
 
   async function loginWithGoogle() {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider: 'google',
     });
+
     if (error) {
-      console.error("Error logging in with Google:", error.message);
+      throw new Error(`Error logging in with Google: ${error.message}`);
+    }
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+      throw new Error(`Error fetching user: ${userError.message}`);
+    }
+
+    if (user) {
+      await checkUser(user.id);
     }
   }
 
   async function logout() {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error("Error logging out:", error.message);
+      throw new Error(`Error logging out: ${error.message}`);
     }
   }
 
@@ -42,7 +67,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            By{" "}
+            By{' '}
             <Image
               src="/vercel.svg"
               alt="Vercel Logo"
@@ -74,7 +99,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
+            Docs{' '}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -91,7 +116,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
+            Learn{' '}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -108,7 +133,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
+            Templates{' '}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -125,7 +150,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
+            Deploy{' '}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -137,10 +162,10 @@ export default function Home() {
       </div>
 
       <div className="flex space-x-4">
-        <button onClick={loginWithGoogle} className="px-4 py-2 bg-blue-500 text-white rounded">
+        <button onClick={loginWithGoogle} className="px-4 py-2 bg-blue-500 text-white rounded" type="button">
           Login with Google
         </button>
-        <button onClick={logout} className="px-4 py-2 bg-red-500 text-white rounded">
+        <button onClick={logout} className="px-4 py-2 bg-red-500 text-white rounded" type="button">
           Logout
         </button>
       </div>
