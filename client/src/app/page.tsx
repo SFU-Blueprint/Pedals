@@ -12,7 +12,6 @@ export default function Home() {
     ];
     const currentDay = daysOfWeek[currentTime.getDay()];
 
-
     // Get current month (0 = January, 1 = February, ..., 11 = December)
     const monthsOfYear = [
       "January",
