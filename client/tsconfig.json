@@ -28,6 +28,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "*.config.mjs"
-  ],
+, "src/app/auth/api/checkout.ts"  ],
   "exclude": ["node_modules"]
 }

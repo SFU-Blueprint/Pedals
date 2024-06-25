@@ -1,57 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY as string;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function Home() {
-  const router = useRouter();
 
-  const checkUser = async (userId: string) => {
-    try {
-      const res = await fetch(`/auth/api/login?userId=${userId}`);
-      const result = await res.json();
-
-      if (res.status === 404) {
-        router.push('/register');
-      } else if (res.status !== 200) {
-        throw new Error(`Error fetching custom user: ${result.error}`);
-      }
-    } catch (err) {
-      throw new Error(`Internal server error: ${err}`);
-    }
-  };
-
-  async function loginWithGoogle() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-    });
-
-    if (error) {
-      throw new Error(`Error logging in with Google: ${error.message}`);
-    }
-
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-    if (userError) {
-      throw new Error(`Error fetching user: ${userError.message}`);
-    }
-
-    if (user) {
-      await checkUser(user.id);
-    }
-  }
-
-  async function logout() {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      throw new Error(`Error logging out: ${error.message}`);
-    }
-  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -159,15 +111,6 @@ export default function Home() {
             Instantly deploy your Next.js site to a shareable URL with Vercel.
           </p>
         </a>
-      </div>
-
-      <div className="flex space-x-4">
-        <button onClick={loginWithGoogle} className="px-4 py-2 bg-blue-500 text-white rounded" type="button">
-          Login with Google
-        </button>
-        <button onClick={logout} className="px-4 py-2 bg-red-500 text-white rounded" type="button">
-          Logout
-        </button>
       </div>
     </main>
   );
