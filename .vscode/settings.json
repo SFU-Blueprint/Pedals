@@ -1,10 +1,8 @@
 {
-    "eslint.workingDirectories": [
-        "./client"
-    ],
-    "files.associations": {
-        "*.css": "tailwindcss"
-    },
-    "explorer.sortOrder": "type",
-    "editor.formatOnSave": true
+  "eslint.workingDirectories": ["./src"],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "explorer.sortOrder": "type",
+  "editor.formatOnSave": true
 }
