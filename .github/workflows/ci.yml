@@ -17,7 +17,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./client
+        working-directory: ./src
 
     steps:
       - name: Checkout repository
@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-          cache-dependency-path: client/package-lock.json
+          cache-dependency-path: src/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -50,15 +50,15 @@ jobs:
 
       - name: Annotate formatting errors
         if: steps.format.outcome != 'success'
-        run: echo "::warning file=client::Formatting errors found"
+        run: echo "Formatting errors found"
 
       - name: Annotate linter errors
         if: steps.lint.outcome != 'success'
-        run: echo "::warning file=client::Linter errors found"
+        run: echo "Linter errors found"
 
       - name: Annotate test errors
         if: steps.test.outcome != 'success'
-        run: echo "::warning file=client::Test errors found"
+        run: echo ":Test errors found"
 
       - name: Fail the job if any checks failed
         if: steps.format.outcome != 'success' || steps.lint.outcome != 'success' || steps.test.outcome != 'success'
