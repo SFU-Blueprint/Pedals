@@ -29,7 +29,7 @@ To install and start developing, follow these steps:
 2. Navigate to the client directory:
 
    ```sh
-   cd ./client
+   cd ./src
    ```
 
 3. Install the dependencies using npm or other package managers:
