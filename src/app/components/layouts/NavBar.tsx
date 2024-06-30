@@ -10,20 +10,20 @@ export default function NavBar({
   return (
     <nav className={`${props.className} flex justify-between gap-10`}>
       <Link
-        className={`${pathname === "/checkin" ? "active" : ""}`}
+        className={`${pathname === "/checkin" ? "font-bold" : ""}`}
         href="/checkin"
       >
         CHECK IN
       </Link>
       <Link
-        className={`${pathname === "/register" ? "active" : ""}`}
+        className={`${pathname === "/register" ? "font-bold" : ""}`}
         href="/register"
       >
         REGISTER
       </Link>
       <Link
-        className={`${pathname === "/manage" ? "active" : ""}`}
-        href="/manage"
+        className={`${pathname === "/manage" || pathname === "/manage-login" ? "font-bold" : ""}`}
+        href="/manage-login"
       >
         MANAGE
       </Link>
