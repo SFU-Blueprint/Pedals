@@ -25,17 +25,20 @@ export default function ManagePage() {
   if (isLargeScreen) {
     return (
       <div className="h-screen bg-pedals-lightgrey">
-        <div className="flex h-full w-fit flex-col justify-center gap-3 pb-20 pl-28">
+        <div className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32">
           <h1 className="">ENTER ACCESS CODE</h1>
           <div className="flex flex-row gap-5">
             <input className="grow rounded-sm px-3 py-0.5" placeholder="TYPE" />
             <button
               type="submit"
-              className="!bg-pedals-grey !px-12 hover:!bg-pedals-yellow"
+              className="!bg-pedals-grey !px-16 hover:!bg-pedals-yellow"
               onClick={() => router.push("/manage")}
             >
               GO
             </button>
+          </div>
+          <div className="justify-self-end pt-40 font-mono text-pedals-darkgrey">
+            FORGOT PASSWORD?
           </div>
         </div>
       </div>
