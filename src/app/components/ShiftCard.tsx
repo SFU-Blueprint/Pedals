@@ -1,12 +1,5 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  ComponentPropsWithoutRef
-} from "react";
-
 export default function ShiftCard() {
   return (
     <div className="flex w-full justify-between border-y-[1px] border-y-pedals-darkgrey px-16 py-5">

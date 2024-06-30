@@ -1,5 +1,3 @@
-import TimeDisplay from "@/components/layouts/TimeDisplay";
-
 export default function ManagerLayout({
   children // will be a page or nested layout
 }: {
