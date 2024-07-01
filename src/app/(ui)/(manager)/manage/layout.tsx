@@ -1,17 +1,19 @@
+import ManageNavBar from "@/components/layouts/ManageNavBar";
+
 export default function ManagerLayout({
-  children // will be a page or nested layout
+  children
 }: {
   children: React.ReactNode;
 }) {
-  // make Month year into dropdowns
   return (
     <>
-      <div className="flex w-full justify-between bg-pedals-lightgrey px-10">
-        <div className="flex flex-grow gap-2 py-10 pr-10">
-          <button type="button" className="min-w-[100px] !bg-yellow-400">
-            Shift
+      <ManageNavBar className="fixed left-20 top-20" />
+      <div className="flex w-full justify-between bg-pedals-lightgrey px-20 pt-[100px]">
+        <div className="flex gap-2 py-10">
+          <button type="button" className="uppercase">
+            Shifts
           </button>
-          <button type="button" className="min-w-[100px]">
+          <button type="button" className="uppercase">
             People
           </button>
         </div>
@@ -41,8 +43,6 @@ export default function ManagerLayout({
         <div className="flex flex-grow items-center justify-end gap-2">
           <input type="text" placeholder="Search Name" />
         </div>
-
-        {children}
       </div>
       <div className="flex w-full flex-col bg-pedals-lightgrey">
         <div className="flex w-full items-center">
@@ -79,6 +79,7 @@ export default function ManagerLayout({
             Remove from database
           </button>
         </div>
+        {children}
       </div>
     </>
   );
