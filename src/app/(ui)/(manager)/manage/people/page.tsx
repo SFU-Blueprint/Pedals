@@ -1,13 +1,5 @@
-"use client";
-
-import { useState } from "react";
-import FormInput from "@/components/FormInput";
-import Dropdown from "@/components/Dropdown";
-
 export default function Checkin() {
-  return (
-   <div></div>
-  );
+  return <div>{}</div>;
 }
 
 /* Shift Type
