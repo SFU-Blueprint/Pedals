@@ -27,6 +27,15 @@ export default function NavBar({
       >
         MANAGE
       </Link>
+
+      {/* This snippet is just to show the link to the change-access page*/}
+      {/*<Link*/}
+      {/*  className={`${pathname === "/manage" || pathname === "/change-access" ? "font-bold" : ""}`}*/}
+      {/*  href="/change-access"*/}
+      {/*  >*/}
+      {/*  CHANGE ACCESS CODE*/}
+      {/*</Link>*/}
+
     </nav>
   );
 }
