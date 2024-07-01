@@ -1,9 +1,11 @@
-import React, { useId } from "react";
+import React from "react";
 
 interface VolunteerProps {
   firstName: String;
   lastName: String;
-  timeIn: String; //Todo: Change to DateTime Object
+  timeIn: String; // Todo: Change to DateTime Object
+
+  // eslint-disable-next-line react/no-unused-prop-types
   id: any;
 }
 
@@ -11,6 +13,7 @@ export default function Volunteer({
   firstName,
   lastName,
   timeIn,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   id
 }: VolunteerProps) {
   return (
