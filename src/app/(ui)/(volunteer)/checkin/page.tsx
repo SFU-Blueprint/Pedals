@@ -3,6 +3,22 @@
 import { useState } from "react";
 import FormInput from "@/components/FormInput";
 import Dropdown from "@/components/Dropdown";
+import Volunteer from "@/components/Volunteer";
+
+const fakeInfo = [
+  {
+    firstName: "Johnny",
+    lastName: "Test",
+    timeIn: "Since 11:10am",
+    id: "test"
+  },
+  {
+    firstName: "Mark",
+    lastName: "Hamburg",
+    timeIn: "Since 10:00am",
+    id: "test"
+  }
+];
 
 function ShiftSelect() {
   const [selectedShift, setSelectedShift] = useState<string | null>(null);
@@ -40,13 +56,36 @@ function ShiftSelect() {
 
 export default function Checkin() {
   return (
-    <form className="flex justify-between gap-20 px-20 py-10">
-      <FormInput label="Username" type="text" placeholder="TYPE" />
-      <ShiftSelect />
-      <button type="submit" className="min-w-[200px]">
-        Check In
-      </button>
-    </form>
+    <div className="flex flex-col">
+      {" "}
+      <form className="flex justify-between gap-20 px-20 py-10">
+        <FormInput
+          className="w-4/12 flex-initial"
+          label="Username"
+          type="text"
+          placeholder="TYPE"
+        />
+        <ShiftSelect />
+        <button type="submit" className="min-w-[200px]">
+          Check In
+        </button>
+      </form>
+      {fakeInfo.map(
+        (item: {
+          firstName: String;
+          lastName: String;
+          timeIn: String;
+          id: any;
+        }) => (
+          <Volunteer
+            firstName={item.firstName}
+            lastName={item.lastName}
+            timeIn={item.timeIn}
+            id={item.id}
+          />
+        )
+      )}
+    </div>
   );
 }
 

@@ -7,7 +7,7 @@ interface FormInputProps extends React.ComponentPropsWithoutRef<"input"> {
 export default function FormInput({ label, ...props }: FormInputProps) {
   const id = useId();
   return (
-    <div className={`${props.className} flex w-full flex-col gap-1.5`}>
+    <div className={`${props.className} flex flex-col gap-1.5`}>
       {label && <label htmlFor={id}>{label}</label>}
       {props.children || (
         <input id={id} type={props.type} placeholder={props.placeholder} />
