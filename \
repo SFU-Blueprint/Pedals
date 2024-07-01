@@ -5,56 +5,33 @@ import FormInput from "@/components/FormInput";
 import Dropdown from "@/components/Dropdown";
 
 function ShiftSelect() {
-  const [PFTPState, setPFTPState] = useState<boolean>(false);
-  const [WTQState, setWTQState] = useState<boolean>(false);
-  const [OptionState, setOptionState] = useState<boolean>(false);
-
-
+  const [selectedShift, setSelectedShift] = useState<string | null>(null);
   return (
     <FormInput label="Shift Type">
       <div className="flex gap-2">
         <button
           type="button"
-          className={PFTPState ? "!bg-pedals-yellow" : ""}
-          onClick={() => {
-				if (!PFTPState) {
-					setPFTPState(true)
-					setWTQState(false)
-					setOptionState(false)
-				} 
-			}}
+          // className={selectedShift === "PFTP" ? "bg-pedals-yellow" : ""}
+          className="text-zinc-50"
+          onClick={() => setSelectedShift("PFTP")}
         >
           PFTP
         </button>
         <button
           type="button"
-          className={WTQState ? "!bg-pedals-yellow" : ""}
-          onClick={() => {
-				if (!WTQState) {
-					setWTQState(true);
-					setPFTPState(false);
-					setOptionState(false);
-				}
-			}}
+          className={selectedShift === "PFTP" ? "bg-pedals-yellow" : ""}
+          onClick={() => setSelectedShift("WTQ")}
         >
           WTQ
         </button>
         <Dropdown
-          className={OptionState ? "!bg-pedals-yellow" : ""}
-			// className="!bg-pedals-yellow"
+          className={`${selectedShift === "PFTP" ? "bg-pedals-yellow" : ""} uppercase`}
           options={[
-            { value: "option1", label: "OPTION 1" },
-            { value: "option2", label: "OPTION 2" },
-            { value: "option3", label: "OPTION 3" }
+            { value: "option1", label: "Option 1" },
+            { value: "option2", label: "Option 2" },
+            { value: "option3", label: "Option 3" }
           ]}
-			  handleOnClick={() => {
-					// console.log(e)
-				if (!OptionState) {
-					setWTQState(false);
-					setPFTPState(false);
-					setOptionState(true);
-				}
-			}}
+          onChange={() => setSelectedShift("dropdown")}
           placeholder="SELECT"
         />
       </div>

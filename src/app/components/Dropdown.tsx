@@ -15,11 +15,13 @@ type Option = {
 interface DropdownProps extends ComponentPropsWithoutRef<"div"> {
   options: Option[];
   placeholder: string;
+	handleOnClick?: any;
 }
 
 export default function Dropdown({
   options,
   placeholder,
+	handleOnClick,
   ...props
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,13 +49,15 @@ export default function Dropdown({
     };
   }, []);
 
+
   return (
     <div className={`${props.className} relative`} ref={dropdownRef}>
       {!isOpen ? (
         <button
           type="button"
-          className="flex w-60 items-center justify-between uppercase hover:ring-2 hover:ring-pedals-yellow hover:ring-offset-1"
+          className={`flex w-60 items-center justify-between uppercase hover:ring-2 hover:ring-pedals-yellow hover:ring-offset-1 ${selectedOption ? props.className : ""}`}
           onClick={() => {
+			handleOnClick();
             setIsOpen(!isOpen);
           }}
         >
