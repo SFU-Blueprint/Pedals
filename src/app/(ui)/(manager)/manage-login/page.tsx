@@ -14,21 +14,45 @@ function IncorrectAccessCodeWarning() {
 }
 
 function ForgotPasswordPopUp({
-  children,
   open,
   onClose
 }: {
-  children: React.ReactNode;
   open: boolean;
   onClose: any;
 }) {
   if (open) {
     return (
-      <div>
-        <button type="button" onClick={onClose}>
-          hello
-        </button>
-        {children}
+      <div className="flex h-full w-full items-center justify-center"
+		style={{
+					position: "fixed",
+					top: 0,
+					left: 0,
+					zIndex: 1040,
+					backgroundColor: "rgba(0, 0, 0, 0.4)",
+					backdropFilter: "blur(15px)"
+				}}
+		>
+		<div className="flex flex-col mx-auto !bg-pedals-white w-1/2 h-1/2">
+
+			<div className="flex flex-row h-1/4 w-full !bg-pedals-yellow justify-between align-middle items-center px-10 !text-black">
+				<h5 className=""> Password Recovery </h5>
+				<h5 className="" onClick={() => onClose()}>X</h5>
+			</div>
+
+			<div className="flex flex-col h-full px-10 py-10 justify-around">
+				<div>
+					An email has been set to cavan@gmail.com/Please follow jthe instruction in the email to reset your access code.
+				</div>
+				<div className="flex w-full justify-between gap-[100px]">
+					<button type="button" onClick={onClose}>
+					  CANCEL
+					</button>
+					<button className="grow" type="button" onClick={onClose}>
+					  FINISHED
+					</button>
+				</div>
+			</div>
+		</div>
       </div>
     );
   }
@@ -72,9 +96,7 @@ export default function ManagePage() {
             >
               FORGOT PASSWORD?
             </button>
-            <ForgotPasswordPopUp open={isOpen} onClose={() => setIsOpen(false)}>
-              hello
-            </ForgotPasswordPopUp>
+            <ForgotPasswordPopUp open={isOpen} onClose={() => setIsOpen(false)}/>
           </div>
         </div>
         <IncorrectAccessCodeWarning />
