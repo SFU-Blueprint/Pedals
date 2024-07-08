@@ -7,30 +7,46 @@ import React, {
   ComponentPropsWithoutRef
 } from "react";
 
-type Option = {
-  label: string;
-  value: string | number;
-};
-
-interface DropdownProps extends ComponentPropsWithoutRef<"div"> {
-  options: Option[];
+interface DropdownProps extends ComponentPropsWithoutRef<"button"> {
+  options: string[];
+  currentOption: string | null;
   placeholder: string;
-	handleOnClick?: any;
+}
+
+function DropdownArrow() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6 9L12 15L18 9"
+        stroke="#252525"
+        strokeWidth="2"
+        strokeLinecap="square"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 export default function Dropdown({
   options,
+  currentOption,
   placeholder,
-	handleOnClick,
   ...props
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleOptionClick = (option: Option | null) => {
-    setSelectedOption(option);
-    setIsOpen(false);
+  const handleClickInside = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setIsOpen(!isOpen);
+    if (props.onClick) {
+      props.onClick(event);
+    }
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -49,67 +65,36 @@ export default function Dropdown({
     };
   }, []);
 
-
   return (
-    <div className={`${props.className} relative`} ref={dropdownRef}>
+    <div className={`${props.className} relative w-60`} ref={dropdownRef}>
       {!isOpen ? (
         <button
           type="button"
-          className={`flex w-60 items-center justify-between uppercase hover:ring-2 hover:ring-pedals-yellow hover:ring-offset-1 ${selectedOption ? props.className : ""}`}
-          onClick={() => {
-			handleOnClick();
-            setIsOpen(!isOpen);
-          }}
+          className={`flex w-full items-center justify-between uppercase hover:ring-2 hover:ring-pedals-yellow hover:ring-offset-1 ${currentOption ? "!bg-pedals-yellow" : ""}`}
+          onClick={() => setIsOpen(true)}
         >
-          {selectedOption ? selectedOption.label : placeholder}
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6 9L12 15L18 9"
-              stroke="#252525"
-              strokeWidth="2"
-              strokeLinecap="square"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {currentOption || placeholder}
+          <DropdownArrow />
         </button>
       ) : (
-        <div className="absolute flex w-60 flex-col items-start rounded-[3px] bg-white outline-none ring-2 ring-pedals-yellow ring-offset-1">
+        <div className="absolute w-full rounded-[3px] bg-white outline-none ring-2 ring-pedals-yellow ring-offset-1">
           <button
             type="button"
             className="flex w-full items-center justify-between uppercase hover:bg-pedals-grey"
-            onClick={() => handleOptionClick(null)}
+            onClick={handleClickInside}
           >
             {placeholder}
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6 9L12 15L18 9"
-                stroke="#252525"
-                strokeWidth="2"
-                strokeLinecap="square"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <DropdownArrow />
           </button>
           {options.map((option) => (
             <button
               type="button"
-              key={option.value}
-              onClick={() => handleOptionClick(option)}
+              key={option}
+              value={option}
+              onClick={handleClickInside}
               className="flex w-full items-center justify-start uppercase"
             >
-              {option.label}
+              {option}
             </button>
           ))}
         </div>
