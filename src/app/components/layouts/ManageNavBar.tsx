@@ -7,7 +7,7 @@ export default function ManageNavBar({
 }: React.ComponentPropsWithoutRef<"nav">) {
   return (
     <nav className={`${props.className} flex justify-between gap-10`}>
-      <Link href="/checkin">CHANGE ACCESS CODE</Link>
+      <Link href="/change-access">CHANGE ACCESS CODE</Link>
       <Link href="/register">EXPORT</Link>
     </nav>
   );
