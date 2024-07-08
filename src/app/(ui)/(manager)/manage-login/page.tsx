@@ -2,9 +2,42 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+
+function IncorrectAccessCodeWarning() {
+  return (
+    <div className="translate absolute bottom-5 right-1/2 translate-x-1/2 rounded-xl bg-pedals-yellow p-4">
+      <Image src="" alt="" />
+      <p>Incorrect access code, please try again.</p>
+    </div>
+  );
+}
+
+function ForgotPasswordPopUp({
+  children,
+  open,
+  onClose
+}: {
+  children: React.ReactNode;
+  open: boolean;
+  onClose: any;
+}) {
+  if (open) {
+    return (
+      <div>
+        <button type="button" onClick={onClose}>
+          hello
+        </button>
+        {children}
+      </div>
+    );
+  }
+  return null;
+}
 
 export default function ManagePage() {
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(true);
 
   useEffect(() => {
@@ -31,10 +64,20 @@ export default function ManagePage() {
               Go
             </button>
           </div>
-          <p className="pt-40 !font-mono text-pedals-darkgrey hover:font-bold hover:text-pedals-black">
-            Forgot Password?
-          </p>
+          <div className="pt-40 font-mono text-lg text-pedals-darkgrey">
+            <button
+              type="button"
+              className="!bg-transparent hover:font-bold hover:text-pedals-black"
+              onClick={() => setIsOpen(true)}
+            >
+              FORGOT PASSWORD?
+            </button>
+            <ForgotPasswordPopUp open={isOpen} onClose={() => setIsOpen(false)}>
+              hello
+            </ForgotPasswordPopUp>
+          </div>
         </div>
+        <IncorrectAccessCodeWarning />
       </div>
     );
   }
