@@ -9,7 +9,6 @@ function ShiftSelect() {
   const [WTQState, setWTQState] = useState<boolean>(false);
   const [OptionState, setOptionState] = useState<boolean>(false);
 
-
   return (
     <FormInput label="Shift Type">
       <div className="flex gap-2">
@@ -17,12 +16,12 @@ function ShiftSelect() {
           type="button"
           className={PFTPState ? "!bg-pedals-yellow" : ""}
           onClick={() => {
-				if (!PFTPState) {
-					setPFTPState(true)
-					setWTQState(false)
-					setOptionState(false)
-				} 
-			}}
+            if (!PFTPState) {
+              setPFTPState(true);
+              setWTQState(false);
+              setOptionState(false);
+            }
+          }}
         >
           PFTP
         </button>
@@ -30,31 +29,31 @@ function ShiftSelect() {
           type="button"
           className={WTQState ? "!bg-pedals-yellow" : ""}
           onClick={() => {
-				if (!WTQState) {
-					setWTQState(true);
-					setPFTPState(false);
-					setOptionState(false);
-				}
-			}}
+            if (!WTQState) {
+              setWTQState(true);
+              setPFTPState(false);
+              setOptionState(false);
+            }
+          }}
         >
           WTQ
         </button>
         <Dropdown
           className={OptionState ? "!bg-pedals-yellow" : ""}
-			// className="!bg-pedals-yellow"
+          // className="!bg-pedals-yellow"
           options={[
             { value: "option1", label: "OPTION 1" },
             { value: "option2", label: "OPTION 2" },
             { value: "option3", label: "OPTION 3" }
           ]}
-			  handleOnClick={() => {
-					// console.log(e)
-				if (!OptionState) {
-					setWTQState(false);
-					setPFTPState(false);
-					setOptionState(true);
-				}
-			}}
+          handleOnClick={() => {
+            // console.log(e)
+            if (!OptionState) {
+              setWTQState(false);
+              setPFTPState(false);
+              setOptionState(true);
+            }
+          }}
           placeholder="SELECT"
         />
       </div>
