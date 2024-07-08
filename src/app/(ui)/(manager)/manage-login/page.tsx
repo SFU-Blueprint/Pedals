@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function ManagePage() {
   const router = useRouter();
-  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 1000);
+  const [isLargeScreen, setIsLargeScreen] = useState(true);
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,7 +28,7 @@ export default function ManagePage() {
         <div className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32">
           <h1 className="">ENTER ACCESS CODE</h1>
           <div className="flex flex-row gap-5">
-            <input className="grow rounded-sm px-3 py-0.5" placeholder="TYPE" />
+            <input className="grow" placeholder="TYPE" type="text" />
             <button
               type="submit"
               className="!bg-pedals-grey !px-16 hover:!bg-pedals-yellow"
@@ -37,8 +37,10 @@ export default function ManagePage() {
               GO
             </button>
           </div>
-          <div className="justify-self-end pt-40 font-mono text-pedals-darkgrey">
-            FORGOT PASSWORD?
+          <div className="pt-40 font-mono text-lg text-pedals-darkgrey">
+            <span className="hover:font-bold hover:text-pedals-black">
+              FORGOT PASSWORD?
+            </span>
           </div>
         </div>
       </div>
@@ -46,7 +48,7 @@ export default function ManagePage() {
   }
 
   return (
-    <div className="flex h-screen flex-col place-content-center items-center">
+    <div className="flex h-screen place-content-center items-center">
       <h3 className="px-10 font-semibold">
         To view the Manage page, please use a device with a bigger screen. Thank
         you!
