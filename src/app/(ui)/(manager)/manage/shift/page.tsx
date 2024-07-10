@@ -1,6 +1,6 @@
 "use client";
 
-import ShiftCard from "@/components/ShiftCard";
+import ShiftCard from "./components/ShiftCard";
 
 export default function ManageShift() {
   return (

@@ -26,7 +26,7 @@ To install and start developing, follow these steps:
    git clone <repository-url>
    ```
 
-2. Navigate to the client directory:
+2. Navigate to the source directory:
 
    ```sh
    cd ./src
