@@ -76,7 +76,7 @@ export async function GET() {
 	const key = process.env.SUPABASE_KEY;
 	if (supabaseUrl && key){
 		const supabase = createClient(supabaseUrl, key);
-		const {data, error} = await supabase.from("volunteers_test").select("*");
+		const {data, error} = await supabase.from("user_test").select("*");
 		return NextResponse.json(data);
 	}
 
@@ -87,3 +87,33 @@ export async function GET() {
 }
 
 
+export async function POST(req: Request) {
+	const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL;
+	const key = process.env.SUPABASE_KEY;
+
+	const body = await req.json();
+	const { email, shiftId } = body;
+	
+	if (!email || !shiftId) {
+		return NextResponse.json({
+			message: "Please provide an email and a shiftID"
+		})
+	}
+
+	if (supabaseUrl && key){
+		const supabase = createClient(supabaseUrl, key);
+		const {data, error} = await supabase.from("user_test").select("*").eq("email", email);
+
+		if (error) {
+			return NextResponse.json({
+				message: error
+			})
+		}
+		return NextResponse.json(data);
+	}
+
+	return NextResponse.json({
+		message: "Encounter problem when try to send a request"
+	})
+
+}

@@ -11,7 +11,13 @@ export default function Checkin() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const response = await fetch("/api/checkin")
+				const response = await fetch("/api/checkin", {
+					method: "POST",
+					body: JSON.stringify({
+						email: "test1@gmail.com",
+						shiftId: 1
+					})
+				})
 				if (response.ok) {
 					const result = await response.json()
 					console.log(result)
