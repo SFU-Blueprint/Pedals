@@ -3,8 +3,26 @@
 import FormInput from "@/components/FormInput";
 import VolunteerCard from "./components/VolunteerCard";
 import ShiftSelect from "./components/ShiftSelect";
+import { useEffect } from "react";
+// import Post from "../../../api/checkin/route"
 
 export default function Checkin() {
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const response = await fetch("/api/checkin")
+				if (response.ok) {
+					const result = await response.json()
+					console.log(result)
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		}
+		fetchData();
+	}, [])
+
   const mockInfo = [
     {
       firstName: "Johnny",
@@ -34,12 +52,13 @@ export default function Checkin() {
           lastName: string;
           timeIn: string;
           shift: string;
-        }) => (
+        }, idx) => (
           <VolunteerCard
             firstName={item.firstName}
             lastName={item.lastName}
             timeIn={item.timeIn}
             shift={item.shift}
+			key = {idx}
           />
         )
       )}
