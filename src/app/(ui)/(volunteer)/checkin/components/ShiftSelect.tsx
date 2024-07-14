@@ -2,12 +2,12 @@ import { useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import FormInput from "@/components/FormInput";
 
-export default function ShiftSelect() {
+export default function ShiftSelect({ className }: { className: string }) {
   const dropdownOptions = ["option 1", "option 2", "option 3"];
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   return (
-    <FormInput label="Shift Type">
+    <FormInput className={className} label="Shift Type">
       <div className="flex gap-2">
         <button
           type="button"
