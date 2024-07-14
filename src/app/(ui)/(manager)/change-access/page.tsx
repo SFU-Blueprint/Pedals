@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import React from "react";
+import Vector from "./image/chevron-left.svg";
 
 export default function ChangeAccessPage() {
   return (
@@ -8,16 +11,21 @@ export default function ChangeAccessPage() {
       <div className="flex h-full w-fit flex-col justify-center gap-8 pl-28 pt-16">
         <div className="flex flex-col">
           <Link
-            className="mb-2 flex items-center text-lg font-medium text-pedals-darkgrey hover:text-pedals-yellow"
-            href="/manage"
+            className="group mb-2 flex items-center text-lg font-medium text-pedals-black hover:text-black hover:font-bold"
+            href="/manage/shift"
           >
-            <span className="mb-[0.425rem] ml-2 mr-2 text-3xl">&lt;</span> BACK
+            <Image
+              src={Vector}
+              alt="Back"
+              className=""
+            />
+            <span className="ml-2 group-hover:text-black">BACK</span>
           </Link>
         </div>
 
         <div className="flex flex-col gap-2">
           <p>Current access code:</p>
-          <input className="rounded-sm px-3 py-0.5" placeholder="TYPE" />
+          <input className="grow" placeholder="TYPE" type="text" />
         </div>
 
         <div className="flex flex-col">
@@ -27,12 +35,12 @@ export default function ChangeAccessPage() {
 
         <div className="flex flex-col gap-2">
           <p>New access code:</p>
-          <input className="rounded-sm px-3 py-0.5" placeholder="TYPE" />
+          <input className="grow" placeholder="TYPE" type="text" />
         </div>
 
         <div className="flex flex-col gap-2">
           <p>Confirm new access code:</p>
-          <input className="rounded-sm px-3 py-0.5" placeholder="TYPE" />
+          <input className="grow" placeholder="TYPE" type="text" />
         </div>
 
         <div className="mt-8">
@@ -47,3 +55,4 @@ export default function ChangeAccessPage() {
     </div>
   );
 }
+
