@@ -51,4 +51,3 @@ export const POST = async (request: NextRequest) => {
   }
 };
 
-// id, created_at, date, time, required_volunteer
