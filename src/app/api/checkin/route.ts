@@ -71,45 +71,61 @@ import { createClient } from "@supabase/supabase-js";
   // }
 // }
 
-export async function GET() {
-	const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL;
-	const key = process.env.SUPABASE_KEY;
-	if (supabaseUrl && key){
-		const supabase = createClient(supabaseUrl, key);
-		const {data, error} = await supabase.from("user_test").select("*");
-		return NextResponse.json(data);
-	}
-
-	const data = {
-		message: "Hello from API"
-	}
-	return NextResponse.json(data);
-}
-
-
 export async function POST(req: Request) {
 	const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL;
 	const key = process.env.SUPABASE_KEY;
 
 	const body = await req.json();
-	const { email, shiftId } = body;
+	const { userName, shiftId } = body;
 	
-	if (!email || !shiftId) {
+	if (!userName || !shiftId) {
 		return NextResponse.json({
-			message: "Please provide an email and a shiftID"
+			message: "Please provide a username and a shiftID"
 		})
 	}
 
 	if (supabaseUrl && key){
 		const supabase = createClient(supabaseUrl, key);
-		const {data, error} = await supabase.from("user_test").select("*").eq("email", email);
+		const {data: user, error: userError} = await supabase
+			.from("users")
+			.select("*")
+			.eq("username", userName)
+			.single()
 
-		if (error) {
+		if (userError) {
 			return NextResponse.json({
-				message: error
+				message: userError
 			})
 		}
-		return NextResponse.json(data);
+
+		const {data: volunteer, error: volunteerError} = await supabase
+			.from("volunteers")
+			.select("*")
+			.eq("user_id", user.sid)
+			.single()
+
+		if (volunteerError) {
+			return NextResponse.json({
+				message: "There no volunteer with provided userName"
+			})
+		}
+
+		const {data: shift, error:errorShift} = await supabase.from("volunteer_shifts").insert({
+			"volunteer_id": volunteer.vid,
+			"shift_id": shiftId,
+			"status": "Available",
+			"checked_in_at": new Date().toISOString()
+		});
+
+		if (errorShift) {
+			return NextResponse.json({
+				message: errorShift
+			})
+		}
+
+		return NextResponse.json({
+			message: "Checkin successfully"
+		});
 	}
 
 	return NextResponse.json({
