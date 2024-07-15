@@ -6,7 +6,7 @@ import Image from "next/image";
 
 function IncorrectAccessCodeWarning() {
   return (
-    <div className="translate absolute bottom-5 right-1/2 flex w-[400px] translate-x-1/2 flex-row justify-evenly rounded-xl bg-pedals-yellow py-4">
+    <div className="translate absolute bottom-9 right-1/2 flex w-[400px] translate-x-1/2 flex-row justify-evenly rounded-xl bg-pedals-yellow py-4">
       <Image
         src="/warning-triangle.svg"
         alt=""
@@ -106,7 +106,11 @@ export default function ManagePage() {
         <div className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32 uppercase">
           <h1>Enter Access Code</h1>
           <div className="flex flex-row gap-5">
-            <input className="grow" placeholder="TYPE" type="text" />
+            <input
+              className="grow rounded-[3px] px-3 py-2 outline-none focus:ring-2 focus:ring-pedals-yellow focus:ring-offset-1"
+              placeholder="TYPE"
+              type="password"
+            />
             <button
               type="submit"
               className="!bg-pedals-grey !px-16 uppercase hover:!bg-pedals-yellow"
