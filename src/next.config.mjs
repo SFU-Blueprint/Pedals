@@ -1,4 +1,4 @@
-import startCronJob from '../src/cronJob.mjs';
+import startCronJob from "../src/cronJob.mjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -7,7 +7,7 @@ const nextConfig = {
       startCronJob();
     }
     return config;
-  },
+  }
 };
 
 export default nextConfig;
