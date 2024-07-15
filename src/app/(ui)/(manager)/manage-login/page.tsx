@@ -6,8 +6,14 @@ import Image from "next/image";
 
 function IncorrectAccessCodeWarning() {
   return (
-    <div className="translate absolute bottom-5 right-1/2 translate-x-1/2 rounded-xl bg-pedals-yellow p-4">
-      <Image src="" alt="" />
+    <div className="translate absolute bottom-5 right-1/2 flex w-[400px] translate-x-1/2 flex-row justify-evenly rounded-xl bg-pedals-yellow py-4">
+      <Image
+        src="/warning-triangle.svg"
+        alt=""
+        width={0}
+        height={0}
+        className="h-auto w-auto"
+      />
       <p>Incorrect access code, please try again.</p>
     </div>
   );
@@ -22,37 +28,58 @@ function ForgotPasswordPopUp({
 }) {
   if (open) {
     return (
-      <div className="flex h-full w-full items-center justify-center"
-		style={{
-					position: "fixed",
-					top: 0,
-					left: 0,
-					zIndex: 1040,
-					backgroundColor: "rgba(0, 0, 0, 0.4)",
-					backdropFilter: "blur(15px)"
-				}}
-		>
-		<div className="flex flex-col mx-auto !bg-pedals-white w-1/2 h-1/2">
+      <div
+        className="flex h-full w-full items-center justify-center"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 1040,
+          backgroundColor: "rgba(0, 0, 0, 0.25)"
+        }}
+      >
+        <div className="mx-auto flex h-1/2 w-2/5 flex-col rounded-xl !bg-pedals-white font-inter normal-case !text-black">
+          <div className="flex h-2/5 w-full flex-row items-center justify-between rounded-t-xl !bg-pedals-yellow px-10 align-middle">
+            <h5 className=""> Password Recovery </h5>
+            <button
+              type="button"
+              className="!bg-transparent"
+              onClick={() => onClose()}
+              aria-label="Close Password Recovery"
+            >
+              <Image
+                src="/close-x.svg"
+                alt=""
+                width={0}
+                height={0}
+                className="h-auto w-auto"
+              />
+            </button>
+          </div>
 
-			<div className="flex flex-row h-1/4 w-full !bg-pedals-yellow justify-between align-middle items-center px-10 !text-black">
-				<h5 className=""> Password Recovery </h5>
-				<h5 className="" onClick={() => onClose()}>X</h5>
-			</div>
-
-			<div className="flex flex-col h-full px-10 py-10 justify-around">
-				<div>
-					An email has been set to cavan@gmail.com/Please follow jthe instruction in the email to reset your access code.
-				</div>
-				<div className="flex w-full justify-between gap-[100px]">
-					<button type="button" onClick={onClose}>
-					  CANCEL
-					</button>
-					<button className="grow" type="button" onClick={onClose}>
-					  FINISHED
-					</button>
-				</div>
-			</div>
-		</div>
+          <div className="flex h-full flex-col justify-around px-10 py-10">
+            <div>
+              An email has been set to cavan@gmail.com. Please follow the
+              instruction in the email to reset your access code.
+            </div>
+            <div className="flex w-full justify-between gap-[70px]">
+              <button
+                type="button"
+                onClick={onClose}
+                className="!rounded-3xl !bg-pedals-yellow !px-5"
+              >
+                CANCEL
+              </button>
+              <button
+                className="grow !rounded-3xl !bg-pedals-lightgrey"
+                type="button"
+                onClick={onClose}
+              >
+                FINISHED
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -96,7 +123,10 @@ export default function ManagePage() {
             >
               FORGOT PASSWORD?
             </button>
-            <ForgotPasswordPopUp open={isOpen} onClose={() => setIsOpen(false)}/>
+            <ForgotPasswordPopUp
+              open={isOpen}
+              onClose={() => setIsOpen(false)}
+            />
           </div>
         </div>
         <IncorrectAccessCodeWarning />
