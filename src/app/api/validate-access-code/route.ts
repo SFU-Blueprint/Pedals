@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
-import supabase from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
 
 export default async function POST(req: Request) {
+  const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL;
+  const key = process.env.SUPABASE_KEY;
+
   const body = await req.json();
-  const accessCodeToCheck = body;
+  const { accessCodeToCheck } = body;
+
   if (!accessCodeToCheck) {
     return NextResponse.json(
       { error: "Missing required field" },
@@ -11,10 +15,14 @@ export default async function POST(req: Request) {
     );
   }
 
-  try {
+  if (supabaseUrl && key) {
+    const supabase = createClient(supabaseUrl, key);
+
     const { data: accessCodeData, error } = await supabase
       .from("access-codes")
-      .select("access-code");
+      .select("*")
+      .eq("id", 1);
+
     // Assuming accessCodeData is an array of strings and accessCodeToCheck is a string
     if (accessCodeData === null) {
       return NextResponse.json(
@@ -22,9 +30,11 @@ export default async function POST(req: Request) {
         { status: 500 }
       );
     }
+
     const hasAccessCode = accessCodeData.some(
       (accessCode) => accessCode === accessCodeToCheck
     );
+
     if (hasAccessCode) {
       return NextResponse.json(
         {
@@ -41,13 +51,5 @@ export default async function POST(req: Request) {
     return NextResponse.json({
       message: "Access code does not exist on the database"
     });
-  } catch (error) {
-    let errorMessage = "An unknown error occurred";
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
