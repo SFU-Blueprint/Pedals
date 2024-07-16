@@ -3,8 +3,24 @@
 import FormInput from "@/components/FormInput";
 import VolunteerCard from "./components/VolunteerCard";
 import ShiftSelect from "./components/ShiftSelect";
+// import Post from "../../../api/checkin/route"
 
 export default function Checkin() {
+  async function findVolunteer(formData: FormData) {
+    const userName = formData.get("Username");
+
+    try {
+      await fetch("/api/checkin", {
+        method: "POST",
+        body: JSON.stringify({
+          userName
+        })
+      });
+    } catch (error) {
+      // console.log(error);
+    }
+  }
+
   const mockInfo = [
     {
       firstName: "Johnny",
@@ -21,8 +37,11 @@ export default function Checkin() {
   ];
   return (
     <div className="flex flex-col">
-      <form className="flex justify-between gap-20 px-20 py-10">
-        <FormInput label="Username" type="text" placeholder="TYPE" />
+      <form
+        className="flex justify-between gap-20 px-20 py-10"
+        action={findVolunteer}
+      >
+        <FormInput label="Username" type="text" placeholder="TEXT" />
         <ShiftSelect />
         <button type="submit" className="min-w-[200px]">
           Check In
