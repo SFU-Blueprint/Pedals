@@ -30,6 +30,11 @@ export const DELETE = async (request: NextRequest) => {
     
     try {
         const {id} = await request.json()
+		if (!id) {
+			return NextResponse.json({
+				message: "Please provide an id"
+			})
+		}
         const supabase = createClient(supabaseUrl, key);
         const {error} = await supabase.from('users').delete().eq('sid', id);
 

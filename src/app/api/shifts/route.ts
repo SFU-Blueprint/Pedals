@@ -29,6 +29,13 @@ export const POST = async (request: NextRequest) => {
     
     try {
         const req_body = await request.json();
+
+		if (!req_body) {
+			return NextResponse.json({
+				message: "Please provided a req_body"
+			})
+		}
+
         const supabase = createClient(supabaseUrl, key);
         const {data, error} = await supabase.from('shifts').upsert(req_body);
 
