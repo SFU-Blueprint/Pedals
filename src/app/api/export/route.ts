@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-import { NextResponse } from 'next/server';
+import { createClient } from "@supabase/supabase-js";
+import { NextResponse } from "next/server";
 
 export const GET = async () => {
   const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
@@ -7,9 +7,7 @@ export const GET = async () => {
 
   try {
     const supabase = createClient(supabaseUrl, key);
-    const { data, error } = await supabase
-      .from("access_codes")
-      .select("*");
+    const { data, error } = await supabase.from("access_codes").select("*");
 
     if (error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
@@ -24,35 +22,38 @@ export const GET = async () => {
 
     // // Set headers for CSV download
     const headers = new Headers();
-    headers.append('Content-Type', 'text/csv');
-    headers.append('Content-Disposition', 'attachment; filename=volunteers.csv');
+    headers.append("Content-Type", "text/csv");
+    headers.append(
+      "Content-Disposition",
+      "attachment; filename=volunteers.csv"
+    );
 
     // Return the CSV data
     return new NextResponse(csv, {
       status: 200,
-      headers: headers,
+      headers: headers
     });
 
     // return NextResponse.json({ message: "Success"}, { status: 200});
-
   } catch (error) {
-    console.error('Error:', error);
-    return NextResponse.json({ message: "An unexpected error occurred" }, { status: 500 });
+    console.error("Error:", error);
+    return NextResponse.json(
+      { message: "An unexpected error occurred" },
+      { status: 500 }
+    );
   }
 };
 
 function convertToCSV(arr: any[]): string {
-  if (arr.length === 0) return '';
-  
+  if (arr.length === 0) return "";
+
   const headers = Object.keys(arr[0]);
   const csvRows = [
-    headers.join(','), // CSV header row
-    ...arr.map(row => 
-      headers.map(fieldName => 
-        JSON.stringify(row[fieldName] ?? '')
-      ).join(',')
+    headers.join(","), // CSV header row
+    ...arr.map((row) =>
+      headers.map((fieldName) => JSON.stringify(row[fieldName] ?? "")).join(",")
     )
   ];
-  
-  return csvRows.join('\n');
+
+  return csvRows.join("\n");
 }
