@@ -36,7 +36,7 @@ function IncorrectAccessCodeWarning() {
           strokeLinejoin="round"
         />
       </svg>
-=    <p>Incorrect access code, please try again.</p>
+      <p>Incorrect access code, please try again.</p>
     </div>
   );
 }
