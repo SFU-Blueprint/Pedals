@@ -13,10 +13,10 @@ const fetchData = async () => {
 };
 
 // Schedule the task to run every day at midnight
-cron.schedule("* * * * * *", fetchData);
+cron.schedule('0 0 * * *', fetchData);
 
-console.log("Cron job started: Fetching data every second");
+console.log('Cron job started: Fetching data every day at midnight');
 
 export default function startCronJob() {
-  cron.schedule("* * * * * *", fetchData);
+  cron.schedule('0 0 * * *', fetchData);
 }
