@@ -11,7 +11,7 @@ export const GET = async () => {
   try {
     const supabase = createClient(supabaseUrl, key);
     const { data, error } = await supabase.from("users").select("name");
-    console.log(data);
+    // console.log(data);
     if (error) {
       return NextResponse.json({ message: error });
     }

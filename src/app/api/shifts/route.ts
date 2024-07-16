@@ -11,7 +11,7 @@ export const GET = async () => {
   try {
     const supabase = createClient(supabaseUrl, key);
     const { data, error } = await supabase.from("shifts").select("id");
-    console.log(data);
+    // console.log(data);
     if (error) {
       return NextResponse.json({ message: error });
     }
@@ -27,16 +27,16 @@ export const POST = async (request: NextRequest) => {
   const key = process.env.SUPABASE_KEY as string;
 
   try {
-    const req_body = await request.json();
+    const reqBody = await request.json();
 
-    if (!req_body) {
+    if (!reqBody) {
       return NextResponse.json({
-        message: "Please provided a req_body"
+        message: "Please provided a reqBody"
       });
     }
 
     const supabase = createClient(supabaseUrl, key);
-    const { data, error } = await supabase.from("shifts").upsert(req_body);
+    const { data, error } = await supabase.from("shifts").upsert(reqBody);
 
     if (error || !data) {
       return NextResponse.json({ message: error });

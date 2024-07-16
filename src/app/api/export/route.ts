@@ -44,13 +44,15 @@ export default async function GET() {
 
     // Return the CSV data
     return new NextResponse(csv, {
+      /* eslint-disable-next-line object-shorthand */
       status: 200,
+      /* eslint-disable-next-line object-shorthand */
       headers: headers
     });
 
     // return NextResponse.json({ message: "Success"}, { status: 200});
   } catch (error) {
-    console.error("Error:", error);
+    // console.error("Error:", error);
     return NextResponse.json(
       { message: "An unexpected error occurred" },
       { status: 500 }

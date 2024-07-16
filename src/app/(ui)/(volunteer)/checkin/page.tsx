@@ -10,18 +10,14 @@ export default function Checkin() {
     const userName = formData.get("Username");
 
     try {
-      const response = await fetch("/api/checkin", {
+      await fetch("/api/checkin", {
         method: "POST",
         body: JSON.stringify({
-          userName: userName
+          userName
         })
       });
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
-      }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -52,21 +48,17 @@ export default function Checkin() {
         </button>
       </form>
       {mockInfo.map(
-        (
-          item: {
-            firstName: string;
-            lastName: string;
-            timeIn: string;
-            shift: string;
-          },
-          idx
-        ) => (
+        (item: {
+          firstName: string;
+          lastName: string;
+          timeIn: string;
+          shift: string;
+        }) => (
           <VolunteerCard
             firstName={item.firstName}
             lastName={item.lastName}
             timeIn={item.timeIn}
             shift={item.shift}
-            key={idx}
           />
         )
       )}
