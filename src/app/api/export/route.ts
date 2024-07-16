@@ -1,7 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-export const GET = async () => {
+function convertToCSV(arr: any[]): string {
+  if (arr.length === 0) return "";
+
+  const headers = Object.keys(arr[0]);
+  const csvRows = [
+    headers.join(","), // CSV header row
+    ...arr.map((row) =>
+      headers.map((fieldName) => JSON.stringify(row[fieldName] ?? "")).join(",")
+    )
+  ];
+
+  return csvRows.join("\n");
+}
+
+export default async function GET() {
   const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
   const key = process.env.SUPABASE_KEY as string;
 
@@ -42,18 +56,4 @@ export const GET = async () => {
       { status: 500 }
     );
   }
-};
-
-function convertToCSV(arr: any[]): string {
-  if (arr.length === 0) return "";
-
-  const headers = Object.keys(arr[0]);
-  const csvRows = [
-    headers.join(","), // CSV header row
-    ...arr.map((row) =>
-      headers.map((fieldName) => JSON.stringify(row[fieldName] ?? "")).join(",")
-    )
-  ];
-
-  return csvRows.join("\n");
 }

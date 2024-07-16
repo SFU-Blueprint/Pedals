@@ -10,7 +10,12 @@ export default function FormInput({ label, ...props }: FormInputProps) {
     <div className={`${props.className} flex w-full flex-col gap-1.5`}>
       {label && <label htmlFor={id}>{label}</label>}
       {props.children || (
-        <input id={id} type={props.type} placeholder={props.placeholder} name = {label}/>
+        <input
+          id={id}
+          type={props.type}
+          placeholder={props.placeholder}
+          name={label}
+        />
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 import { createMocks } from "node-mocks-http";
 import { NextApiRequest } from "next/types";
-import POST from "./route";
+import { POST } from "./route";
 
 jest.mock("@supabase/supabase-js", () => ({
   createClient: jest.fn(() => ({
@@ -22,7 +22,7 @@ describe("Check-in API Route", () => {
     req = mockReq as unknown as NextApiRequest;
   });
 
-  it("should return 400 if email or shiftId is missing", async () => {
+  it("should return 400 if userName or shiftId is missing", async () => {
     const mockReq = {
       ...req,
       json: async () => ({})
@@ -32,7 +32,7 @@ describe("Check-in API Route", () => {
 
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({
-      error: "Email and Shift ID are required"
+      message: "Please provide a username and a shiftID"
     });
   });
 });
