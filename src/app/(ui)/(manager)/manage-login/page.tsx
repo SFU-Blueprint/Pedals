@@ -114,7 +114,7 @@ export default function ManagePage() {
 
   const handleWrongAccessCode = () => {
     setIsWarningVisible(true);
-    setTimeout(() => setIsWarningVisible(false), 2500);
+    setTimeout(() => setIsWarningVisible(false), 50000);
   };
 
   useEffect(() => {
