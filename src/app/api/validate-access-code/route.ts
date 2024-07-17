@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-export default async function POST(req: Request) {
+/* eslint-disable-next-line import/prefer-default-export */
+export async function POST(req: Request) {
   const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL;
   const key = process.env.SUPABASE_KEY;
 
@@ -19,26 +20,27 @@ export default async function POST(req: Request) {
     const supabase = createClient(supabaseUrl, key);
 
     const { data: accessCodeData, error } = await supabase
-      .from("access-codes")
-      .select("*")
-      .eq("id", 1);
+      .from("access_codes")
+      .select("access_code");
 
     // Assuming accessCodeData is an array of strings and accessCodeToCheck is a string
-    if (accessCodeData === null) {
+    if (!accessCodeData) {
       return NextResponse.json(
         { error: "Empty accessCode table" },
         { status: 500 }
       );
     }
 
-    const hasAccessCode = accessCodeData.some(
-      (accessCode) => accessCode === accessCodeToCheck
-    );
+    let hasAccessCode = false;
+
+    accessCodeData.forEach((code) => {
+      if (code.access_code === accessCodeToCheck) hasAccessCode = true;
+    });
 
     if (hasAccessCode) {
       return NextResponse.json(
         {
-          message: "Manage page accsessed successfully"
+          message: "Manage page accessed successfully"
         },
         { status: 200 }
       );

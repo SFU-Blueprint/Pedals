@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-export default async function POST(request: NextRequest) {
+export async function POST(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
   const key = process.env.SUPABASE_KEY as string;
 
