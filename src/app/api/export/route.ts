@@ -14,8 +14,8 @@ function convertToCSV(arr: any[]): string {
 
   return csvRows.join("\n");
 }
-
-export default async function GET() {
+/* eslint-disable-next-line import/prefer-default-export */
+export async function GET() {
   const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
   const key = process.env.SUPABASE_KEY as string;
 
