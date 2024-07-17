@@ -8,6 +8,7 @@ export default function ShiftCard() {
       <p className="uppercase">12 : 00 pm</p>
       <p className="uppercase">2 : 00 pm</p>
       <p className="uppercase"> WTQ</p>
+      <button className="">Get</button>
     </div>
   );
 }
