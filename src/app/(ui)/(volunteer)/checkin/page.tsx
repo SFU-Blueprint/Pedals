@@ -4,6 +4,7 @@ import FormInput from "@/components/FormInput";
 import VolunteerCard from "./components/VolunteerCard";
 import ShiftSelect from "./components/ShiftSelect";
 // import Post from "../../../api/checkin/route"
+import Register from "./components/Register";
 
 export default function Checkin() {
   async function findVolunteer(formData: FormData) {
@@ -64,39 +65,8 @@ export default function Checkin() {
           </button>
         </div>
       </form>
-      <div>
-        {" "}
-        <form className="grid grid-cols-5 justify-between gap-20 px-20 py-10">
-          <div className="col-span-2 items-end">
-            <FormInput
-              className="w-[90%]"
-              label="Full Name"
-              type="text"
-              placeholder="TYPE"
-            />
-          </div>
-          <div className="col-span-2 items-end">
-            <FormInput
-              className="flex h-full"
-              label="(If under 18) Date of Birth"
-              type="text"
-              placeholder="TYPE"
-            >
-              <div className="flex gap-2">
-                {" "}
-                <input type="text" className="w-1/2" placeholder="Day"></input>
-                <input
-                  type="text"
-                  className="w-1/2"
-                  placeholder="Month"
-                ></input>
-                <input type="text" className="w-1/2" placeholder="Year"></input>
-              </div>{" "}
-            </FormInput>
-          </div>
-          <div className="col-span-1"></div>
-        </form>
-      </div>
+
+      <Register></Register>
       {mockInfo.map(
         (item: {
           firstName: string;
