@@ -1,39 +1,78 @@
-import { NextResponse, NextRequest } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import {NextResponse} from "next/server";
+import supabase from "@/lib/supabase";
 
-export default async function POST(request: NextRequest) {
-  const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
-  const key = process.env.SUPABASE_KEY as string;
+const minLength = 8;
+const maxLength = 15;
 
-  const { newCode } = await request.json();
+const hasNumbers = (string: string) => /\d/.test(string);
+const hasLetters = (string: string) => /[a-zA-Z]/.test(string);
 
-  if (!newCode) {
-    return NextResponse.json({
-      message: "Please provided an access code"
-    });
-  }
+export default async function POST(req: Request) {
+    const body = await req.json();
+    const { currCode, newCode } = body;
 
-  try {
-    const supabase = createClient(supabaseUrl, key);
-    const { data, error } = await supabase
-      .from("access_codes")
-      .update({
-        created_at: new Date().toISOString(),
-        access_code: newCode
-      })
-      .eq("id", 1);
-
-    if (error || !data) {
-      return NextResponse.json({ message: error }, { status: 500 });
+    if (!currCode || !newCode) {
+        return NextResponse.json(
+            {error: "Current and New Code are required"},
+            {status: 400}
+        );
     }
 
-    return NextResponse.json(
-      {
-        message: "Update access code successfully"
-      },
-      { status: 200 }
-    );
-  } catch (error) {
-    return NextResponse.json({ message: error }, { status: 500 });
-  }
+    if (currCode === newCode) {
+        return NextResponse.json(
+            {error: "Current and New Code cannot be the same"},
+            {status: 400}
+        );
+    }
+
+    if (newCode.length < minLength
+        || newCode.length > maxLength
+        || !(hasLetters(newCode) && hasNumbers(newCode))) {
+        return NextResponse.json(
+            {error: "New Code must be between 8 and 15 characters long, and contain at least one letter and one number"},
+            {status: 400}
+        );
+    }
+
+
+    try {
+        const {data: codeData, error: codeError} = await supabase.
+            from("access_codes").
+            select("access_code").
+            eq("access_code", currCode).
+            single();
+
+        if (codeError || !codeData) {
+            return NextResponse.json(
+                {error: codeError?.message || "Code not found"},
+                {status: 500}
+            );
+        }
+
+        const {data, error} = await supabase.
+            from("access_codes").
+            update({
+                access_code: newCode
+            }).
+            eq("access_code", currCode);
+
+
+        if (error) {
+            return NextResponse.json({error: error.message}, {status: 500});
+        }
+
+        return NextResponse.json({
+            message: "Code changed successfully",
+            data
+        }, {status: 200});
+
+    } catch (error) {
+        let errorMessage = "An unknown error occurred";
+
+        if (error instanceof Error) {
+            errorMessage = error.message;
+        }
+
+        return NextResponse.json({error: errorMessage}, {status: 500});
+    }
 }
