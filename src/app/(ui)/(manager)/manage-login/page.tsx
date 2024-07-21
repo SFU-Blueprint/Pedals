@@ -50,15 +50,7 @@ function ForgotPasswordPopUp({
   if (open) {
     return (
       <div
-        className="flex h-full w-full items-center justify-center"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          zIndex: 1040,
-          backgroundColor: "rgba(0, 0, 0, 0.25)"
-        }}
-      >
+        className="flex h-full w-full items-center justify-center fixed top-0 left-0 z-50 bg-opacity-20 bg-black"  >
         <div className="mx-auto flex h-1/2 w-2/5 flex-col rounded-xl !bg-pedals-white font-inter normal-case !text-black">
           <div className="flex h-2/5 w-full flex-row items-center justify-between rounded-t-xl !bg-pedals-yellow px-10 align-middle">
             <h5 className=""> Password Recovery </h5>
@@ -112,9 +104,10 @@ export default function ManagePage() {
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isWarningVisible, setIsWarningVisible] = useState(false);
 
-  const handleWrongAccessCode = () => {
+  const handleWrongAccessCode = (e: any) => {
     setIsWarningVisible(true);
-    setTimeout(() => setIsWarningVisible(false), 50000);
+    e.preventDefault();
+    setTimeout(() => setIsWarningVisible(false), 2500);
   };
 
   useEffect(() => {
@@ -141,7 +134,7 @@ export default function ManagePage() {
             <button
               type="submit"
               className="!bg-pedals-grey !px-16 uppercase hover:!bg-pedals-yellow"
-              onClick={handleWrongAccessCode}
+              onClick={(e) => handleWrongAccessCode(e)}
             >
               Go
             </button>
