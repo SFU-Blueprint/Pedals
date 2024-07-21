@@ -15,6 +15,7 @@ export default function FormInput({ label, ...props }: FormInputProps) {
           type={props.type}
           placeholder={props.placeholder}
           name={label}
+          onChange={props.onChange}
         />
       )}
     </div>
