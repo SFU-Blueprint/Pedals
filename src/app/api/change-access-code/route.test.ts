@@ -2,16 +2,15 @@ import { createMocks } from "node-mocks-http";
 import { NextApiRequest } from "next/types";
 import POST from "./route";
 
-jest.mock("@supabase/supabase-js", () => ({
-    createClient: jest.fn(() => ({
-        from: jest.fn().mockReturnThis(),
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
-        update: jest.fn().mockResolvedValue({ data: [], error: null })
-    }))
+jest.mock("@/lib/supabase", () => ({
+    from: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
+    single: jest.fn(),
+    update: jest.fn()
 }));
 
-describe("change-access-code API route", () => {
+describe("Code Change API Route", () => {
     let req: NextApiRequest;
 
     beforeEach(() => {
@@ -19,11 +18,7 @@ describe("change-access-code API route", () => {
         req = mockReq as unknown as NextApiRequest;
     });
 
-    it("should return 400 if required fields are missing", async () => {
-        req.method = "POST";
-        req.headers = { "Content-Type": "application/json" };
-        req.body = JSON.stringify({});
-
+    it("should return 400 if currCode or newCode is missing", async () => {
         const mockReq = {
             ...req,
             json: async () => ({})
@@ -32,39 +27,36 @@ describe("change-access-code API route", () => {
         const response = await POST(mockReq);
 
         expect(response.status).toBe(400);
-        expect(await response.json()).toEqual({ error: "Missing required field" });
+        expect(await response.json()).toEqual({
+            error: "Current and New Code are required"
+        });
     });
 
-    it("should return 400 if new code and current code are the identical", async () => {
-        req.method = "POST";
-        req.headers = { "Content-Type": "application/json" };
-        req.body = JSON.stringify({ newCode: "1234Abcd", currentCode: "1234Abcd" });
-
+    it("should return 400 if currCode and newCode are the same", async () => {
         const mockReq = {
             ...req,
-            json: async () => ({ newCode: "1234Abcd", currentCode: "1234Abcd" })
+            json: async () => ({ currCode: "sameCode", newCode: "sameCode" })
         } as unknown as Request;
 
         const response = await POST(mockReq);
 
         expect(response.status).toBe(400);
-        expect(await response.json()).toEqual({ error: "New code must be different from the current code" });
+        expect(await response.json()).toEqual({
+            error: "Current and New Code cannot be the same"
+        });
     });
 
-    it("should return 400 if new code does not meet requirements", async () => {
-        req.method = "POST";
-        req.headers = { "Content-Type": "application/json" };
-        req.body = JSON.stringify({ newCode: "123", currentCode: "1234Abcd" });
-
+    it("should return 400 if newCode does not meet length and character requirements", async () => {
         const mockReq = {
             ...req,
-            json: async () => ({ newCode: "123", currentCode: "1234Abcd" })
+            json: async () => ({ currCode: "currCode123", newCode: "short" })
         } as unknown as Request;
 
         const response = await POST(mockReq);
 
         expect(response.status).toBe(400);
-        expect(await response.json()).toEqual({ error: "New code must be between 8 and 15 characters long, and contain at least one letter and one number" });
+        expect(await response.json()).toEqual({
+            error: "New Code must be between 8 and 15 characters long, and contain at least one letter and one number"
+        });
     });
-
-})
+});
