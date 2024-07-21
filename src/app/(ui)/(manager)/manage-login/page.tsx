@@ -50,8 +50,7 @@ function ForgotPasswordPopUp({
 }) {
   if (open) {
     return (
-      <div
-        className="flex h-full w-full items-center justify-center fixed top-0 left-0 z-50 bg-opacity-20 bg-black"  >
+      <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black bg-opacity-20">
         <div className="mx-auto flex h-1/2 w-2/5 flex-col rounded-xl !bg-pedals-white font-inter normal-case !text-black">
           <div className="flex h-2/5 w-full flex-row items-center justify-between rounded-t-xl !bg-pedals-yellow px-10 align-middle">
             <h5 className=""> Password Recovery </h5>
@@ -61,13 +60,26 @@ function ForgotPasswordPopUp({
               onClick={() => onClose()}
               aria-label="Close Password Recovery"
             >
-              <Image
-                src="/close-x.svg"
-                alt=""
-                width={0}
-                height={0}
-                className="h-auto w-auto"
-              />
+              <svg
+                width="46"
+                height="46"
+                viewBox="0 0 46 46"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M34.5 11.5L11.5 34.5"
+                  stroke="#252525"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M11.5 11.5L34.5 34.5"
+                  stroke="#252525"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           </div>
 
@@ -111,6 +123,10 @@ export default function ManagePage() {
     setTimeout(() => setIsWarningVisible(false), 2500);
   };
 
+  const handleAccessCodeSubmission = (e: any) => {
+    e.preventDefault();
+  };
+
   useEffect(() => {
     const handleResize = () => {
       setIsLargeScreen(window.innerWidth > 1000);
@@ -123,7 +139,11 @@ export default function ManagePage() {
   if (isLargeScreen) {
     return (
       <div className="h-screen bg-pedals-lightgrey">
-        <form className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32 uppercase">
+        <form
+          className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32 uppercase"
+          method="post"
+          onSubmit={handleAccessCodeSubmission}
+        >
           <h1>Enter Access Code</h1>
           <div className="flex flex-row gap-5">
             <input
