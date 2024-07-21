@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
-export default async function GET(req: Request) {
+/* eslint-disable-next-line import/prefer-default-export */
+export async function GET(req: Request) {
   const url = new URL(req.url);
   const userId = url.searchParams.get("userId");
 

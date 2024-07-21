@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
-export default async function POST() {
+/* eslint-disable-next-line import/prefer-default-export */
+export async function POST() {
   try {
     const { error } = await supabase.auth.signOut();
 

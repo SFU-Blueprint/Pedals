@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
-export default async function POST(req: Request) {
+/* eslint-disable-next-line import/prefer-default-export */
+export async function POST(req: Request) {
   const body = await req.json();
   const { name, dateOfBirth, pronoun, email } = body;
 
