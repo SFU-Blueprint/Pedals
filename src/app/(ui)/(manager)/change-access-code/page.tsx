@@ -5,6 +5,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import chevron_left from "./image/chevron-left.svg";
 import close_X from "./image/xclose-x.svg";
+import FormInput from "@/components/FormInput";
 
 interface ErrorPopUpProps {
   open: boolean;
@@ -54,6 +55,42 @@ function ErrorPopUp({ open, onClose, message }: ErrorPopUpProps) {
 
 export default function ChangeAccessPage() {
   const [isOpen, setIsOpen] = useState(false);
+  const [currentCode, setCurrentCode] = useState('');
+  const [newCode, setNewCode] = useState('');
+  const [confirmNewCode, setConfirmNewCode] = useState('');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async () => {
+    if (newCode !== confirmNewCode) {
+      setMessage('New access codes do not match');
+      setIsOpen(true);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/change-access-code', {
+        method: 'POST',
+        body: JSON.stringify({
+          currentCode,
+          newCode
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+          setMessage(data.error);
+      } else {
+          setMessage('Access code changed successfully');
+      }
+
+      setIsOpen(true);
+    } catch (error) {
+      setMessage('An unknown error occurred');
+      setIsOpen(true);
+    }
+  };
+
   return (
       <div className="h-screen bg-pedals-lightgrey">
         <div className="flex h-full w-fit flex-col justify-center gap-8 pl-28 pt-16">
@@ -72,8 +109,15 @@ export default function ChangeAccessPage() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <p>Current access code:</p>
-            <input className="grow" placeholder="Current Access Code" type="text"/>
+            <FormInput>Current access code:</FormInput>
+            <input
+                className="grow"
+                placeholder="Current Access Code"
+                type="text"
+                value={currentCode}
+                onChange={(e) => setCurrentCode(e.target.value)}
+                required
+            />
           </div>
 
           <div className="flex flex-col">
@@ -82,24 +126,37 @@ export default function ChangeAccessPage() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <p>New access code:</p>
-            <input className="grow" placeholder="New access code" type="text" />
+            <FormInput>New access code:</FormInput>
+            <input
+                className="grow"
+                placeholder="New access code"
+                type="text"
+                onChange={(e) => setNewCode(e.target.value)}
+                required
+            />
           </div>
 
           <div className="flex flex-col gap-2">
-            <p>Confirm new access code:</p>
-            <input className="grow" placeholder="Confirm new access code" type="text" />
+            <FormInput>Confirm new access code:</FormInput>
+            <input
+                className="grow"
+                placeholder="Confirm new access code"
+                type="text"
+                onChange={(e) => setConfirmNewCode(e.target.value)}
+                required
+            />
           </div>
 
           <div className="mt-8">
             <button
                 type="submit"
                 className="!bg-pedals-grey hover:!bg-pedals-yellow"
-                onClick={() => setIsOpen(true)}
+                onClick={handleSubmit}
             >
               CHANGE ACCESS CODE
             </button>
-            <ErrorPopUp open={isOpen} onClose={() => setIsOpen(false) } message="Failed to change access code, please make sure your inputs are valid" />
+            <ErrorPopUp open={isOpen} onClose={() => setIsOpen(false)}
+                        message={message}/>
           </div>
         </div>
       </div>
