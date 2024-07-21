@@ -77,9 +77,9 @@ export async function POST(req: Request) {
   const key = process.env.SUPABASE_KEY;
 
   const body = await req.json();
-  const { userName, shiftId } = body;
+  const { userName, shiftType } = body;
 
-  if (!userName || !shiftId) {
+  if (!userName || !shiftType) {
     return NextResponse.json(
       {
         message: "Please provide a username and a shiftID"
@@ -90,6 +90,23 @@ export async function POST(req: Request) {
 
   if (supabaseUrl && key) {
     const supabase = createClient(supabaseUrl, key);
+
+    //Query the shiftID
+    const { data: shiftId, error: shiftIdError } = await supabase
+      .from("shifts")
+      .select("id")
+      .eq("shift_name", shiftType.toUpperCase())
+      .single();
+
+    if (shiftIdError) {
+      return NextResponse.json(
+        {
+          message: shiftIdError
+        },
+        { status: 400 }
+      );
+    }
+
     const { data: user, error: userError } = await supabase
       .from("users")
       .select("*")
@@ -121,7 +138,7 @@ export async function POST(req: Request) {
       .from("volunteer_shifts")
       .insert({
         volunteer_id: volunteer.vid,
-        shift_id: shiftId,
+        shift_id: shiftId.id,
         status: "Available",
         checked_in_at: new Date().toISOString()
       });
