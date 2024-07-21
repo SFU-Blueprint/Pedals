@@ -71,7 +71,8 @@ import { createClient } from "@supabase/supabase-js";
 // }
 // }
 
-export default async function POST(req: Request) {
+/* eslint-disable-next-line import/prefer-default-export */
+export async function POST(req: Request) {
   const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL;
   const key = process.env.SUPABASE_KEY;
 
