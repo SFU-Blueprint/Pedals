@@ -1,6 +1,6 @@
 import { createMocks } from "node-mocks-http";
 import { NextApiRequest } from "next/types";
-import POST from "./route";
+import { POST } from "./route";
 
 jest.mock("@supabase/supabase-js", () => ({
   createClient: jest.fn(() => ({
