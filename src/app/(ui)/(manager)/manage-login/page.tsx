@@ -8,6 +8,7 @@ function IncorrectAccessCodeWarning() {
     <div className="translate absolute bottom-9 right-1/2 flex w-[400px] translate-x-1/2 flex-row justify-evenly rounded-xl bg-pedals-yellow py-4">
       <svg
         width="20"
+		className="translate-y-[6px]"
         height="17"
         viewBox="0 0 20 17"
         fill="none"
