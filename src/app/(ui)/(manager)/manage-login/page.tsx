@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 function IncorrectAccessCodeWarning() {
   return (
@@ -114,6 +115,8 @@ export default function ManagePage() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isWarningVisible, setIsWarningVisible] = useState(false);
+  const [accessCodeToCheck, setaccessCodeToCheck] = useState<string>("");
+  const router = useRouter();
 
   const handleWrongAccessCode = (e: any) => {
     setIsWarningVisible(true);
@@ -121,9 +124,24 @@ export default function ManagePage() {
     setTimeout(() => setIsWarningVisible(false), 2500);
   };
 
-  const handleAccessCodeSubmission = (e: any) => {
+  async function handleAccessCodeSubmission(e: any) {
     e.preventDefault();
-  };
+    const response = await fetch("/api/validate-access-code", {
+      method: "POST",
+      body: JSON.stringify({
+        accessCodeToCheck
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    if (response.status === 200) {
+      router.push("/manage");
+    }
+    if (response.status === 401) {
+      handleWrongAccessCode(e);
+    }
+  }
 
   useEffect(() => {
     const handleResize = () => {
@@ -140,7 +158,7 @@ export default function ManagePage() {
         <form
           className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32 uppercase"
           method="post"
-          onSubmit={handleAccessCodeSubmission}
+          onSubmit={(e) => handleAccessCodeSubmission(e)}
         >
           <h1>Enter Access Code</h1>
           <div className="flex flex-row gap-5">
@@ -149,11 +167,11 @@ export default function ManagePage() {
               placeholder="TYPE"
               type="password"
               onClick={() => setIsWarningVisible(false)}
+              onChange={(e) => setaccessCodeToCheck(e.target.value)}
             />
             <button
               type="submit"
               className="!bg-pedals-grey !px-16 uppercase hover:!bg-pedals-yellow"
-              onClick={(e) => handleWrongAccessCode(e)}
             >
               Go
             </button>
