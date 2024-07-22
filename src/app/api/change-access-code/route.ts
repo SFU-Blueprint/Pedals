@@ -22,18 +22,34 @@ export async function POST(req: Request) {
         );
     }
 
-    if (currCode === newCode) {
+    if (newCode.length < minLength) {
         return NextResponse.json(
-            { error: "Current and New Code cannot be the same" },
+            {
+                error: `Current Code must be at least ${minLength} characters long`
+            },
             { status: 400 }
         );
     }
 
-    if (newCode.length < minLength
-        || newCode.length > maxLength
-        || !(hasLetters(newCode) && hasNumbers(newCode))) {
+    if (newCode.length > maxLength) {
         return NextResponse.json(
-            { error: "New Code must be between 8 and 15 characters long, and contain at least one letter and one number" },
+            {
+                error: `Current Code must be at most ${maxLength} characters long`
+            },
+            { status: 400 }
+        );
+    }
+
+    if (!hasNumbers(newCode)) {
+        return NextResponse.json(
+            { error: "Current Code must contain at least one number" },
+            { status: 400 }
+        );
+    }
+
+    if (!hasLetters(newCode)) {
+        return NextResponse.json(
+            { error: "Current Code must contain at least one letter" },
             { status: 400 }
         );
     }
@@ -42,16 +58,23 @@ export async function POST(req: Request) {
     if (supabaseUrl && key) {
         const supabase = createClient(supabaseUrl, key);
         try {
-            const { data: codeData, error: codeError } = await supabase.
+            const { data: codeData} = await supabase.
             from("access_codes").
             select("access_code").
             eq("access_code", currCode).
             single();
 
-            if (codeError || !codeData) {
+            if (!codeData) {
                 return NextResponse.json(
-                    { error: codeError?.message || "Code not found" },
-                    { status: 500 }
+                    { error: "Your input current access code does not exist." },
+                    { status: 400 }
+                );
+            }
+
+            if (currCode === newCode) {
+                return NextResponse.json(
+                    { error: "Current and New Code cannot be the same" },
+                    { status: 400 }
                 );
             }
 
