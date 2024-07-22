@@ -41,6 +41,26 @@ async function getVolunteerByUsername(user_id: string) {
   return data;
 }
 
+// Function to see if volunteer is already checked in
+async function getVolunteeShiftInfo(volunteer_id: string) {
+  const { data, error } = await supabase
+    .from("volunteer_shifts")
+    .select("*")
+    .eq("volunteer_id", volunteer_id)
+    .single();
+
+  if (error && error.code !== "PGRST116") {
+    // Ignore "no rows" error
+    console.error("Error fetching user:", error);
+  }
+
+  if (data) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 // Function to create a new user
 async function createUser(
   userName: string,
@@ -132,13 +152,41 @@ export async function POST(req: Request) {
       user = await getUserByUsername(userName);
       await createVolunteer(user.sid, user.name, timestamp);
       const volunteer = await getVolunteerByUsername(user.sid);
-      checkInVolunteer(volunteer, shiftId);
+      // Check to see if volunteer is already checked in
+      const checkedIn = await getVolunteeShiftInfo(volunteer.vid);
+
+      if (!checkedIn) {
+        checkInVolunteer(volunteer, shiftId);
+      } else {
+        return NextResponse.json(
+          {
+            message: "Volunteer already checked in"
+          },
+          { status: 300 }
+        );
+      }
     } else {
       const volunteer = await getVolunteerByUsername(user.sid);
-      checkInVolunteer(volunteer, shiftId);
+
+      // Check to see if volunteer is already checked in
+      const checkedIn = await getVolunteeShiftInfo(volunteer.vid);
+
+      if (!checkedIn) {
+        checkInVolunteer(volunteer, shiftId);
+      } else {
+        return NextResponse.json(
+          {
+            message: "Volunteer already checked in"
+          },
+          { status: 300 }
+        );
+      }
     }
 
-    return NextResponse.json({ message: "Success" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Success, registered and checked in volunteer" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
     return NextResponse.json({ message: "An error occurred" }, { status: 500 });
