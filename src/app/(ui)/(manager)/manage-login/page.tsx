@@ -128,6 +128,7 @@ export default function ManagePage() {
             >
               FORGOT PASSWORD?
             </button>
+<<<<<<< HEAD
             <PopUp
               title="Password Recovery"
               open={isOpen}
@@ -156,6 +157,8 @@ export default function ManagePage() {
                 </div>
               </div>
             </PopUp>
+=======
+>>>>>>> 2490d4ad414d450f837eaf2a0dc4732c363a2b1e
             <ForgotPasswordPopUp
               open={isOpen}
               onClose={() => setIsOpen(false)}
