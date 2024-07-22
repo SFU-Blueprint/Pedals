@@ -22,7 +22,7 @@ export default function Checkin() {
   ];
   return (
     <div className="flex flex-col">
-      <form className="grid grid-cols-5 gap-20 px-20">
+      <form className="grid grid-cols-5 gap-20 px-20 pb-20">
         <div className="col-span-2">
           {" "}
           <FormInput
@@ -41,7 +41,6 @@ export default function Checkin() {
         </div>
       </form>
 
-      <Register></Register>
       {mockInfo.map(
         (item: {
           firstName: string;
