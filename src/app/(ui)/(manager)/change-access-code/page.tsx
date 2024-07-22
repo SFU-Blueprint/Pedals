@@ -55,7 +55,7 @@ function ErrorPopUp({ open, onClose, message }: ErrorPopUpProps) {
 
 export default function ChangeAccessPage() {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentCode, setCurrentCode] = useState('');
+  const [currCode, setCurrCode] = useState('');
   const [newCode, setNewCode] = useState('');
   const [confirmNewCode, setConfirmNewCode] = useState('');
   const [message, setMessage] = useState('');
@@ -71,7 +71,7 @@ export default function ChangeAccessPage() {
       const response = await fetch('/api/change-access-code', {
         method: 'POST',
         body: JSON.stringify({
-          currentCode,
+          currCode,
           newCode
         })
       });
@@ -114,8 +114,8 @@ export default function ChangeAccessPage() {
                 className="grow"
                 placeholder="Current Access Code"
                 type="text"
-                value={currentCode}
-                onChange={(e) => setCurrentCode(e.target.value)}
+                value={currCode}
+                onChange={(e) => setCurrCode(e.target.value)}
                 required
             />
           </div>

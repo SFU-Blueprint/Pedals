@@ -1,8 +1,8 @@
 import { createMocks } from "node-mocks-http";
 import { NextApiRequest } from "next/types";
-import POST from "./route";
+import { POST } from "./route";
 
-jest.mock("@/lib/supabase", () => ({
+jest.mock("@supabase/supabase-js", () => ({
     from: jest.fn().mockReturnThis(),
     select: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
