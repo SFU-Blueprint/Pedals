@@ -3,7 +3,6 @@
 import FormInput from "@/components/FormInput";
 import VolunteerCard from "./components/VolunteerCard";
 import ShiftSelect from "./components/ShiftSelect";
-// import Post from "../../../api/checkin/route"
 import Register from "./components/Register";
 
 export default function Checkin() {
@@ -38,15 +37,6 @@ export default function Checkin() {
   ];
   return (
     <div className="flex flex-col">
-      <form
-        className="flex justify-between gap-20 px-20 py-10"
-        action={findVolunteer}
-      >
-        <FormInput label="Username" type="text" placeholder="TEXT" />
-        <ShiftSelect />
-        <button type="submit" className="min-w-[200px]">
-          Check In
-        </button>
       <form className="grid grid-cols-5 gap-20 px-20 pb-20">
         <div className="col-span-2">
           {" "}
