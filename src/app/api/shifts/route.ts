@@ -50,4 +50,3 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json({ message: error }, { status: 500 });
   }
 };
-

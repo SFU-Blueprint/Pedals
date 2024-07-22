@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import PopUp from "@/components/PopUp";
 
 function IncorrectAccessCodeWarning() {
   return (
     <div className="translate absolute bottom-9 right-1/2 flex w-[400px] translate-x-1/2 flex-row justify-evenly rounded-xl bg-pedals-yellow py-4">
       <svg
         width="20"
-		className="translate-y-[6px]"
+        className="translate-y-[6px]"
         height="17"
         viewBox="0 0 20 17"
         fill="none"
@@ -39,77 +40,6 @@ function IncorrectAccessCodeWarning() {
       <p>Incorrect access code, please try again.</p>
     </div>
   );
-}
-
-function ForgotPasswordPopUp({
-  open,
-  onClose
-}: {
-  open: boolean;
-  onClose: any;
-}) {
-  if (open) {
-    return (
-      <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black bg-opacity-20">
-        <div className="mx-auto flex h-1/2 w-2/5 flex-col rounded-xl !bg-pedals-white font-inter normal-case !text-black">
-          <div className="flex h-2/5 w-full flex-row items-center justify-between rounded-t-xl !bg-pedals-yellow px-10 align-middle">
-            <h5 className=""> Password Recovery </h5>
-            <button
-              type="button"
-              className="!bg-transparent"
-              onClick={() => onClose()}
-              aria-label="Close Password Recovery"
-            >
-              <svg
-                width="46"
-                height="46"
-                viewBox="0 0 46 46"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M34.5 11.5L11.5 34.5"
-                  stroke="#252525"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M11.5 11.5L34.5 34.5"
-                  stroke="#252525"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <div className="flex h-full flex-col justify-around px-10 py-10">
-            <div>
-              An email has been set to cavan@gmail.com. Please follow the
-              instruction in the email to reset your access code.
-            </div>
-            <div className="flex w-full justify-between gap-[70px]">
-              <button
-                type="button"
-                onClick={onClose}
-                className="!rounded-3xl !bg-pedals-yellow !px-5"
-              >
-                CANCEL
-              </button>
-              <button
-                className="grow !rounded-3xl !bg-pedals-lightgrey"
-                type="button"
-                onClick={onClose}
-              >
-                FINISHED
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  return null;
 }
 
 export default function ManagePage() {
@@ -185,10 +115,34 @@ export default function ManagePage() {
             >
               FORGOT PASSWORD?
             </button>
-            <ForgotPasswordPopUp
+            <PopUp
+              title="Password Recovery"
               open={isOpen}
               onClose={() => setIsOpen(false)}
-            />
+            >
+              <div className="flex h-full flex-col justify-around px-10 py-10">
+                <div>
+                  An email has been set to cavan@gmail.com. Please follow the
+                  instruction in the email to reset your access code.
+                </div>
+                <div className="flex w-full justify-between gap-[70px]">
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    className="!rounded-3xl !bg-pedals-yellow !px-5"
+                  >
+                    CANCEL
+                  </button>
+                  <button
+                    className="grow !rounded-3xl !bg-pedals-lightgrey"
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    FINISHED
+                  </button>
+                </div>
+              </div>
+            </PopUp>
           </div>
         </form>
         {isWarningVisible && <IncorrectAccessCodeWarning />}
