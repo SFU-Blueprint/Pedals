@@ -4,7 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import React, { useState } from "react";
 import chevron_left from "./image/chevron-left.svg";
-import close_X from "./image/xclose-x.svg";
+import close_X from "./image/x.svg";
+import FormInput from "@/components/FormInput";
+import PopUp from "@/components/PopUp";
 
 interface ErrorPopUpProps {
   open: boolean;
@@ -12,96 +14,90 @@ interface ErrorPopUpProps {
   message: string;
 }
 
-function ErrorPopUp({ open, onClose, message }: ErrorPopUpProps) {
-  return open ?
-    <div className="flex h-full w-full items-center justify-center rounded-xl"
-         style={{
-           position: "fixed",
-           top: 0,
-           left: 0,
-           zIndex: 1040,
-           backgroundColor: "rgba(0, 0, 0, 0.4)",
-           backdropFilter: "blur(15px)"
-         }}
-    >
-      <div className="flex flex-col mx-auto bg-pedals-white w-1/2 h-1/2 rounded-xl">
-
-        <div className="flex flex-row h-1/4 w-full bg-pedals-yellow justify-between align-middle items-center px-10 rounded-t-xl">
-          <h3> Change Access Code </h3>
-          <button type="button" onClick={() => onClose()} className="!bg-transparent">
-            <Image src={close_X} alt="Close"/>
-          </button>
-        </div>
-
-        <div className="flex flex-col h-full px-10 py-10 justify-around">
-          <div>
-            <h3>{message}</h3>
-          </div>
-          <div className="flex w-full justify-between gap-[70px]">
-            <button className="!bg-pedals-grey hover:!bg-pedals-yellow" type="submit" onClick={onClose}>
-              CANCEL
-            </button>
-            <button className="grow !bg-pedals-grey hover:!bg-pedals-yellow" type="submit" onClick={onClose}>
-              FINISHED
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    : null
-}
-
-
 export default function ChangeAccessPage() {
   const [isOpen, setIsOpen] = useState(false);
   return (
-      <div className="h-screen bg-pedals-lightgrey">
-        <div className="flex h-full w-fit flex-col justify-center gap-8 pl-28 pt-16">
-          <div className="flex flex-col">
-            <Link
-                className="group mb-2 flex items-center text-lg font-medium text-pedals-black hover:text-black hover:font-bold"
-                href="/manage/shift"
-            >
-              <Image
-                  src={chevron_left}
-                  alt="Back"
-                  className=""
-              />
-              <span className="ml-2 group-hover:text-black">BACK</span>
-            </Link>
-          </div>
+    <div className="h-screen bg-pedals-lightgrey">
+      <div className="flex h-full w-fit flex-col justify-center gap-6 px-32">
+        <Link
+          className="flex items-start gap-2 text-lg font-medium hover:font-bold"
+          href="/manage/shift"
+        >
+          <Image src={chevron_left} alt="Back" />
+          <span>BACK</span>
+        </Link>
 
-          <div className="flex flex-col gap-2">
-            <p>Current access code:</p>
-            <input className="grow" placeholder="Current Access Code" type="text"/>
-          </div>
+        <FormInput
+          label="Current access code:"
+          placeholder="TYPE"
+          type="text"
+        />
 
-          <div className="flex flex-col">
-            <p>Your new code must be between 8-15 characters,</p>
-            <p>and must have both numbers and letters.</p>
-          </div>
+        <div>
+          <p>Your new code must be between 8-15 characters,</p>
+          <p>and must have both numbers and letters.</p>
+        </div>
 
-          <div className="flex flex-col gap-2">
-            <p>New access code:</p>
-            <input className="grow" placeholder="New access code" type="text" />
-          </div>
+        <FormInput label="New access code:" placeholder="TYPE" type="text" />
+        <FormInput
+          label="Confirm new access code:"
+          placeholder="TYPE"
+          type="text"
+        />
 
-          <div className="flex flex-col gap-2">
-            <p>Confirm new access code:</p>
-            <input className="grow" placeholder="Confirm new access code" type="text" />
-          </div>
-
-          <div className="mt-8">
-            <button
-                type="submit"
-                className="!bg-pedals-grey hover:!bg-pedals-yellow"
-                onClick={() => setIsOpen(true)}
-            >
-              CHANGE ACCESS CODE
-            </button>
-            <ErrorPopUp open={isOpen} onClose={() => setIsOpen(false) } message="Failed to change access code, please make sure your inputs are valid" />
-          </div>
+        <div className="mt-6">
+          <button
+            type="submit"
+            className="flex items-center justify-center !bg-pedals-grey hover:!bg-pedals-yellow"
+            onClick={() => setIsOpen(true)}
+          >
+            CHANGE ACCESS CODE
+          </button>
+          <PopUp
+            title="Change Access Code"
+            open={isOpen}
+            onClose={() => setIsOpen(false)}
+          >
+            <div className="flex h-full flex-col justify-around px-10 py-10">
+              <div>
+                <h3>Test</h3>
+              </div>
+              <div className="flex w-full justify-between gap-[70px]">
+                <button
+                  className="!bg-pedals-grey hover:!bg-pedals-yellow"
+                  type="submit"
+                  onClick={() => setIsOpen(false)}
+                >
+                  CANCEL
+                </button>
+                <button
+                  className="grow !bg-pedals-grey hover:!bg-pedals-yellow"
+                  type="submit"
+                  onClick={() => setIsOpen(false)}
+                >
+                  FINISHED
+                </button>
+              </div>
+            </div>
+          </PopUp>
         </div>
       </div>
+    </div>
   );
 }
+
+/*
+<div className="mx-auto flex h-1/2 w-1/2 flex-col rounded-xl bg-pedals-white">
+        <div className="flex h-1/4 w-full flex-row items-center justify-between rounded-t-xl bg-pedals-yellow px-10 align-middle">
+          <h3> Change Access Code </h3>
+          <button
+            type="button"
+            onClick={() => onClose()}
+            className="!bg-transparent"
+          >
+            <Image src={close_X} alt="Close" />
+          </button>
+        </div>
+
+        
+*/

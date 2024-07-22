@@ -32,7 +32,14 @@ To install and start developing, follow these steps:
    cd ./src
    ```
 
-3. Install the dependencies using npm or other package managers:
+3. Add the local enviornment variables in an .env.local with this format:
+
+```sh
+NEXT_PUBLIC_SUPABASE_URL=<YOUR SUPABASE URL>
+NEXT_PUBLIC_SUPABASE_KEY=<YOUR SUPABASE ANON KEY>
+```
+
+4. Install the dependencies using npm or other package managers:
    ```sh
    npm ci
    ```

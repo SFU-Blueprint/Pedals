@@ -1,6 +1,5 @@
 // cronJob.mjs
 import cron from "node-cron";
-import fetch from "node-fetch";
 
 const fetchData = async () => {
   try {

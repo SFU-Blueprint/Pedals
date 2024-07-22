@@ -1,4 +1,4 @@
-import startCronJob from "../src/cronJob.mjs";
+import startCronJob from "./cronJob.mjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
