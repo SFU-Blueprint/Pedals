@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     if (newCode.length < minLength) {
         return NextResponse.json(
             {
-                error: `Current Code must be at least ${minLength} characters long`
+                error: `New Code must be at least ${minLength} characters long`
             },
             { status: 400 }
         );
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     if (newCode.length > maxLength) {
         return NextResponse.json(
             {
-                error: `Current Code must be at most ${maxLength} characters long`
+                error: `New Code must be at most ${maxLength} characters long`
             },
             { status: 400 }
         );
@@ -42,14 +42,14 @@ export async function POST(req: Request) {
 
     if (!hasNumbers(newCode)) {
         return NextResponse.json(
-            { error: "Current Code must contain at least one number" },
+            { error: "New Code must contain at least one number" },
             { status: 400 }
         );
     }
 
     if (!hasLetters(newCode)) {
         return NextResponse.json(
-            { error: "Current Code must contain at least one letter" },
+            { error: "New Code must contain at least one letter" },
             { status: 400 }
         );
     }
