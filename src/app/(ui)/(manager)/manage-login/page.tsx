@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import PopUp from "@/components/PopUp";
+import { useRouter } from "next/navigation";
 
 function IncorrectAccessCodeWarning() {
   return (
@@ -116,6 +115,8 @@ export default function ManagePage() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isWarningVisible, setIsWarningVisible] = useState(false);
+  const [accessCodeToCheck, setaccessCodeToCheck] = useState<string>("");
+  const router = useRouter();
 
   const handleWrongAccessCode = (e: any) => {
     setIsWarningVisible(true);
@@ -123,9 +124,24 @@ export default function ManagePage() {
     setTimeout(() => setIsWarningVisible(false), 2500);
   };
 
-  const handleAccessCodeSubmission = (e: any) => {
+  async function handleAccessCodeSubmission(e: any) {
     e.preventDefault();
-  };
+    const response = await fetch("/api/validate-access-code", {
+      method: "POST",
+      body: JSON.stringify({
+        accessCodeToCheck
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    if (response.status === 200) {
+      router.push("/manage");
+    }
+    if (response.status === 401) {
+      handleWrongAccessCode(e);
+    }
+  }
 
   useEffect(() => {
     const handleResize = () => {
@@ -142,7 +158,7 @@ export default function ManagePage() {
         <form
           className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32 uppercase"
           method="post"
-          onSubmit={handleAccessCodeSubmission}
+          onSubmit={(e) => handleAccessCodeSubmission(e)}
         >
           <h1>Enter Access Code</h1>
           <div className="flex flex-row gap-5">
@@ -151,11 +167,11 @@ export default function ManagePage() {
               placeholder="TYPE"
               type="password"
               onClick={() => setIsWarningVisible(false)}
+              onChange={(e) => setaccessCodeToCheck(e.target.value)}
             />
             <button
               type="submit"
               className="!bg-pedals-grey !px-16 uppercase hover:!bg-pedals-yellow"
-              onClick={(e) => handleWrongAccessCode(e)}
             >
               Go
             </button>
@@ -168,34 +184,6 @@ export default function ManagePage() {
             >
               FORGOT PASSWORD?
             </button>
-            <PopUp
-              title="Password Recovery"
-              open={isOpen}
-              onClose={() => setIsOpen(false)}
-            >
-              <div className="flex h-full flex-col justify-around px-10 py-10">
-                <div>
-                  An email has been set to cavan@gmail.com. Please follow the
-                  instruction in the email to reset your access code.
-                </div>
-                <div className="flex w-full justify-between gap-[70px]">
-                  <button
-                    type="button"
-                    onClick={() => setIsOpen(false)}
-                    className="!rounded-3xl !bg-pedals-yellow !px-5"
-                  >
-                    CANCEL
-                  </button>
-                  <button
-                    className="grow !rounded-3xl !bg-pedals-lightgrey"
-                    type="button"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    FINISHED
-                  </button>
-                </div>
-              </div>
-            </PopUp>
             <ForgotPasswordPopUp
               open={isOpen}
               onClose={() => setIsOpen(false)}

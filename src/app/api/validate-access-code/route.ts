@@ -49,8 +49,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: (error as unknown as Error).message });
     }
 
-    return NextResponse.json({
-      message: "Access code does not exist on the database"
-    });
+    return NextResponse.json({ error: "Wrong access code" }, { status: 401 });
   }
 }
