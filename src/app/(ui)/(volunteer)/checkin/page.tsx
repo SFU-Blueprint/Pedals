@@ -1,9 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import FormInput from "@/components/FormInput";
 import VolunteerCard from "./components/VolunteerCard";
 import ShiftSelect from "./components/ShiftSelect";
-import { useState } from "react";
 // import Post from "../../../api/checkin/route"
 
 export default function Checkin() {
@@ -23,7 +23,7 @@ export default function Checkin() {
         })
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 

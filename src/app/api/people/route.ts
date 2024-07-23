@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 // https://maryetokwudo.hashnode.dev/nextjs-13-route-handlers-with-typescript
