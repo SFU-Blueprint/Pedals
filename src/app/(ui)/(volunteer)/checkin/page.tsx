@@ -1,19 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import FormInput from "@/components/FormInput";
 import VolunteerCard from "./components/VolunteerCard";
 import ShiftSelect from "./components/ShiftSelect";
 // import Post from "../../../api/checkin/route"
 
 export default function Checkin() {
-  async function findVolunteer(formData: FormData) {
-    const userName = formData.get("Username");
+  const [userName, setUserName] = useState("");
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  async function findVolunteer(e: any) {
+    e.preventDefault();
+    const shiftType = selectedOption;
 
     try {
       await fetch("/api/checkin", {
         method: "POST",
         body: JSON.stringify({
-          userName
+          userName,
+          shiftType
         })
       });
     } catch (error) {
@@ -37,13 +43,22 @@ export default function Checkin() {
   ];
   return (
     <div className="flex flex-col">
-      <form
-        className="flex justify-between gap-20 px-20 py-10"
-        action={findVolunteer}
-      >
-        <FormInput label="Username" type="text" placeholder="TEXT" />
-        <ShiftSelect />
-        <button type="submit" className="min-w-[200px]">
+      <form className="flex justify-between gap-20 px-20 py-10">
+        <FormInput
+          label="Username"
+          type="text"
+          placeholder="TEXT"
+          onChange={(e) => setUserName(e.target.value)}
+        />
+        <ShiftSelect
+          selectedOption={selectedOption}
+          setSelectedOption={setSelectedOption}
+        />
+        <button
+          type="submit"
+          className="min-w-[200px]"
+          onClick={(e) => findVolunteer(e)}
+        >
           Check In
         </button>
       </form>

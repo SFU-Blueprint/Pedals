@@ -1,10 +1,17 @@
-import { useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import FormInput from "@/components/FormInput";
 
-export default function ShiftSelect() {
+interface ShiftSelectProps {
+  selectedOption: string | null;
+  setSelectedOption: (arg: string | null) => void;
+}
+
+export default function ShiftSelect({
+  selectedOption,
+  setSelectedOption
+}: ShiftSelectProps) {
   const dropdownOptions = ["option 1", "option 2", "option 3"];
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  // const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   return (
     <FormInput label="Shift Type">

@@ -10,7 +10,7 @@ export default function PopUp({ open, onClose, title, ...props }: PopUpProps) {
   if (open) {
     return (
       <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black bg-opacity-20">
-        <div className="flex h-1/2 w-2/5 flex-col rounded-xl !bg-pedals-white !text-pedals-black">
+        <div className="flex h-1/2 w-2/5 flex-col rounded-xl !bg-pedals-white font-inter normal-case !text-pedals-black">
           <div className="flex h-2/5 w-full flex-row items-center justify-between rounded-t-xl !bg-pedals-yellow px-10">
             <p>{title}</p>
             <button

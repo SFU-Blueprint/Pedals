@@ -14,8 +14,9 @@ function convertToCSV(arr: any[]): string {
 
   return csvRows.join("\n");
 }
-
-export default async function GET() {
+// I don't know why but this need to not be export default inorder for it to function right. If anyone know how to solve it please proceed
+/* eslint-disable-next-line import/prefer-default-export */
+export async function GET() {
   const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
   const key = process.env.SUPABASE_KEY as string;
 

@@ -1,4 +1,4 @@
-import POST from "./route"; // Adjust the path as needed
+import { POST } from "./route"; // Adjust the path as needed
 
 jest.mock("@supabase/supabase-js", () => ({
   createClient: jest.fn(() => ({

@@ -50,5 +50,3 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json({ message: error }, { status: 500 });
   }
 };
-
-// id, created_at, date, time, required_volunteer

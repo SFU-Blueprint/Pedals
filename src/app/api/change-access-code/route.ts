@@ -1,39 +1,113 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-export default async function POST(request: NextRequest) {
-  const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
-  const key = process.env.SUPABASE_KEY as string;
+const minLength = 8;
+const maxLength = 15;
 
-  const { newCode } = await request.json();
+const hasNumbers = (string: string) => /\d/.test(string);
+const hasLetters = (string: string) => /[a-zA-Z]/.test(string);
 
-  if (!newCode) {
-    return NextResponse.json({
-      message: "Please provided an access code"
-    });
+// eslint-disable-next-line import/prefer-default-export
+export async function POST(req: Request) {
+  const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL;
+  const key = process.env.SUPABASE_KEY;
+
+  const body = await req.json();
+  const { currCode, newCode } = body;
+
+  if (!currCode || !newCode) {
+    return NextResponse.json(
+      { error: "Current and New Code are required" },
+      { status: 400 }
+    );
   }
 
-  try {
-    const supabase = createClient(supabaseUrl, key);
-    const { data, error } = await supabase
-      .from("access_codes")
-      .update({
-        created_at: new Date().toISOString(),
-        access_code: newCode
-      })
-      .eq("id", 1);
-
-    if (error || !data) {
-      return NextResponse.json({ message: error }, { status: 500 });
-    }
-
+  if (newCode.length < minLength) {
     return NextResponse.json(
       {
-        message: "Update access code successfully"
+        error: `New Code must be at least ${minLength} characters long`
       },
-      { status: 200 }
+      { status: 400 }
     );
-  } catch (error) {
-    return NextResponse.json({ message: error }, { status: 500 });
   }
+
+  if (newCode.length > maxLength) {
+    return NextResponse.json(
+      {
+        error: `New Code must be at most ${maxLength} characters long`
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!hasNumbers(newCode)) {
+    return NextResponse.json(
+      { error: "New Code must contain at least one number" },
+      { status: 400 }
+    );
+  }
+
+  if (!hasLetters(newCode)) {
+    return NextResponse.json(
+      { error: "New Code must contain at least one letter" },
+      { status: 400 }
+    );
+  }
+
+  if (supabaseUrl && key) {
+    const supabase = createClient(supabaseUrl, key);
+    try {
+      const { data: codeData } = await supabase
+        .from("access_codes")
+        .select("access_code")
+        .eq("access_code", currCode)
+        .single();
+
+      if (!codeData) {
+        return NextResponse.json(
+          { error: "Your input current access code does not exist." },
+          { status: 400 }
+        );
+      }
+
+      if (currCode === newCode) {
+        return NextResponse.json(
+          { error: "Current and New Code cannot be the same" },
+          { status: 400 }
+        );
+      }
+
+      const { data, error } = await supabase
+        .from("access_codes")
+        .update({
+          access_code: newCode
+        })
+        .eq("access_code", currCode);
+
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+
+      return NextResponse.json(
+        {
+          message: "Code changed successfully",
+          data
+        },
+        { status: 200 }
+      );
+    } catch (error) {
+      let errorMessage = "An unknown error occurred";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
+    }
+  }
+
+  return NextResponse.json(
+    { error: "Supabase URL and Key are required" },
+    { status: 500 }
+  );
 }
