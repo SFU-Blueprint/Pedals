@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import PopUp from "@/components/PopUp";
 
+// This should be another global components, having 3 levels: Error, Warning, Success, so that other pages can use.
 function IncorrectAccessCodeWarning() {
   return (
     <div className="translate absolute bottom-9 right-1/2 flex w-[400px] translate-x-1/2 flex-row justify-evenly rounded-xl bg-pedals-yellow py-4">
@@ -43,36 +44,34 @@ function IncorrectAccessCodeWarning() {
 }
 
 export default function ManagePage() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [currentAccessCode, setCurrentAccessCode] = useState<string>("");
   const [isLargeScreen, setIsLargeScreen] = useState(true);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isWarningVisible, setIsWarningVisible] = useState(false);
-  const [accessCodeToCheck, setaccessCodeToCheck] = useState<string>("");
   const router = useRouter();
 
-  const handleWrongAccessCode = (e: any) => {
+  const handleWrongAccessCode = () => {
     setIsWarningVisible(true);
-    e.preventDefault();
     setTimeout(() => setIsWarningVisible(false), 2500);
   };
 
-  async function handleAccessCodeSubmission(e: any) {
+  const handleAccessCodeSubmission = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const response = await fetch("/api/validate-access-code", {
       method: "POST",
       body: JSON.stringify({
-        accessCodeToCheck
+        accessCodeToCheck: currentAccessCode
       }),
       headers: {
         "Content-Type": "application/json"
       }
     });
-    if (response.status === 200) {
+    if (response.status === 401) {
+      handleWrongAccessCode();
+    } else if (response.status === 200) {
       router.push("/manage");
     }
-    if (response.status === 401) {
-      handleWrongAccessCode(e);
-    }
-  }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -83,79 +82,69 @@ export default function ManagePage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (isLargeScreen) {
-    return (
-      <div className="h-screen bg-pedals-lightgrey">
-        <form
-          className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32 uppercase"
-          method="post"
-          onSubmit={(e) => handleAccessCodeSubmission(e)}
+  return isLargeScreen ? (
+    <div className="h-screen bg-pedals-lightgrey">
+      <form
+        className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32 uppercase"
+        method="post"
+        onSubmit={handleAccessCodeSubmission}
+      >
+        <h1>Enter Access Code</h1>
+        <div className="flex flex-row gap-5">
+          <input
+            className="grow rounded-[3px] px-3 py-2 outline-none focus:ring-2 focus:ring-pedals-yellow focus:ring-offset-1"
+            placeholder="TYPE"
+            type="password"
+            onClick={() => setIsWarningVisible(false)}
+            onChange={(e) => setCurrentAccessCode(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="!bg-pedals-grey !px-16 uppercase hover:!bg-pedals-yellow"
+          >
+            Go
+          </button>
+        </div>
+        <button
+          type="button"
+          className="!bg-transparent !pt-40 !text-left font-mono text-lg text-pedals-darkgrey hover:font-bold hover:text-pedals-black"
+          onClick={() => setIsPopupVisible(true)}
         >
-          <h1>Enter Access Code</h1>
-          <div className="flex flex-row gap-5">
-            <input
-              className="grow rounded-[3px] px-3 py-2 outline-none focus:ring-2 focus:ring-pedals-yellow focus:ring-offset-1"
-              placeholder="TYPE"
-              type="password"
-              onClick={() => setIsWarningVisible(false)}
-              onChange={(e) => setaccessCodeToCheck(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="!bg-pedals-grey !px-16 uppercase hover:!bg-pedals-yellow"
-            >
-              Go
-            </button>
+          FORGOT PASSWORD?
+        </button>
+      </form>
+      {isPopupVisible && (
+        <PopUp title="Password Recovery" close={() => setIsPopupVisible(false)}>
+          <div className="flex h-full flex-col justify-around px-10 py-10">
+            <div>
+              An email has been set to cavan@gmail.com. Please follow the
+              instruction in the email to reset your access code.
+            </div>
+            <div className="flex w-full justify-between gap-[70px]">
+              <button
+                type="button"
+                onClick={() => setIsPopupVisible(false)}
+                className="!rounded-3xl !bg-pedals-yellow !px-5"
+              >
+                CANCEL
+              </button>
+              <button
+                className="grow !rounded-3xl !bg-pedals-lightgrey"
+                type="button"
+                onClick={() => setIsPopupVisible(false)}
+              >
+                FINISHED
+              </button>
+            </div>
           </div>
-          <div className="pt-40 font-mono text-lg text-pedals-darkgrey">
-            <button
-              type="button"
-              className="!bg-transparent hover:font-bold hover:text-pedals-black"
-              onClick={() => setIsOpen(true)}
-            >
-              FORGOT PASSWORD?
-            </button>
-            <PopUp
-              title="Password Recovery"
-              open={isOpen}
-              onClose={() => setIsOpen(false)}
-            >
-              <div className="flex h-full flex-col justify-around px-10 py-10">
-                <div>
-                  An email has been set to cavan@gmail.com. Please follow the
-                  instruction in the email to reset your access code.
-                </div>
-                <div className="flex w-full justify-between gap-[70px]">
-                  <button
-                    type="button"
-                    onClick={() => setIsOpen(false)}
-                    className="!rounded-3xl !bg-pedals-yellow !px-5"
-                  >
-                    CANCEL
-                  </button>
-                  <button
-                    className="grow !rounded-3xl !bg-pedals-lightgrey"
-                    type="button"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    FINISHED
-                  </button>
-                </div>
-              </div>
-            </PopUp>
-          </div>
-        </form>
-        {isWarningVisible && <IncorrectAccessCodeWarning />}
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex h-screen items-center">
-      <h3 className="px-10 font-semibold">
-        To view the Manage page, please use a device with a bigger screen. Thank
-        you!
-      </h3>
+        </PopUp>
+      )}
+      {isWarningVisible && <IncorrectAccessCodeWarning />}
     </div>
+  ) : (
+    <h3 className="flex h-screen items-center px-10 font-semibold">
+      To view the Manage page, please use a device with a bigger screen. Thank
+      you!
+    </h3>
   );
 }

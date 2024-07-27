@@ -2,48 +2,43 @@ import Dropdown from "@/components/Dropdown";
 import FormInput from "@/components/FormInput";
 
 interface ShiftSelectProps {
+  options: string[];
   selectedOption: string | null;
-  setSelectedOption: (arg: string | null) => void;
+  onChange: (arg: string | null) => void;
 }
 
 export default function ShiftSelect({
+  options,
   selectedOption,
-  setSelectedOption
+  onChange
 }: ShiftSelectProps) {
-  const dropdownOptions = ["option 1", "option 2", "option 3"];
-  // const [selectedOption, setSelectedOption] = useState<string | null>(null);
-
   return (
     <FormInput label="Shift Type">
       <div className="flex gap-2">
         <button
           type="button"
-          className={selectedOption === "pftp" ? "!bg-pedals-yellow" : ""}
-          onClick={() =>
-            setSelectedOption(selectedOption !== "pftp" ? "pftp" : null)
-          }
+          className={`${selectedOption === "pftp" && "!bg-pedals-yellow"}`}
+          onClick={() => onChange(selectedOption === "pftp" ? null : "pftp")}
         >
           PFTP
         </button>
         <button
           type="button"
-          className={selectedOption === "wtq" ? "!bg-pedals-yellow" : ""}
-          onClick={() =>
-            setSelectedOption(selectedOption !== "wtq" ? "wtq" : null)
-          }
+          className={`${selectedOption === "wtq" && "!bg-pedals-yellow"}`}
+          onClick={() => onChange(selectedOption === "wtq" ? null : "wtq")}
         >
           WTQ
         </button>
         <Dropdown
-          options={dropdownOptions}
+          options={options}
           currentOption={
-            selectedOption && dropdownOptions.includes(selectedOption)
+            selectedOption && options.includes(selectedOption)
               ? selectedOption
               : null
           }
           onClick={(e) => {
             e.preventDefault();
-            setSelectedOption((e.target as HTMLButtonElement).value || null);
+            onChange((e.target as HTMLButtonElement).value || null);
           }}
           placeholder="SELECT"
         />

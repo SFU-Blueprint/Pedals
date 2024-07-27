@@ -1,31 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import FormInput from "@/components/FormInput";
 import VolunteerCard from "./components/VolunteerCard";
 import ShiftSelect from "./components/ShiftSelect";
-// import Post from "../../../api/checkin/route"
 
 export default function Checkin() {
   const [userName, setUserName] = useState("");
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  async function findVolunteer(e: any) {
+  const handleCheckinVolunteer = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const shiftType = selectedOption;
-
     try {
       await fetch("/api/checkin", {
         method: "POST",
         body: JSON.stringify({
           userName,
-          shiftType
+          selectedOption
         })
       });
     } catch (error) {
       // console.log(error);
     }
-  }
+  };
 
   const mockInfo = [
     {
@@ -41,42 +38,38 @@ export default function Checkin() {
       shift: "PFTP"
     }
   ];
+
+  const mockOptions = ["option 1, option 2, option 3"];
+
   return (
     <div className="flex flex-col">
-      <form className="flex justify-between gap-20 px-20 py-10">
+      <form
+        className="flex justify-between gap-20 px-20 py-10"
+        onSubmit={handleCheckinVolunteer}
+      >
         <FormInput
           label="Username"
           type="text"
-          placeholder="TEXT"
+          placeholder="Your Username"
           onChange={(e) => setUserName(e.target.value)}
         />
         <ShiftSelect
+          options={mockOptions}
           selectedOption={selectedOption}
-          setSelectedOption={setSelectedOption}
+          onChange={setSelectedOption}
         />
-        <button
-          type="submit"
-          className="min-w-[200px]"
-          onClick={(e) => findVolunteer(e)}
-        >
+        <button type="submit" className="min-w-[200px]">
           Check In
         </button>
       </form>
-      {mockInfo.map(
-        (item: {
-          firstName: string;
-          lastName: string;
-          timeIn: string;
-          shift: string;
-        }) => (
-          <VolunteerCard
-            firstName={item.firstName}
-            lastName={item.lastName}
-            timeIn={item.timeIn}
-            shift={item.shift}
-          />
-        )
-      )}
+      {mockInfo.map((item) => (
+        <VolunteerCard
+          firstName={item.firstName}
+          lastName={item.lastName}
+          timeIn={item.timeIn}
+          shift={item.shift}
+        />
+      ))}
     </div>
   );
 }
