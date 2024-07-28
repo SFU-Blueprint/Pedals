@@ -60,7 +60,7 @@ export default function ManagePage() {
     const response = await fetch("/api/validate-access-code", {
       method: "POST",
       body: JSON.stringify({
-        accessCodeToCheck: currentAccessCode
+        accessCode: currentAccessCode
       }),
       headers: {
         "Content-Type": "application/json"

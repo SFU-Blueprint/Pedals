@@ -3,30 +3,35 @@ import supabase from "@/lib/supabase";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { accessCodeToCheck } = body;
-  if (!accessCodeToCheck) {
+  const { accessCode } = body;
+  if (!accessCode) {
     return NextResponse.json(
       { error: "Missing required field" },
       { status: 400 }
     );
   }
 
-  const { data: accessCodeData, error } = await supabase
+  const { data, error, status, statusText } = await supabase
     .from("access_codes")
     .select("access_code");
 
-  // Assuming accessCodeData is an array of strings and accessCodeToCheck is a string
-  if (!accessCodeData) {
+  if (error) {
+    return NextResponse.json({ error, status, statusText });
+  }
+
+  // Assuming data is an array of strings and accessCode is a string
+  if (!data) {
     return NextResponse.json(
-      { error: "Empty accessCode table" },
+      { error: "Empty access_code table" },
       { status: 500 }
     );
   }
 
   let hasAccessCode = false;
-
-  accessCodeData.forEach((code) => {
-    if (code.access_code === accessCodeToCheck) hasAccessCode = true;
+  data.forEach((code) => {
+    if (code.access_code === accessCode) {
+      hasAccessCode = true;
+    }
   });
 
   if (hasAccessCode) {
@@ -37,10 +42,5 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   }
-
-  if (error) {
-    return NextResponse.json({ error: (error as unknown as Error).message });
-  }
-
   return NextResponse.json({ error: "Wrong access code" }, { status: 401 });
 }
