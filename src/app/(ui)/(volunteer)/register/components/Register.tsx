@@ -3,19 +3,37 @@ import React from "react";
 import FormInput from "@/components/FormInput";
 
 interface RegisterProps {
-  // Define any props you need for the component
+  fullName: string;
+  userDay: number;
+  userMonth: number;
+  userYear: number;
+  setFullName: (value: string) => void;
+  setUserDay: (value: number) => void;
+  setUserMonth: (value: number) => void;
+  setUserYear: (value: number) => void;
 }
 
-const Register: React.FC<RegisterProps> = () => {
+const Register: React.FC<RegisterProps> = ({
+  fullName,
+  userDay,
+  userMonth,
+  userYear,
+  setFullName,
+  setUserDay,
+  setUserMonth,
+  setUserYear
+}: RegisterProps) => {
   return (
     <div>
-      <form className="grid grid-cols-5 justify-between gap-20 px-20 py-10">
+      <div className="grid grid-cols-5 items-end justify-between gap-20 px-20 py-10">
         <div className="col-span-2 items-end">
-          <FormInput
+          <label className="text-black">Full Name</label>
+          <input
             className="w-[90%]"
-            label="Full Name"
+            // label="Full Name"
             type="text"
-            placeholder="TYPE"
+            placeholder="Your Name"
+            onChange={(e) => setFullName(e.target.value)}
           />
         </div>
         <div className="col-span-2 items-end">
@@ -26,14 +44,29 @@ const Register: React.FC<RegisterProps> = () => {
             placeholder="TYPE"
           >
             <div className="flex gap-2">
-              <input type="text" className="w-1/2" placeholder="Day" />
-              <input type="text" className="w-1/2" placeholder="Month" />
-              <input type="text" className="w-1/2" placeholder="Year" />
+              <input
+                type="number"
+                className="w-1/2"
+                placeholder="Day"
+                onChange={(e) => setUserDay(Number(e.target.value))}
+              />
+              <input
+                type="number"
+                className="w-1/2"
+                placeholder="Month"
+                onChange={(e) => setUserMonth(Number(e.target.value))}
+              />
+              <input
+                type="number"
+                className="w-1/2"
+                placeholder="Year"
+                onChange={(e) => setUserYear(Number(e.target.value))}
+              />
             </div>
           </FormInput>
         </div>
         <div className="col-span-1"></div>
-      </form>
+      </div>
     </div>
   );
 };

@@ -2,41 +2,46 @@ import { useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import FormInput from "@/components/FormInput";
 
-export default function ShiftSelect({ className }: { className: string }) {
-  const dropdownOptions = ["option 1", "option 2", "option 3"];
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-
+interface ShiftSelectProps {
+  className: string;
+  options: Array<string>;
+  selectedOption: string | null;
+  onChange: (arg: string | null) => void;
+}
+const dropdownOptions = ["option 1", "option 2", "option 3"];
+export default function ShiftSelect({
+  className,
+  options,
+  selectedOption,
+  onChange
+}: ShiftSelectProps) {
   return (
     <FormInput className={className} label="Shift Type">
       <div className="flex gap-2">
         <button
           type="button"
-          className={selectedOption === "pftp" ? "!bg-pedals-yellow" : ""}
-          onClick={() =>
-            setSelectedOption(selectedOption !== "pftp" ? "pftp" : null)
-          }
+          className={`${selectedOption === "pftp" && "!bg-pedals-yellow"}`}
+          onClick={() => onChange(selectedOption === "pftp" ? null : "pftp")}
         >
           PFTP
         </button>
         <button
           type="button"
-          className={selectedOption === "wtq" ? "!bg-pedals-yellow" : ""}
-          onClick={() =>
-            setSelectedOption(selectedOption !== "wtq" ? "wtq" : null)
-          }
+          className={`${selectedOption === "wtq" && "!bg-pedals-yellow"}`}
+          onClick={() => onChange(selectedOption === "wtq" ? null : "wtq")}
         >
           WTQ
         </button>
         <Dropdown
-          options={dropdownOptions}
+          options={options}
           currentOption={
-            selectedOption && dropdownOptions.includes(selectedOption)
+            selectedOption && options.includes(selectedOption)
               ? selectedOption
               : null
           }
           onClick={(e) => {
             e.preventDefault();
-            setSelectedOption((e.target as HTMLButtonElement).value || null);
+            onChange((e.target as HTMLButtonElement).value || null);
           }}
           placeholder="SELECT"
         />

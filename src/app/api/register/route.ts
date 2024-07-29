@@ -104,7 +104,7 @@ async function createVolunteer(userId: string, name: string, timestamp: Date) {
 }
 
 // Function to check in volunteer
-async function checkInVolunteer(volunteer: any, shiftId: Date) {
+async function checkInVolunteer(volunteer: any, shiftId: any) {
   const { data: shift, error: errorShift } = await supabase
     .from("volunteer_shifts")
     .insert({
@@ -128,17 +128,31 @@ async function checkInVolunteer(volunteer: any, shiftId: Date) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { userName, shiftId, fullName, dob } = body;
+    console.log(body);
+    const { userName, shiftType, fullName, dob } = body;
 
     const currentDate = new Date();
     const timestamp = currentDate;
 
-    console.log("kek");
-
-    if (!userName || !shiftId || !fullName || !dob) {
+    if (!userName || !shiftType || !fullName || !dob) {
+      // console.log(body);
       return NextResponse.json(
         {
           message: "Please provide valid details"
+        },
+        { status: 400 }
+      );
+    }
+    const { data: shiftId, error: shiftIdError } = await supabase
+      .from("shifts")
+      .select("id")
+      .eq("shift_name", shiftType.toUpperCase())
+      .single();
+
+    if (shiftIdError) {
+      return NextResponse.json(
+        {
+          message: shiftIdError
         },
         { status: 400 }
       );
