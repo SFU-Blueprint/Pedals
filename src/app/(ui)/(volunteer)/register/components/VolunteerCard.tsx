@@ -20,7 +20,9 @@ export default function VolunteerCard({
       </p>
       <p className="w-1/12">{timeIn}</p>
       <p className="w-1/12">{shift}</p>
-      <button className="button-checkout w-2/12">Check Out</button>
+      <button type="button" className="button-checkout w-2/12">
+        Check Out
+      </button>
     </div>
   );
 }

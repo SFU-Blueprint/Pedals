@@ -1,10 +1,9 @@
 "use client";
 
-import FormInput from "@/components/FormInput";
+import { FormEvent, useState } from "react";
 import VolunteerCard from "./components/VolunteerCard";
 import ShiftSelect from "./components/ShiftSelect";
 import Register from "./components/Register";
-import { FormEvent, useState } from "react";
 // import Post from "../../../api/register/route";
 
 export default function RegisterPage() {
@@ -18,7 +17,7 @@ export default function RegisterPage() {
 
   const handleRegisterVolunteer = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(userName, shiftType, fullName, userDay, userMonth, userYear);
+    // console.log(userName, shiftType, fullName, userDay, userMonth, userYear);
     try {
       await fetch("/api/register", {
         method: "POST",
@@ -30,7 +29,7 @@ export default function RegisterPage() {
         })
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
   const mockInfo = [
@@ -55,8 +54,11 @@ export default function RegisterPage() {
         <div className="grid grid-cols-5 items-end gap-20 px-20">
           <div className="col-span-2">
             {" "}
-            <label className="text-black">Username</label>
+            <label htmlFor="username" className="text-black">
+              Username
+            </label>
             <input
+              id="username"
               // label="Username"
               className="w-[90%]"
               type="text"

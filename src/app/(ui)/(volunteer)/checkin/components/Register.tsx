@@ -2,11 +2,22 @@ import React from "react";
 
 import FormInput from "@/components/FormInput";
 
+/*
+ * If you plan on having any props please follows this format since it make our code 
+
 interface RegisterProps {
   // Define any props you need for the component
 }
 
-const Register: React.FC<RegisterProps> = () => {
+ function Register({
+	yourProps: <Your Props Type>
+}): RegisterProps  {
+....
+....
+}
+*/
+
+function Register() {
   return (
     <div>
       <form className="grid grid-cols-5 justify-between gap-20 px-20 py-10">
@@ -36,6 +47,6 @@ const Register: React.FC<RegisterProps> = () => {
       </form>
     </div>
   );
-};
+}
 
 export default Register;

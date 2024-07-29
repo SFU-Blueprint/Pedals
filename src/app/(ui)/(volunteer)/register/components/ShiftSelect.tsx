@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import FormInput from "@/components/FormInput";
 
@@ -8,7 +7,7 @@ interface ShiftSelectProps {
   selectedOption: string | null;
   onChange: (arg: string | null) => void;
 }
-const dropdownOptions = ["option 1", "option 2", "option 3"];
+
 export default function ShiftSelect({
   className,
   options,

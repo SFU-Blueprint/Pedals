@@ -1,5 +1,4 @@
 import React from "react";
-
 import FormInput from "@/components/FormInput";
 
 interface RegisterProps {
@@ -13,7 +12,7 @@ interface RegisterProps {
   setUserYear: (value: number) => void;
 }
 
-const Register: React.FC<RegisterProps> = ({
+function Register({
   fullName,
   userDay,
   userMonth,
@@ -22,7 +21,7 @@ const Register: React.FC<RegisterProps> = ({
   setUserDay,
   setUserMonth,
   setUserYear
-}: RegisterProps) => {
+}: RegisterProps) {
   return (
     <div>
       <div className="grid grid-cols-5 items-end justify-between gap-20 px-20 py-10">
@@ -69,6 +68,6 @@ const Register: React.FC<RegisterProps> = ({
       </div>
     </div>
   );
-};
+}
 
 export default Register;

@@ -18,7 +18,7 @@ async function getUserByUsername(username: string) {
 
   if (error && error.code !== "PGRST116") {
     // Ignore "no rows" error
-    console.error("Error fetching user:", error);
+    // console.error("Error fetching user:", error);
   }
 
   return data;
@@ -34,7 +34,7 @@ async function getVolunteerByUsername(user_id: string) {
 
   if (error && error.code !== "PGRST116") {
     // Ignore "no rows" error
-    console.error("Error fetching user:", error);
+    // console.error("Error fetching user:", error);
   }
 
   return data;
@@ -50,14 +50,13 @@ async function getVolunteeShiftInfo(volunteer_id: string) {
 
   if (error && error.code !== "PGRST116") {
     // Ignore "no rows" error
-    console.error("Error fetching user:", error);
+    // console.error("Error fetching user:", error);
   }
 
   if (data) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 // Function to create a new user
@@ -96,7 +95,7 @@ async function createVolunteer(userId: string, name: string, timestamp: Date) {
     .single();
 
   if (error) {
-    console.log(error);
+    // console.log(error);
   }
 
   return data;
@@ -128,7 +127,7 @@ async function checkInVolunteer(volunteer: any, shiftId: any) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log(body);
+    // console.log(body);
     const { userName, shiftType, fullName, dob } = body;
 
     const currentDate = new Date();
@@ -202,7 +201,7 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error:", error);
+    // console.error("Error:", error);
     return NextResponse.json({ message: "An error occurred" }, { status: 500 });
   }
 }
