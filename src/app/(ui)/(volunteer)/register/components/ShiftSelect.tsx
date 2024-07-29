@@ -1,17 +1,18 @@
+import { useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import FormInput from "@/components/FormInput";
 
 interface ShiftSelectProps {
-  options: string[];
+  className: string;
+  options: Array<string>;
   selectedOption: string | null;
   onChange: (arg: string | null) => void;
-  className: string;
 }
-
+const dropdownOptions = ["option 1", "option 2", "option 3"];
 export default function ShiftSelect({
+  className,
   options,
   selectedOption,
-  className,
   onChange
 }: ShiftSelectProps) {
   return (
