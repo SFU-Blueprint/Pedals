@@ -2,16 +2,16 @@ import Dropdown from "@/components/Dropdown";
 import FormInput from "@/components/FormInput";
 
 interface ShiftSelectProps {
-  options: string[];
+  className: string;
+  options: Array<string>;
   selectedOption: string | null;
   onChange: (arg: string | null) => void;
-  className: string;
 }
 
 export default function ShiftSelect({
+  className,
   options,
   selectedOption,
-  className,
   onChange
 }: ShiftSelectProps) {
   return (

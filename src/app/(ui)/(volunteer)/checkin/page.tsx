@@ -57,6 +57,7 @@ export default function Checkin() {
           options={mockOptions}
           selectedOption={selectedOption}
           onChange={setSelectedOption}
+          className="col-span-2"
         />
         <button type="submit" className="min-w-[200px]">
           Check In
