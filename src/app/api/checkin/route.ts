@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       {
         message: shiftIdError
       },
-      { status: 400 }
+      { status: 401 }
     );
   }
 
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       {
         message: userError
       },
-      { status: 400 }
+      { status: 402 }
     );
   }
 
@@ -51,9 +51,12 @@ export async function POST(req: Request) {
     .single();
 
   if (volunteerError) {
-    return NextResponse.json({
-      message: "There no volunteer with provided userName"
-    });
+    return NextResponse.json(
+      {
+        message: "There no volunteer with provided userName"
+      },
+      { status: 403 }
+    );
   }
 
   const { data: shift, error: errorShift } = await supabase
@@ -66,9 +69,12 @@ export async function POST(req: Request) {
     });
 
   if (errorShift || !shift) {
-    return NextResponse.json({
-      message: errorShift
-    });
+    return NextResponse.json(
+      {
+        message: errorShift
+      },
+      { status: 404 }
+    );
   }
 
   return NextResponse.json({

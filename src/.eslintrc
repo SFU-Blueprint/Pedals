@@ -15,6 +15,6 @@
     "react/require-default-props": "off",
     "import/extensions": "off",
     "import/prefer-default-export": "off",
-	"object-shorthand": "off"
+    "object-shorthand": "off"
   }
 }

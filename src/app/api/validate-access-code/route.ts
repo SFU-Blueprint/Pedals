@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   const { accessCode } = body;
   if (!accessCode) {
     return NextResponse.json(
-      { error: "Missing required field" },
+      { message: "Missing required field" },
       { status: 400 }
     );
   }
@@ -16,13 +16,13 @@ export async function POST(req: Request) {
     .select("access_code");
 
   if (error) {
-    return NextResponse.json({ error, status, statusText });
+    return NextResponse.json({ message: statusText }, { status });
   }
 
   // Assuming data is an array of strings and accessCode is a string
   if (!data) {
     return NextResponse.json(
-      { error: "Empty access_code table" },
+      { message: "Empty access_code table" },
       { status: 500 }
     );
   }
@@ -42,5 +42,5 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   }
-  return NextResponse.json({ error: "Wrong access code" }, { status: 401 });
+  return NextResponse.json({ message: "Wrong access code" }, { status: 401 });
 }

@@ -7,7 +7,7 @@ import ShiftSelect from "./components/ShiftSelect";
 
 export default function Checkin() {
   const [userName, setUserName] = useState("");
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [shiftType, setShiftType] = useState<string | null>(null);
 
   const handleCheckinVolunteer = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -16,11 +16,11 @@ export default function Checkin() {
         method: "POST",
         body: JSON.stringify({
           userName,
-          selectedOption
+          shiftType
         })
       });
     } catch (error) {
-      // console.log(error);
+      // do something
     }
   };
 
@@ -39,7 +39,7 @@ export default function Checkin() {
     }
   ];
 
-  const mockOptions = ["option 1, option 2, option 3"];
+  const mockOptions = ["option 1", "option 2", "option 3"];
 
   return (
     <div className="flex flex-col">
@@ -55,8 +55,8 @@ export default function Checkin() {
         />
         <ShiftSelect
           options={mockOptions}
-          selectedOption={selectedOption}
-          onChange={setSelectedOption}
+          selectedOption={shiftType}
+          onChange={setShiftType}
           className="col-span-2"
         />
         <button type="submit" className="min-w-[200px]">

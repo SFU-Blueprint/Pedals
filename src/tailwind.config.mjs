@@ -11,7 +11,9 @@ export default {
         "pedals-black": "#252525",
         "pedals-yellow": "#FCC300",
         "pedals-brown": "#AE8330",
-        "pedals-buttongrey": "#969696"
+        "pedals-buttongrey": "#969696",
+        "pedals-green": "#16A34A",
+        "pedals-red": "#DC2626"
       },
       fontFamily: {
         inter: "var(--font-inter)",
