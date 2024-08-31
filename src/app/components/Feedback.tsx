@@ -10,43 +10,105 @@ export enum FeedbackType {
 
 export default function Feedback({ type, ...props }: FeedbackProps) {
   const colorMap: Record<FeedbackType, string> = {
-    [FeedbackType.Success]: "pedals-green",
-    [FeedbackType.Warning]: "pedals-yellow",
-    [FeedbackType.Error]: "pedals-red"
+    [FeedbackType.Success]: "bg-pedals-green text-pedals-white",
+    [FeedbackType.Warning]: "bg-pedals-yellow",
+    [FeedbackType.Error]: "bg-pedals-red text-pedals-white"
   };
-  const styles = `!bg-${colorMap[type]} absolute bottom-9 right-1/2 flex w-[400px] translate-x-1/2 flex-row justify-evenly rounded-xl py-4`;
-  return (
-    <div className={styles}>
+
+  const svgMap: Record<FeedbackType, React.ReactElement> = {
+    [FeedbackType.Success]: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="21"
+        viewBox="0 0 20 21"
+        fill="none"
+        className="h-5 w-5"
+      >
+        <path
+          d="M18.3334 9.73333V10.5C18.3324 12.297 17.7505 14.0456 16.6745 15.4849C15.5986 16.9241 14.0862 17.9771 12.3629 18.4866C10.6396 18.9961 8.7978 18.9349 7.11214 18.3122C5.42648 17.6894 3.98729 16.5384 3.00922 15.0309C2.03114 13.5234 1.56657 11.7401 1.68481 9.94693C1.80305 8.1538 2.49775 6.44694 3.66531 5.08089C4.83288 3.71485 6.41074 2.76282 8.16357 2.36679C9.91641 1.97076 11.7503 2.15195 13.3918 2.88333"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M18.3333 3.83334L10 12.175L7.5 9.67501"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+    [FeedbackType.Warning]: (
       <svg
         width="20"
-        className="translate-y-[6px]"
         height="17"
         viewBox="0 0 20 17"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M8.24035 1.79773L1.22208 13.5142C1.07738 13.7648 1.00082 14.0489 1.00001 14.3383C0.999196 14.6276 1.07417 14.9121 1.21746 15.1635C1.36076 15.4149 1.56738 15.6244 1.81678 15.7712C2.06617 15.9179 2.34964 15.9968 2.63899 16H16.6755C16.9649 15.9968 17.2484 15.9179 17.4978 15.7712C17.7471 15.6244 17.9538 15.4149 18.0971 15.1635C18.2404 14.9121 18.3153 14.6276 18.3145 14.3383C18.3137 14.0489 18.2372 13.7648 18.0925 13.5142L11.0742 1.79773C10.9265 1.55421 10.7185 1.35287 10.4703 1.21314C10.2221 1.07341 9.94209 1 9.65727 1C9.37245 1 9.09243 1.07341 8.84424 1.21314C8.59606 1.35287 8.38807 1.55421 8.24035 1.79773Z"
+          d="M10 1L1 16H19L10 1Z"
           stroke="#252525"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M9.65723 6.05676V9.37118"
+          d="M10 6V9"
           stroke="#252525"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M9.65723 12.6855H9.66441"
+          d="M10 12H10.01"
           stroke="#252525"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
       </svg>
+    ),
+    [FeedbackType.Error]: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="21"
+        viewBox="0 0 20 21"
+        fill="none"
+        className="h-5 w-5"
+      >
+        <path
+          d="M10.0001 18.8333C14.6025 18.8333 18.3334 15.1024 18.3334 10.5C18.3334 5.89762 14.6025 2.16666 10.0001 2.16666C5.39771 2.16666 1.66675 5.89762 1.66675 10.5C1.66675 15.1024 5.39771 18.8333 10.0001 18.8333Z"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M12.5 8L7.5 13"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M7.5 8L12.5 13"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    )
+  };
+  const styles = `${colorMap[type]} absolute bottom-9 right-1/2 flex w-fit translate-x-1/2 flex-row gap-[13px] px-[20px] py-[15px] rounded-[3px] items-center`;
+  return (
+    <div className={styles}>
+      {svgMap[type]}
       <p>{props.children}</p>
     </div>
   );

@@ -9,18 +9,18 @@ export default function ManagePage() {
   const [currentAccessCode, setCurrentAccessCode] = useState<string>("");
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  // const [isWarningVisible, setIsWarningVisible] = useState(false);
+  
 
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
   const router = useRouter();
 
-  // const handleWrongAccessCode = () => {
-  //   setIsWarningVisible(true);
-  //   setTimeout(() => setIsWarningVisible(false), 2500);
-  // };
+  const handleErrorAndWarning = () => {
+    setTimeout(() => setFeedback(null), 2500);
+  };
 
   const handleAccessCodeSubmission = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // TODO: standardize method to make request and handle response
     try {
       const response = await fetch("/api/validate-access-code", {
         method: "POST",
@@ -33,13 +33,15 @@ export default function ManagePage() {
       });
 
       if (response.status === 200) {
-        setFeedback([FeedbackType.Success, "SUCCESS!"]);
+        setFeedback([FeedbackType.Success, "Success"]);
         router.push("/manage");
       } else {
-        setFeedback([FeedbackType.Error, "Error"]);
+        setFeedback([FeedbackType.Error, "Incorrect Access Code"]);
+        handleErrorAndWarning();
       }
     } catch (error) {
       setFeedback([FeedbackType.Error, "Network Error"]);
+      handleErrorAndWarning();
     }
   };
 
@@ -77,7 +79,7 @@ export default function ManagePage() {
         </div>
         <button
           type="button"
-          className="!bg-transparent !pt-40 !text-left font-mono text-lg text-pedals-darkgrey hover:font-bold hover:text-pedals-black"
+          className="mt-40 !h-fit w-fit !bg-transparent !pl-0 font-mono text-lg text-pedals-darkgrey hover:font-bold hover:text-pedals-black"
           onClick={() => setIsPopupVisible(true)}
         >
           FORGOT PASSWORD?
@@ -86,20 +88,20 @@ export default function ManagePage() {
       {isPopupVisible && (
         <PopUp title="Password Recovery" close={() => setIsPopupVisible(false)}>
           <div className="flex h-full flex-col justify-around px-10 py-10">
-            <div>
+            <p>
               An email has been set to cavan@gmail.com. Please follow the
               instruction in the email to reset your access code.
-            </div>
-            <div className="flex w-full justify-between gap-[70px]">
+            </p>
+            <div className="flex w-full justify-between gap-[50px]">
               <button
                 type="button"
                 onClick={() => setIsPopupVisible(false)}
-                className="!rounded-3xl !bg-pedals-yellow !px-5"
+                className="grow !rounded-3xl !bg-pedals-yellow !px-5 basis-1/3"
               >
                 CANCEL
               </button>
               <button
-                className="grow !rounded-3xl !bg-pedals-lightgrey"
+                className="grow !rounded-3xl !bg-pedals-lightgrey basis-2/3"
                 type="button"
                 onClick={() => setIsPopupVisible(false)}
               >
