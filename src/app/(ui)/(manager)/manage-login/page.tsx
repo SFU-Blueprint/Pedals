@@ -31,12 +31,12 @@ export default function ManagePage() {
           "Content-Type": "application/json"
         }
       });
-
+      const data = await response.json();
       if (response.status === 200) {
-        setFeedback([FeedbackType.Success, "Success"]);
+        setFeedback([FeedbackType.Success, data.message]);
         router.push("/manage");
       } else {
-        setFeedback([FeedbackType.Error, "Incorrect Access Code"]);
+        setFeedback([FeedbackType.Warning, data.message]);
         handleErrorAndWarning();
       }
     } catch (error) {
