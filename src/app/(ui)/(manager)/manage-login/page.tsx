@@ -9,15 +9,15 @@ export default function ManagePage() {
   const [currentAccessCode, setCurrentAccessCode] = useState<string>("");
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  
-
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
   const router = useRouter();
 
-  const handleErrorAndWarning = () => {
-    setTimeout(() => setFeedback(null), 2500);
+  const handleFeedback = () => {
+    if (feedback) {
+      setTimeout(() => setFeedback(null), 2500);
+    }
   };
-
+  const closePopUpAction = () => setIsPopupVisible(false);
   const handleAccessCodeSubmission = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // TODO: standardize method to make request and handle response
@@ -32,17 +32,18 @@ export default function ManagePage() {
         }
       });
 
+      console.log(response);
+
       if (response.status === 200) {
         setFeedback([FeedbackType.Success, "Success"]);
         router.push("/manage");
       } else {
         setFeedback([FeedbackType.Error, "Incorrect Access Code"]);
-        handleErrorAndWarning();
       }
     } catch (error) {
       setFeedback([FeedbackType.Error, "Network Error"]);
-      handleErrorAndWarning();
     }
+    handleFeedback();
   };
 
   useEffect(() => {
@@ -86,7 +87,7 @@ export default function ManagePage() {
         </button>
       </form>
       {isPopupVisible && (
-        <PopUp title="Password Recovery" close={() => setIsPopupVisible(false)}>
+        <PopUp title="Password Recovery" closeAction={closePopUpAction}>
           <div className="flex h-full flex-col justify-around px-10 py-10">
             <p>
               An email has been set to cavan@gmail.com. Please follow the
@@ -95,15 +96,15 @@ export default function ManagePage() {
             <div className="flex w-full justify-between gap-[50px]">
               <button
                 type="button"
-                onClick={() => setIsPopupVisible(false)}
-                className="grow !rounded-3xl !bg-pedals-yellow !px-5 basis-1/3"
+                onClick={closePopUpAction}
+                className="basis-1/3 !rounded-3xl !bg-pedals-yellow !px-5"
               >
                 CANCEL
               </button>
               <button
-                className="grow !rounded-3xl !bg-pedals-lightgrey basis-2/3"
+                className="basis-2/3 !rounded-3xl !bg-pedals-lightgrey"
                 type="button"
-                onClick={() => setIsPopupVisible(false)}
+                onClick={closePopUpAction}
               >
                 FINISHED
               </button>
