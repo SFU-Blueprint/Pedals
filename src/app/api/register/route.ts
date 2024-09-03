@@ -137,7 +137,7 @@ export async function POST(req: Request) {
       // console.log(body);
       return NextResponse.json(
         {
-          message: "Please provide valid details"
+          message: "Missing required fields"
         },
         { status: 400 }
       );
