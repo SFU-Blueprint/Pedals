@@ -10,7 +10,8 @@ import React, {
 interface DropdownProps extends ComponentPropsWithoutRef<"button"> {
   options: string[];
   currentOption: string | null;
-  placeholder: string;
+  placeholder?: string;
+  centerParentFix?: string;
 }
 
 function DropdownArrow() {
@@ -36,7 +37,8 @@ function DropdownArrow() {
 export default function Dropdown({
   options,
   currentOption,
-  placeholder,
+  placeholder = "Select",
+  centerParentFix,
   ...props
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,18 +68,11 @@ export default function Dropdown({
   }, []);
 
   return (
-    <div className={`${props.className} relative w-60`} ref={dropdownRef}>
-      {!isOpen ? (
-        <button
-          type="button"
-          className={`flex w-full items-center justify-between uppercase hover:ring-2 hover:ring-pedals-yellow hover:ring-offset-1 ${currentOption ? "!bg-pedals-yellow" : ""}`}
-          onClick={() => setIsOpen(true)}
+    <div className={`${props.className} relative`} ref={dropdownRef}>
+      {isOpen ? (
+        <div
+          className={`${centerParentFix} absolute z-50 w-full rounded-[3px] bg-white outline-none ring-2 ring-pedals-yellow ring-offset-1`}
         >
-          {currentOption || placeholder}
-          <DropdownArrow />
-        </button>
-      ) : (
-        <div className="absolute w-full rounded-[3px] bg-white outline-none ring-2 ring-pedals-yellow ring-offset-1">
           <button
             type="button"
             className="flex w-full items-center justify-between uppercase hover:bg-pedals-grey"
@@ -92,12 +87,21 @@ export default function Dropdown({
               key={option}
               value={option}
               onClick={handleClickInside}
-              className="flex w-full items-center justify-start uppercase"
+              className={`flex w-full items-center justify-start uppercase ${option === currentOption && "font-bold"}`}
             >
               {option}
             </button>
           ))}
         </div>
+      ) : (
+        <button
+          type="button"
+          className={`flex w-full items-center justify-between uppercase hover:ring-2 hover:ring-pedals-yellow hover:ring-offset-1 ${currentOption ? "!bg-pedals-yellow" : ""}`}
+          onClick={() => setIsOpen(true)}
+        >
+          {currentOption || placeholder}
+          <DropdownArrow />
+        </button>
       )}
     </div>
   );

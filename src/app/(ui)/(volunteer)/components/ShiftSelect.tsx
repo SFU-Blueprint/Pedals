@@ -5,7 +5,7 @@ interface ShiftSelectProps {
   options: string[];
   selectedOption: string | null;
   onChange: (arg: string | null) => void;
-  className: string;
+  className?: string;
 }
 
 export default function ShiftSelect({
@@ -32,6 +32,7 @@ export default function ShiftSelect({
           WTQ
         </button>
         <Dropdown
+          className="w-full"
           options={options}
           currentOption={
             selectedOption && options.includes(selectedOption)
@@ -42,7 +43,6 @@ export default function ShiftSelect({
             e.preventDefault();
             onChange((e.target as HTMLButtonElement).value || null);
           }}
-          placeholder="SELECT"
         />
       </div>
     </FormInput>

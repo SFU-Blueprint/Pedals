@@ -1,24 +1,25 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import ManageNavBar from "@/components/layouts/ManageNavBar";
+import Dropdown from "@/components/Dropdown";
+import FormInput from "@/components/FormInput";
 
-function SelectShift({ nav, setNav }: { nav: any; setNav: any }) {
+function SelectPath({ currentPath }: { currentPath: string }) {
   return (
-    <div className="flex gap-2 py-10">
+    <div className="flex gap-2">
       <Link
         href="/manage/shift"
-        className={`bg-white px-3 py-2.5 font-mono text-lg uppercase tracking-wide hover:bg-pedals-grey ${nav === "Shift" ? "!bg-yellow-400" : ""}`}
-        onClick={() => setNav("Shift")}
+        className={`px-3 py-2 text-lg uppercase hover:bg-pedals-grey ${currentPath === "/manage/shift" ? "bg-yellow-400" : "bg-white"}`}
       >
         Shifts
       </Link>
 
       <Link
         href="/manage/people"
-        className={`bg-white px-3 py-2.5 font-mono text-lg uppercase tracking-wide hover:bg-pedals-grey ${nav === "People" ? "!bg-yellow-400" : ""}`}
-        onClick={() => setNav("People")}
+        className={`px-3 py-2 text-lg uppercase hover:bg-pedals-grey ${currentPath === "/manage/people" ? "!bg-yellow-400" : "bg-white"}`}
       >
         People
       </Link>
@@ -31,46 +32,74 @@ export default function ManagerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [nav, setNav] = useState("People");
+  const path = usePathname();
+  const [searchName, setSearchName] = useState("");
+  const [searchMonth, setSearchMonth] = useState<string | null>(null);
+  const [searchYear, setSearchYear] = useState<string | null>(null);
 
   return (
     <div>
       <ManageNavBar className="fixed left-20 top-20" />
-
-      <div className="flex w-full justify-between bg-pedals-lightgrey px-20 pt-[100px]">
-        <SelectShift nav={nav} setNav={setNav} />
-
-        {nav === "People" && (
-          <div className="flex flex-grow items-center justify-end gap-2">
-            <input
-              className="uppercase"
-              type="text"
-              placeholder="Search Name"
-            />
-          </div>
-        )}
-
-        {nav === "Shift" && (
-          <div className="flex flex-grow items-center justify-end gap-2">
-            <input
-              className="uppercase"
-              type="text"
-              placeholder="Search Name"
-            />
-            <select className="rounded-[3px] bg-white px-3 py-3 font-mono text-lg uppercase">
-              <option value="month" className="min-w-[100px]">
-                May
-              </option>
-            </select>
-            <select className="rounded-[3px] bg-white px-3 py-3 font-mono text-lg uppercase">
-              <option value="year" className="min-w-[100px]">
-                2024
-              </option>
-            </select>
-          </div>
-        )}
+      <div className="flex w-full items-center justify-between bg-pedals-lightgrey px-20 pb-10 pt-32">
+        <SelectPath currentPath={path} />
+        <div className="flex items-center gap-2">
+          <FormInput
+            className="w-80"
+            type="text"
+            placeholder="Search Name"
+            onChange={(e) => setSearchName(e.target.value)}
+          />
+          {path === "/manage/shift" && (
+            <div className="flex gap-2">
+              <Dropdown
+                className="w-40"
+                options={[
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec"
+                ]}
+                currentOption={searchMonth}
+                placeholder="Month"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSearchMonth((e.target as HTMLButtonElement).value || null);
+                }}
+              />
+              <Dropdown
+                className="w-40"
+                options={[
+                  "2014",
+                  "2015",
+                  "2016",
+                  "2017",
+                  "2018",
+                  "2019",
+                  "2020",
+                  "2021",
+                  "2022",
+                  "2023",
+                  "2024"
+                ]}
+                currentOption={searchYear}
+                placeholder="Year"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSearchYear((e.target as HTMLButtonElement).value || null);
+                }}
+              />
+            </div>
+          )}
+        </div>
       </div>
-
       {children}
     </div>
   );

@@ -7,6 +7,7 @@ interface VolunteerCardProps {
   shift: string;
 }
 
+// Don't use global button-checkout for this
 export default function VolunteerCard({
   firstName,
   lastName,

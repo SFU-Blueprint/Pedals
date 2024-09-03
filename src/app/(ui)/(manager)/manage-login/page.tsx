@@ -4,6 +4,7 @@ import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import PopUp from "@/components/PopUp";
 import Feedback, { FeedbackType } from "@/components/Feedback";
+import FormInput from "@/components/FormInput";
 
 export default function ManagePage() {
   const [currentAccessCode, setCurrentAccessCode] = useState<string>("");
@@ -31,8 +32,6 @@ export default function ManagePage() {
           "Content-Type": "application/json"
         }
       });
-
-      console.log(response);
 
       if (response.status === 200) {
         setFeedback([FeedbackType.Success, "Success"]);
@@ -63,9 +62,9 @@ export default function ManagePage() {
         onSubmit={handleAccessCodeSubmission}
       >
         <h1>Enter Access Code</h1>
-        <div className="flex flex-row gap-5">
-          <input
-            className="grow rounded-[3px] px-3 py-2 outline-none focus:ring-2 focus:ring-pedals-yellow focus:ring-offset-1"
+        <div className="flex items-center gap-5">
+          <FormInput
+            className="w-full"
             placeholder="TYPE"
             type="password"
             onClick={() => setFeedback(null)}

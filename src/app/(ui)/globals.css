@@ -26,7 +26,7 @@
 
   p,
   label {
-    @apply font-inter text-lg;
+    @apply font-inter;
   }
 
   label {
@@ -36,7 +36,8 @@
   button,
   a,
   input,
-  ::placeholder {
+  ::placeholder,
+  .edit-card p {
     @apply font-mono tracking-wide;
   }
 
@@ -44,27 +45,28 @@
     @apply text-base hover:font-bold;
   }
 
-  button {
+  button,
+  input,
+  p,
+  label {
     @apply text-lg;
   }
 
   button[type="submit"] {
-    @apply rounded-[30px] bg-white px-6 py-2.5 hover:bg-pedals-grey;
+    @apply rounded-[30px] bg-white px-6 py-2 hover:bg-pedals-grey;
   }
 
   button[type="button"] {
-    @apply rounded-[3px] bg-white px-3 py-1.5 hover:bg-pedals-grey;
+    @apply rounded-[3px] bg-white px-3 py-2 hover:bg-pedals-grey;
   }
 
   .button-checkout {
-    @apply rounded-[30px] bg-white px-6 py-2.5 hover:bg-pedals-buttongrey;
+    @apply rounded-[30px] bg-white px-6 py-2 hover:bg-pedals-buttongrey;
   }
 
-  input[type="text"] {
-    @apply flex items-center justify-start rounded-[3px] px-3 py-2 outline-none focus:ring-2 focus:ring-pedals-yellow focus:ring-offset-1;
-  }
-
-  input[type="password"] {
+  input[type="text"],
+  input[type="password"],
+  input[type="time"] {
     @apply flex items-center justify-start rounded-[3px] px-3 py-2 outline-none focus:ring-2 focus:ring-pedals-yellow focus:ring-offset-1;
   }
 

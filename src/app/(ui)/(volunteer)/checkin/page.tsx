@@ -2,8 +2,8 @@
 
 import { useState, FormEvent } from "react";
 import FormInput from "@/components/FormInput";
-import VolunteerCard from "./components/VolunteerCard";
-import ShiftSelect from "./components/ShiftSelect";
+import VolunteerCard from "../components/VolunteerCard";
+import ShiftSelect from "../components/ShiftSelect";
 
 export default function Checkin() {
   const [userName, setUserName] = useState("");
@@ -44,22 +44,29 @@ export default function Checkin() {
   return (
     <div className="flex flex-col">
       <form
-        className="flex justify-between gap-20 px-20 py-10"
+        className="flex items-end justify-between gap-96 px-20 py-10"
         onSubmit={handleCheckinVolunteer}
       >
-        <FormInput
-          label="Username"
-          type="text"
-          placeholder="Your Username"
-          onChange={(e) => setUserName(e.target.value)}
-        />
-        <ShiftSelect
-          options={mockOptions}
-          selectedOption={shiftType}
-          onChange={setShiftType}
-          className="col-span-2"
-        />
-        <button type="submit" className="min-w-[200px]">
+        <div className="flex justify-start gap-96">
+          <FormInput
+            className="w-96"
+            label="Username"
+            type="text"
+            placeholder="Type"
+            onChange={(e) => setUserName(e.target.value)}
+          />
+          <ShiftSelect
+            className="w-96"
+            options={mockOptions}
+            selectedOption={shiftType}
+            onChange={setShiftType}
+          />
+        </div>
+        <button
+          disabled={!userName || !shiftType}
+          type="submit"
+          className={`whitespace-nowrap uppercase ${userName && shiftType ? "!bg-pedals-yellow" : "cursor-not-allowed !bg-transparent"}`}
+        >
           Check In
         </button>
       </form>
