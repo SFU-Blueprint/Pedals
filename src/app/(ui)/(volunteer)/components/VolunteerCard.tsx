@@ -3,6 +3,7 @@ import React from "react";
 interface VolunteerCardProps {
   firstName: string;
   lastName: string;
+  key: string;
   timeIn: string;
   shift: string;
 }

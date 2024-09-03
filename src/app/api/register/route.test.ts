@@ -33,6 +33,6 @@ describe("register API Route", () => {
     const response = await POST(mockReq);
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: "Missing required fields" });
+    expect(await response.json()).toEqual({ message: "Missing required fields" });
   });
 });

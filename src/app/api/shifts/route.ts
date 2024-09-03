@@ -5,13 +5,13 @@ import { createClient } from "@supabase/supabase-js";
 
 // https://maryetokwudo.hashnode.dev/nextjs-13-route-handlers-with-typescript
 export const GET = async () => {
-  const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
-  const key = process.env.SUPABASE_KEY as string;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_KEY as string;
+  console.log(supabaseUrl);
 
   try {
     const supabase = createClient(supabaseUrl, key);
     const { data, error } = await supabase.from("shifts").select("id");
-    // console.log(data);
     if (error) {
       return NextResponse.json({ message: error });
     }
