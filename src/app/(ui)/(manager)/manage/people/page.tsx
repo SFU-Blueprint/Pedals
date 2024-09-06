@@ -31,7 +31,7 @@ export default function Checkin() {
           </div>
           <button
             type="submit"
-            className="rounded-[30px] bg-yellow-400 uppercase"
+            className="rounded-full bg-yellow-400 uppercase"
           >
             Remove from database
           </button>

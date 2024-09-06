@@ -1,6 +1,6 @@
 import { createMocks } from "node-mocks-http";
 import { NextApiRequest } from "next/types";
-import { POST } from "./route";
+import { PATCH } from "./route";
 
 jest.mock("@supabase/supabase-js", () => ({
   createClient: jest.fn(() => ({}))
@@ -20,7 +20,7 @@ describe("Check-out API Route", () => {
       json: async () => ({})
     } as unknown as Request;
 
-    const response = await POST(mockReq);
+    const response = await PATCH(mockReq);
 
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import ManageNavBar from "@/components/layouts/ManageNavBar";
+import NavBar from "@/components/NavBar";
 import Dropdown from "@/components/Dropdown";
 import FormInput from "@/components/FormInput";
 
@@ -39,7 +39,13 @@ export default function ManagerLayout({
 
   return (
     <div>
-      <ManageNavBar className="fixed left-20 top-20" />
+      <NavBar
+        className="fixed left-20 top-20"
+        links={[
+          { href: "/change-access-code", label: "Change Access Code" },
+          { href: "/export", label: "Export" }
+        ]}
+      />
       <div className="flex w-full items-center justify-between bg-pedals-lightgrey px-20 pb-10 pt-32">
         <SelectPath currentPath={path} />
         <div className="flex items-center gap-2">

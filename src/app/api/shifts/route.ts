@@ -1,52 +1,90 @@
-// 1. Create the GET /api/shifts and POST /api/shifts endpoints.
+import { NextResponse } from "next/server";
+import supabase from "@/lib/supabase";
 
-import { NextResponse, NextRequest } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+export async function GET() {
+  // Fetch all shifts from the database
+  const { data, error } = await supabase.from("shifts").select("*");
 
-// https://maryetokwudo.hashnode.dev/nextjs-13-route-handlers-with-typescript
-export const GET = async () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_KEY as string;
-  console.log(supabaseUrl);
-
-  try {
-    const supabase = createClient(supabaseUrl, key);
-    const { data, error } = await supabase.from("shifts").select("id");
-    if (error) {
-      return NextResponse.json({ message: error });
-    }
-
-    return NextResponse.json(data, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ message: error }, { status: 500 });
-  }
-};
-
-export const POST = async (request: NextRequest) => {
-  const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
-  const key = process.env.SUPABASE_KEY as string;
-
-  try {
-    const reqBody = await request.json();
-
-    if (!reqBody) {
-      return NextResponse.json({
-        message: "Please provided a reqBody"
-      });
-    }
-
-    const supabase = createClient(supabaseUrl, key);
-    const { data, error } = await supabase.from("shifts").upsert(reqBody);
-
-    if (error || !data) {
-      return NextResponse.json({ message: error });
-    }
-
+  // Handle potential errors during the fetch operation
+  if (error) {
     return NextResponse.json(
-      { message: "Shift created successfully" },
-      { status: 201 }
+      {
+        message:
+          "Error occurred while fetching active shifts. Please reload the page."
+      },
+      { status: 500 } // 500 Internal Server Error for unexpected issues
     );
-  } catch (error) {
-    return NextResponse.json({ message: error }, { status: 500 });
   }
-};
+
+  return NextResponse.json(data, { status: 200 });
+}
+
+// export const POST = async (request: NextRequest) => {
+//   try {
+//     const reqBody = await request.json();
+
+//     if (!reqBody) {
+//       return NextResponse.json({
+//         message: "Please provided a reqBody"
+//       });
+//     }
+//     const { data, error } = await supabase.from("shifts").upsert(reqBody);
+
+//     if (error || !data) {
+//       return NextResponse.json({ message: error });
+//     }
+
+//     return NextResponse.json(
+//       { message: "Shift created successfully" },
+//       { status: 201 }
+//     );
+//   } catch (error) {
+//     return NextResponse.json({ message: error }, { status: 500 });
+//   }
+// };
+
+// export async function GET(req: Request) {
+//   const { data: shifts, error: shiftsError } = await supabase
+//     .from("shifts")
+//     .select("*");
+
+//   if (shiftsError) {
+//     return NextResponse.json(
+//       {
+//         message: shiftsError
+//       },
+//       { status: 400 }
+//     );
+//   }
+
+//   const res = [];
+//   for (const shift of shifts) {
+//     const { data: volunteersId, error: volunteersIdError } = await supabase
+//       .from("volunteer_shifts")
+//       .select(
+//         `
+// volunteer_id,
+// volunteers(
+// 	name
+// )
+// `
+//       )
+//       .eq("shift_id", shift.id);
+//     if (volunteersId) {
+//       for (const volunteer of volunteersId) {
+//         res.push({
+//           id: volunteer.volunteer_id,
+//           shiftType: shift.shift_name,
+//           volunteerName: volunteer.volunteers
+//         });
+//       }
+//     }
+//   }
+
+//   return NextResponse.json(
+//     {
+//       data: res
+//     },
+//     { status: 200 }
+//   );
+// }

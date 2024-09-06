@@ -1,12 +1,5 @@
 import { NextResponse } from "next/server";
-import { SupabaseClient, createClient } from "@supabase/supabase-js";
-
-// Environment variables for Supabase
-const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL || "";
-const supabaseKey = process.env.SUPABASE_KEY || "";
-
-// Initialize Supabase client
-const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
+import supabase from "@/lib/supabase";
 
 // Function to get user by username
 async function getUserByUsername(username: string) {

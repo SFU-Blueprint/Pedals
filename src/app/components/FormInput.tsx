@@ -17,9 +17,9 @@ export default function FormInput({ label, ...props }: FormInputProps) {
         <input
           className="uppercase"
           id={id}
+          name={label}
           type={props.type}
           placeholder={props.placeholder}
-          name={label}
           onClick={props.onClick}
           onChange={props.onChange}
         />

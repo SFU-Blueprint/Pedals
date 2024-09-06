@@ -1,55 +1,77 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import VolunteerCard from "../components/VolunteerCard";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import ShiftSelect from "../components/ShiftSelect";
+import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
 import FormInput from "@/components/FormInput";
 import DateSelector from "@/components/DateSelector";
+import { Tables } from "@/lib/supabase.types";
 
 export default function RegisterPage() {
-  const [userName, setUserName] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
   const [shiftType, setShiftType] = useState<string | null>(null);
   const [dob, setDOB] = useState<Date | null>(new Date());
+  const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
 
-  const handleRegisterVolunteer = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // console.log(userName, shiftType, fullName, userDay, userMonth, userYear);
+  const fetchActiveShifts = useCallback(async () => {
     try {
-      await fetch("/api/register", {
+      const response = await fetch("/api/shifts/active", {
+        method: "GET"
+      });
+      if (response.status === 500) {
+        // This will be handoff to Terry for feedback popup
+      } else if (response.status === 200) {
+        setActiveShifts((await response.json()) as Tables<"shifts">[]);
+      }
+    } catch (error) {
+      // This will be handoff to Terry for feedback popup
+    }
+  }, []);
+
+  const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const registerResponse = await fetch("/api/register", {
         method: "POST",
         body: JSON.stringify({
-          userName,
-          shiftType,
+          username,
           fullName,
           dob
         })
       });
+      if (registerResponse.status === 200) {
+        const checkinResponse = await fetch("/api/checkin", {
+          method: "POST",
+          body: JSON.stringify({
+            username,
+            shiftType
+          })
+        });
+        if (checkinResponse.status === 200) {
+          await fetchActiveShifts();
+          // This will be handoff to Terry for feedback popup
+        } else {
+          // This will be handoff to Terry for feedback popup
+        }
+      } else {
+        // This will be handoff to Terry for feedback popup
+      }
     } catch (error) {
-      // console.log(error);
+      // This will be handoff to Terry for feedback popup
     }
   };
-  const mockInfo = [
-    {
-      firstName: "Johnny",
-      lastName: "Test",
-      timeIn: "11:10am",
-      shift: "PFTP"
-    },
-    {
-      firstName: "Mark",
-      lastName: "Hamburg",
-      timeIn: "10:00am",
-      shift: "PFTP"
-    }
-  ];
 
-  const mockOptions: string[] = ["Option 1", "Option 2", "Option 3"];
+  useEffect(() => {
+    fetchActiveShifts();
+  }, [fetchActiveShifts]);
+
+  const mockOptions = ["Option 1", "Option 2", "Option 3"];
   return (
     <div className="flex flex-col">
       <form
         className="flex items-start justify-between gap-40 px-20 py-10"
-        onSubmit={handleRegisterVolunteer}
+        onSubmit={handleRegister}
       >
         <div className="flex flex-col gap-3">
           <div className="flex justify-start gap-96">
@@ -58,7 +80,7 @@ export default function RegisterPage() {
               label="Username"
               type="text"
               placeholder="Type"
-              onChange={(e) => setUserName(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
             />
             <ShiftSelect
               className="w-96"
@@ -81,29 +103,17 @@ export default function RegisterPage() {
           </div>
         </div>
         <button
-          disabled={!userName || !shiftType || !fullName || !dob}
+          disabled={!username || !shiftType || !fullName || !dob}
           type="submit"
-          className={`mt-[34px] whitespace-nowrap uppercase ${userName && shiftType && fullName && dob ? "!bg-pedals-yellow" : "cursor-not-allowed !bg-transparent"}`}
+          className={`mt-[34px] whitespace-nowrap uppercase ${username && shiftType && fullName && dob ? "!bg-pedals-yellow" : "cursor-not-allowed !bg-transparent"}`}
         >
           Check In
         </button>
       </form>
-
-      {mockInfo.map(
-        (item: {
-          firstName: string;
-          lastName: string;
-          timeIn: string;
-          shift: string;
-        }) => (
-          <VolunteerCard
-            firstName={item.firstName}
-            lastName={item.lastName}
-            timeIn={item.timeIn}
-            shift={item.shift}
-          />
-        )
-      )}
+      <ActiveShiftsGrid
+        shifts={activeShifts}
+        refreshShifts={fetchActiveShifts}
+      />
     </div>
   );
 }

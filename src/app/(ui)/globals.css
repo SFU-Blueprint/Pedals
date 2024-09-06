@@ -53,15 +53,11 @@
   }
 
   button[type="submit"] {
-    @apply rounded-[30px] bg-white px-6 py-2 hover:bg-pedals-grey;
+    @apply rounded-full bg-white px-6 py-2 hover:bg-pedals-grey;
   }
 
   button[type="button"] {
     @apply rounded-[3px] bg-white px-3 py-2 hover:bg-pedals-grey;
-  }
-
-  .button-checkout {
-    @apply rounded-[30px] bg-white px-6 py-2 hover:bg-pedals-buttongrey;
   }
 
   input[type="text"],

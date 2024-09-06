@@ -6,12 +6,11 @@ type DateSelectorProps = React.ComponentProps<typeof DatePicker>;
 export default function DateSelector(props: DateSelectorProps) {
   return (
     <DatePicker
-      className="uppercase"
       showIcon
       toggleCalendarOnIconClick
       dateFormat="MMM d, yyyy"
+      className="uppercase"
       {...props}
     />
   );
 }
-``;

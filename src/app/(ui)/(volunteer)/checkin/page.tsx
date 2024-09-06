@@ -1,72 +1,65 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, FormEvent, useEffect, useCallback } from "react";
 import FormInput from "@/components/FormInput";
-import VolunteerCard from "../components/VolunteerCard";
 import ShiftSelect from "../components/ShiftSelect";
-
-interface CheckInAPIProps {
-  id: string;
-  shiftType: string;
-  volunteerName: {
-    name: string;
-  };
-}
+import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
+import { Tables } from "@/lib/supabase.types";
 
 export default function Checkin() {
-  const router = useRouter();
-  const [userName, setUserName] = useState("");
+  const [username, setUsername] = useState("");
   const [shiftType, setShiftType] = useState<string | null>(null);
-  const [volunteers, setVolunteers] = useState<CheckInAPIProps[]>([]);
+  const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
 
-  const handleCheckinVolunteer = async (e: FormEvent<HTMLFormElement>) => {
+  const fetchActiveShifts = useCallback(async () => {
+    try {
+      const response = await fetch("/api/shifts/active", {
+        method: "GET"
+      });
+      if (response.status === 500) {
+        // This will be handoff to Terry for feedback popup
+      } else if (response.status === 200) {
+        setActiveShifts((await response.json()) as Tables<"shifts">[]);
+      }
+    } catch (error) {
+      // This will be handoff to Terry for feedback popup
+    }
+  }, []);
+
+  const handleCheckin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const response = await fetch("/api/checkin", {
         method: "POST",
+        body: JSON.stringify({
+          username,
+          shiftType
+        }),
         headers: {
           "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          userName,
-          shiftType
-        })
+        }
       });
-
-      if (response.status === 401) {
-        // Do something when not success
-      } else if (response.status === 200) {
-        // Do something when success
-        console.log("Success");
-        location.reload();
+      if (response.status === 200) {
+        await fetchActiveShifts();
+        // This will be handoff to Terry for feedback popup
+      } else {
+        // This will be handoff to Terry for feedback popup
       }
     } catch (error) {
-      // Something related to the network error
+      // This will be handoff to Terry for feedback popup
     }
   };
 
-  const mockOptions = ["option 1", "option 2", "option 3"];
-
   useEffect(() => {
-    (async () => {
-      const response = await fetch("/api/checkin", {
-        method: "GET"
-      });
-      const shifts = await response.json();
-      setVolunteers(shifts.data);
-    })();
+    fetchActiveShifts();
+  }, [fetchActiveShifts]);
 
-    return () => {
-      // this now gets called when the component unmounts
-    };
-  }, []);
-
+  const mockOptions = ["option 1", "option 2", "option 3"];
   return (
     <div className="flex flex-col">
       <form
         className="flex items-end justify-between gap-96 px-20 py-10"
-        onSubmit={handleCheckinVolunteer}
+        onSubmit={handleCheckin}
       >
         <div className="flex justify-start gap-96">
           <FormInput
@@ -74,7 +67,7 @@ export default function Checkin() {
             label="Username"
             type="text"
             placeholder="Type"
-            onChange={(e) => setUserName(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <ShiftSelect
             className="w-96"
@@ -84,22 +77,17 @@ export default function Checkin() {
           />
         </div>
         <button
-          disabled={!userName || !shiftType}
+          disabled={!username || !shiftType}
           type="submit"
-          className={`whitespace-nowrap uppercase ${userName && shiftType ? "!bg-pedals-yellow" : "cursor-not-allowed !bg-transparent"}`}
+          className={`whitespace-nowrap uppercase ${username && shiftType ? "!bg-pedals-yellow" : "cursor-not-allowed !bg-transparent"}`}
         >
           Check In
         </button>
       </form>
-      {volunteers.map((item, idx) => (
-        <VolunteerCard
-          firstName={item.volunteerName.name}
-          key={`${idx}`}
-          lastName=""
-          timeIn="11:10am"
-          shift={item.shiftType}
-        />
-      ))}
+      <ActiveShiftsGrid
+        shifts={activeShifts}
+        refreshShifts={fetchActiveShifts}
+      />
     </div>
   );
 }

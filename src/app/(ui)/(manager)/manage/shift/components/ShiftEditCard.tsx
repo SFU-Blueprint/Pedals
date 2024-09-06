@@ -45,7 +45,7 @@ export default function ShiftEditCard() {
 
       <button
         type="button"
-        className="!rounded-[30px] !px-12 uppercase"
+        className="!rounded-full !px-12 uppercase"
         onClick={() => setIsEditing(!isEditing)}
       >
         {isEditing ? "Done" : "Edit"}

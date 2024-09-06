@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import NavBar from "@/components/layouts/NavBar";
+import NavBar from "@/components/NavBar";
 
 const inter = Inter({
   weight: ["400"],
@@ -44,7 +44,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${supply.variable}`}>
       <body>
-        <NavBar className="fixed right-20 top-20" />
+        <NavBar
+          className="fixed right-20 top-20"
+          links={[
+            { href: "/checkin", label: "CHECK IN" },
+            { href: "/register", label: "REGISTER" },
+            { href: "/manage-login", label: "MANAGE", highlight: "/manage" }
+          ]}
+        />
         {children}
       </body>
     </html>

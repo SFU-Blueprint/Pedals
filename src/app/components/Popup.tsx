@@ -5,7 +5,7 @@ interface PopUpProps extends React.ComponentPropsWithoutRef<"div"> {
   closeAction: () => void;
 }
 
-export default function PopUp({ title, closeAction, ...props }: PopUpProps) {
+export default function Popup({ title, closeAction, ...props }: PopUpProps) {
   return (
     <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black bg-opacity-20">
       <div className="flex h-1/2 w-2/5 flex-col rounded-xl !bg-pedals-white font-inter normal-case leading-[150%] !text-pedals-black">

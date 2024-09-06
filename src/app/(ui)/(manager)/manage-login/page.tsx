@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import PopUp from "@/components/PopUp";
+import Popup from "@/components/Popup";
 import Feedback, { FeedbackType } from "@/components/Feedback";
 import FormInput from "@/components/FormInput";
 
@@ -86,7 +86,7 @@ export default function ManagePage() {
         </button>
       </form>
       {isPopupVisible && (
-        <PopUp title="Password Recovery" closeAction={closePopUpAction}>
+        <Popup title="Password Recovery" closeAction={closePopUpAction}>
           <div className="flex h-full flex-col justify-around px-10 py-10">
             <p>
               An email has been set to cavan@gmail.com. Please follow the
@@ -109,7 +109,7 @@ export default function ManagePage() {
               </button>
             </div>
           </div>
-        </PopUp>
+        </Popup>
       )}
       {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
     </div>
