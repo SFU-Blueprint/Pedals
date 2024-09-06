@@ -42,5 +42,8 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   }
-  return NextResponse.json({ message: "Incorrect access code" }, { status: 401 });
+  return NextResponse.json(
+    { message: "Incorrect access code" },
+    { status: 401 }
+  );
 }
