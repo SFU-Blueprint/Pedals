@@ -9,7 +9,6 @@ export default function ManagePage() {
   const [currentAccessCode, setCurrentAccessCode] = useState<string>("");
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  
 
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
   const router = useRouter();
@@ -23,6 +22,7 @@ export default function ManagePage() {
     // TODO: standardize method to make request and handle response
     try {
       const response = await fetch("/api/validate-access-code", {
+        priority: "high",
         method: "POST",
         body: JSON.stringify({
           accessCode: currentAccessCode
@@ -31,8 +31,10 @@ export default function ManagePage() {
           "Content-Type": "application/json"
         }
       });
+      setFeedback([FeedbackType.Loading, "Loading"]);
       const data = await response.json();
       if (response.status === 200) {
+        console.log("success");
         setFeedback([FeedbackType.Success, data.message]);
         router.push("/manage");
       } else {
@@ -96,12 +98,12 @@ export default function ManagePage() {
               <button
                 type="button"
                 onClick={() => setIsPopupVisible(false)}
-                className="grow !rounded-3xl !bg-pedals-yellow !px-5 basis-1/3"
+                className="grow basis-1/3 !rounded-3xl !bg-pedals-yellow !px-5"
               >
                 CANCEL
               </button>
               <button
-                className="grow !rounded-3xl !bg-pedals-lightgrey basis-2/3"
+                className="grow basis-2/3 !rounded-3xl !bg-pedals-lightgrey"
                 type="button"
                 onClick={() => setIsPopupVisible(false)}
               >
