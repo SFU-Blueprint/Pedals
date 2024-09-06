@@ -21,8 +21,9 @@ export default function ManagePage() {
     e.preventDefault();
     // TODO: standardize method to make request and handle response
     try {
+      // set state to loading right after the form is submitted
+      setFeedback([FeedbackType.Loading, "Loading"]);
       const response = await fetch("/api/validate-access-code", {
-        priority: "high",
         method: "POST",
         body: JSON.stringify({
           accessCode: currentAccessCode
@@ -31,10 +32,8 @@ export default function ManagePage() {
           "Content-Type": "application/json"
         }
       });
-      setFeedback([FeedbackType.Loading, "Loading"]);
       const data = await response.json();
       if (response.status === 200) {
-        console.log("success");
         setFeedback([FeedbackType.Success, data.message]);
         router.push("/manage");
       } else {
