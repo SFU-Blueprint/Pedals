@@ -2,48 +2,55 @@ import { NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { accessCode } = body;
+  const { accessCode } = await req.json();
+
+  // Handle missing required parameters
   if (!accessCode) {
     return NextResponse.json(
-      { message: "Missing required field" },
+      { message: "Please provide the access code" },
       { status: 400 }
     );
   }
 
-  const { data, error, status, statusText } = await supabase
+  // Retrieve access codes from the database
+  const { data, error } = await supabase
     .from("access_codes")
     .select("access_code");
 
-  if (error) {
-    return NextResponse.json({ message: statusText }, { status });
+  // Handle network error
+  if (error?.message === "TypeError: fetch failed") {
+    return NextResponse.json(
+      {
+        message: "Network error. Please check your connection and try again."
+      },
+      { status: 503 }
+    );
   }
 
-  // Assuming data is an array of strings and accessCode is a string
+  // Handle the case where the access_code table is empty
   if (!data) {
     return NextResponse.json(
-      { message: "Empty access_code table" },
+      { message: "Empty access code table. Please contact the manager." },
       { status: 500 }
     );
   }
 
-  let hasAccessCode = false;
-  data.forEach((code) => {
-    if (code.access_code === accessCode) {
-      hasAccessCode = true;
-    }
-  });
+  // Check if the provided access code exists in the database
+  const hasAccessCode = data.some((code) => code.access_code === accessCode);
 
-  if (hasAccessCode) {
+  // Handle the case where the access code is incorrect
+  if (!hasAccessCode) {
     return NextResponse.json(
-      {
-        message: "Success"
-      },
-      { status: 200 }
+      { message: "Incorrect access code. Please try again." },
+      { status: 401 }
     );
   }
+
+  // Confirm successful login
   return NextResponse.json(
-    { message: "Incorrect access code" },
-    { status: 401 }
+    {
+      message: "Success"
+    },
+    { status: 200 }
   );
 }
