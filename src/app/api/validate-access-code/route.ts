@@ -37,10 +37,13 @@ export async function POST(req: Request) {
   if (hasAccessCode) {
     return NextResponse.json(
       {
-        message: "Manage page accessed successfully"
+        message: "Success"
       },
       { status: 200 }
     );
   }
-  return NextResponse.json({ message: "Wrong access code" }, { status: 401 });
+  return NextResponse.json(
+    { message: "Incorrect access code" },
+    { status: 401 }
+  );
 }

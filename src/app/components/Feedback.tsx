@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface FeedbackProps extends React.ComponentPropsWithoutRef<"div"> {
   type: FeedbackType;
 }
@@ -5,14 +7,16 @@ interface FeedbackProps extends React.ComponentPropsWithoutRef<"div"> {
 export enum FeedbackType {
   Success,
   Warning,
-  Error
+  Error,
+  Loading
 }
 
 export default function Feedback({ type, ...props }: FeedbackProps) {
   const colorMap: Record<FeedbackType, string> = {
     [FeedbackType.Success]: "bg-pedals-green text-pedals-white",
     [FeedbackType.Warning]: "bg-pedals-yellow",
-    [FeedbackType.Error]: "bg-pedals-red text-pedals-white"
+    [FeedbackType.Error]: "bg-pedals-red text-pedals-white",
+    [FeedbackType.Loading]: "bg-pedals-darkgrey text-pedals-white"
   };
 
   const svgMap: Record<FeedbackType, React.ReactElement> = {
@@ -103,6 +107,9 @@ export default function Feedback({ type, ...props }: FeedbackProps) {
           strokeLinejoin="round"
         />
       </svg>
+    ),
+    [FeedbackType.Loading]: (
+      <Image src="/loading.gif" alt="loading" width={20} height={20} />
     )
   };
   const styles = `${colorMap[type]} absolute bottom-9 right-1/2 flex w-fit translate-x-1/2 flex-row gap-[13px] px-[20px] py-[15px] rounded-[3px] items-center`;

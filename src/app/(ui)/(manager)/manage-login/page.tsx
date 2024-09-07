@@ -10,6 +10,7 @@ export default function ManageLoginPage() {
   const [currentAccessCode, setCurrentAccessCode] = useState<string>("");
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
   const router = useRouter();
 
@@ -23,6 +24,8 @@ export default function ManageLoginPage() {
     e.preventDefault();
     // TODO: standardize method to make request and handle response
     try {
+      // set state to loading right after the form is submitted
+      setFeedback([FeedbackType.Loading, "Loading"]);
       const response = await fetch("/api/validate-access-code", {
         method: "POST",
         body: JSON.stringify({
@@ -32,12 +35,13 @@ export default function ManageLoginPage() {
           "Content-Type": "application/json"
         }
       });
-
+      const data = await response.json();
       if (response.status === 200) {
-        setFeedback([FeedbackType.Success, "Success"]);
+        setFeedback([FeedbackType.Success, data.message]);
         router.push("/manage");
       } else {
-        setFeedback([FeedbackType.Error, "Incorrect Access Code"]);
+        setFeedback([FeedbackType.Warning, data.message]);
+        handleErrorAndWarning();
       }
     } catch (error) {
       setFeedback([FeedbackType.Error, "Network Error"]);
@@ -95,13 +99,13 @@ export default function ManageLoginPage() {
             <div className="flex w-full justify-between gap-[50px]">
               <button
                 type="button"
-                onClick={closePopUpAction}
-                className="basis-1/3 !rounded-3xl !bg-pedals-yellow !px-5"
+                onClick={() => setIsPopupVisible(false)}
+                className="grow basis-1/3 !rounded-3xl !bg-pedals-yellow !px-5"
               >
                 CANCEL
               </button>
               <button
-                className="basis-2/3 !rounded-3xl !bg-pedals-lightgrey"
+                className="grow basis-2/3 !rounded-3xl !bg-pedals-lightgrey"
                 type="button"
                 onClick={closePopUpAction}
               >
