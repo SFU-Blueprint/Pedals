@@ -68,7 +68,7 @@ export default function RegisterPage() {
 
   const mockOptions = ["Option 1", "Option 2", "Option 3"];
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-grow flex-col">
       <form
         className="flex items-start justify-between gap-40 px-20 py-10"
         onSubmit={handleRegister}

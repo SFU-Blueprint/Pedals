@@ -14,48 +14,21 @@ export default function TimeDisplay({
     return () => clearInterval(timerId);
   }, []);
 
-  const daysOfWeek = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
-  ];
-
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  ];
-
-  const day = daysOfWeek[currentTime.getDay()];
-  const month = months[currentTime.getMonth()];
-  const date = currentTime.getDate();
-  const hours = currentTime.getHours();
-  const minutes = currentTime.getMinutes();
-  const isAM = hours < 12;
-  const displayHours = hours % 12 || 12;
-  const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  const period = isAM ? "AM" : "PM";
-
   return (
     <div className={`${props.className} flex flex-col`}>
       <h2>
-        {day}, {month} {date}
+        {currentTime.toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "long",
+          day: "numeric"
+        })}
       </h2>
       <h1>
-        {displayHours}:{displayMinutes} {period}
+        {currentTime.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true
+        })}
       </h1>
     </div>
   );

@@ -6,7 +6,7 @@ import Popup from "@/components/Popup";
 import Feedback, { FeedbackType } from "@/components/Feedback";
 import FormInput from "@/components/FormInput";
 
-export default function ManagePage() {
+export default function ManageLoginPage() {
   const [currentAccessCode, setCurrentAccessCode] = useState<string>("");
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false);

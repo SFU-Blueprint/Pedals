@@ -6,7 +6,7 @@ import ShiftSelect from "../components/ShiftSelect";
 import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
 import { Tables } from "@/lib/supabase.types";
 
-export default function Checkin() {
+export default function CheckinPage() {
   const [username, setUsername] = useState("");
   const [shiftType, setShiftType] = useState<string | null>(null);
   const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
@@ -56,7 +56,7 @@ export default function Checkin() {
 
   const mockOptions = ["option 1", "option 2", "option 3"];
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-grow flex-col">
       <form
         className="flex items-end justify-between gap-96 px-20 py-10"
         onSubmit={handleCheckin}

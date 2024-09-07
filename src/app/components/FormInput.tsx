@@ -13,7 +13,7 @@ export default function FormInput({ label, ...props }: FormInputProps) {
           {label}
         </label>
       )}
-      {props.children || (
+      {props.children ?? (
         <input
           className="uppercase"
           id={id}

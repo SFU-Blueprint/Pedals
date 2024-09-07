@@ -5,16 +5,23 @@ import Link from "next/link";
 
 interface NavBarProps extends React.ComponentPropsWithoutRef<"nav"> {
   links: { href: string; label: string; highlight?: string }[];
+  customLinkStyles?: string;
+  customHighlightStyles?: string;
 }
 
-export default function NavBar({ links, ...props }: NavBarProps) {
+export default function NavBar({
+  links,
+  customLinkStyles,
+  customHighlightStyles,
+  ...props
+}: NavBarProps) {
   const path = usePathname();
   return (
-    <nav className={`${props.className} flex justify-between gap-10`}>
+    <nav className={`${props.className} flex justify-start gap-10`}>
       {links.map(({ href, label, highlight }) => (
         <Link
           key={href}
-          className={`uppercase ${path.includes(highlight || href) ? "font-bold" : ""}`}
+          className={`${customLinkStyles} uppercase ${path.includes(highlight ?? href) ? customHighlightStyles ?? "font-bold" : ""}`}
           href={href}
         >
           {label}

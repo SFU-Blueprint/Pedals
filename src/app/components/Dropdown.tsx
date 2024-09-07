@@ -8,8 +8,8 @@ import React, {
 } from "react";
 
 interface DropdownProps extends ComponentPropsWithoutRef<"button"> {
-  options: string[];
-  currentOption: string | null;
+  options: string[] | number[];
+  currentOption: string | number | null;
   placeholder?: string;
   centerParentFix?: string;
 }
@@ -99,7 +99,7 @@ export default function Dropdown({
           className={`flex w-full items-center justify-between uppercase hover:ring-2 hover:ring-pedals-yellow hover:ring-offset-1 ${currentOption ? "!bg-pedals-yellow" : ""}`}
           onClick={() => setIsOpen(true)}
         >
-          {currentOption || placeholder}
+          {currentOption ?? placeholder}
           <DropdownArrow />
         </button>
       )}

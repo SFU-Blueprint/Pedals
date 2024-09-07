@@ -1,7 +1,19 @@
-export default function Checkin() {
+"use client";
+
+import { useState } from "react";
+import FormInput from "@/components/FormInput";
+
+export default function ManagePeoplePage() {
+  const [searchName, setSearchName] = useState("");
   return (
     <>
-      <div className="flex w-full flex-col bg-pedals-lightgrey">
+      <FormInput
+        className="ml-auto flex w-80 pr-20 pt-36"
+        type="text"
+        placeholder="Search Name"
+        onChange={(e) => setSearchName(e.target.value)}
+      />
+      <div className="flex w-full flex-col bg-pedals-lightgrey pt-6">
         <div className="flex w-full items-center px-10">
           <hr
             className="flex-grow bg-gray-300"

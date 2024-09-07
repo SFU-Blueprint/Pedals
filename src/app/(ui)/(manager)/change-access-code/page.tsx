@@ -64,7 +64,7 @@ function ErrorPopUp({ open, onClose, message }: ErrorPopUpProps) {
   ) : null;
 }
 
-export default function ChangeAccessPage() {
+export default function ChangeAccessCodePage() {
   const [isOpen, setIsOpen] = useState(false);
   const [currCode, setCurrCode] = useState("");
   const [newCode, setNewCode] = useState("");
