@@ -6,6 +6,7 @@ import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
 import FormInput from "@/components/FormInput";
 import DateSelector from "@/components/DateSelector";
 import { Tables } from "@/lib/supabase.types";
+import { FeedbackType } from "@/components/Feedback";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState<string>("");
@@ -13,6 +14,7 @@ export default function RegisterPage() {
   const [shiftType, setShiftType] = useState<string | null>(null);
   const [dob, setDOB] = useState<Date | null>(new Date());
   const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
+  const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
 
   const fetchActiveShifts = useCallback(async () => {
     try {
@@ -113,6 +115,7 @@ export default function RegisterPage() {
       <ActiveShiftsGrid
         shifts={activeShifts}
         refreshShifts={fetchActiveShifts}
+        propagateFeedback={setFeedback}
       />
     </div>
   );
