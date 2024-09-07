@@ -22,10 +22,10 @@ export default function ManageLoginPage() {
   const closePopUpAction = () => setIsPopupVisible(false);
   const handleAccessCodeSubmission = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFeedback([FeedbackType.Loading, "Loading"]);
     // TODO: standardize method to make request and handle response
     try {
       // set state to loading right after the form is submitted
-      setFeedback([FeedbackType.Loading, "Loading"]);
       const response = await fetch("/api/validate-access-code", {
         method: "POST",
         body: JSON.stringify({
@@ -41,7 +41,6 @@ export default function ManageLoginPage() {
         router.push("/manage");
       } else {
         setFeedback([FeedbackType.Warning, data.message]);
-        handleErrorAndWarning();
       }
     } catch (error) {
       setFeedback([FeedbackType.Error, "Network Error"]);
