@@ -15,9 +15,7 @@ export default function ManageLoginPage() {
   const router = useRouter();
 
   const handleFeedback = () => {
-    if (feedback) {
       setTimeout(() => setFeedback(null), 2500);
-    }
   };
   const closePopUpAction = () => setIsPopupVisible(false);
   const handleAccessCodeSubmission = async (e: FormEvent<HTMLFormElement>) => {
@@ -39,11 +37,13 @@ export default function ManageLoginPage() {
       if (response.status === 200) {
         setFeedback([FeedbackType.Success, data.message]);
         router.push("/manage");
-      } else {
+      } else if (response.status >= 400 && response.status < 500) {
         setFeedback([FeedbackType.Warning, data.message]);
+      } else if (response.status >= 500 && response.status < 600) {
+        setFeedback([FeedbackType.Error, data.message]);
       }
     } catch (error) {
-      setFeedback([FeedbackType.Error, "Network Error"]);
+      setFeedback([FeedbackType.Error, "Unknown Error"]);
     }
     handleFeedback();
   };
