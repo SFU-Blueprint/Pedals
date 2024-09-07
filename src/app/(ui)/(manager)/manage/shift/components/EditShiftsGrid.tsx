@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import DateSelector from "@/components/DateSelector";
 import { Tables } from "@/lib/supabase.types";
+import { formatDate, formatTime, isInMonth, isInYear } from "../utils";
 
 interface EditShiftsGridProps {
   shifts: Tables<"shifts">[];
@@ -21,40 +22,23 @@ interface EditShiftCardProps {
 }
 
 function EditShiftCard({ shift, refreshShifts }: EditShiftCardProps) {
-  const checkinDateTime =
-    (shift.checked_in_at && new Date(shift.checked_in_at)) || null;
-  const checkoutDateTime =
-    (shift.checked_out_at && new Date(shift.checked_out_at)) || null;
-
   const [date, setDate] = useState<Date | null>(() => {
-    const checkinDate = checkinDateTime?.toLocaleDateString("en-US");
-    return checkinDate &&
-      checkoutDateTime?.toLocaleDateString("en-US") === checkinDate
+    const checkinDate = formatDate(shift.checked_in_at);
+    const checkoutDate = formatDate(shift.checked_out_at);
+    return checkinDate && (!checkoutDate || checkoutDate === checkinDate)
       ? new Date(checkinDate)
       : null;
   });
-
   const [checkinTime, setCheckinTime] = useState<string | null>(
-    checkinDateTime &&
-      new Date(checkinDateTime).toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: false
-      })
+    formatTime(shift.checked_in_at)
   );
-
   const [checkoutTime, setCheckoutTime] = useState<string | null>(
-    checkoutDateTime &&
-      new Date(checkoutDateTime).toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: false
-      })
+    formatTime(shift.checked_out_at)
   );
   const [shiftType, setShiftType] = useState<string | null>(shift.shift_type);
   const [isEditing, setIsEditing] = useState(false);
-
   const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -101,13 +85,7 @@ function EditShiftCard({ shift, refreshShifts }: EditShiftCardProps) {
             </div>
           ) : (
             <p className="flex w-48 justify-center uppercase">
-              {(checkinDateTime &&
-                new Date(checkinDateTime).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true
-                })) ??
-                "Error"}
+              {formatTime(shift.checked_in_at, { hour12: true }) ?? "Error"}
             </p>
           )}
           <p>-</p>
@@ -123,13 +101,7 @@ function EditShiftCard({ shift, refreshShifts }: EditShiftCardProps) {
             <p className="flex w-48 justify-center uppercase">
               {shift.is_active
                 ? "Active"
-                : (checkoutDateTime &&
-                    new Date(checkoutDateTime).toLocaleTimeString("en-US", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true
-                    })) ??
-                  "Error"}
+                : formatTime(shift.checked_out_at, { hour12: true }) ?? "Error"}
             </p>
           )}
         </div>
@@ -177,13 +149,31 @@ export default function EditShiftsGrid({
         </div>
         <p className="ml-40">Shift</p>
       </div>
-      {shifts?.map((shift) => (
-        <EditShiftCard
-          key={shift.id}
-          shift={shift}
-          refreshShifts={refreshShifts}
-        />
-      ))}
+      {shifts
+        ?.filter((shift) => {
+          const nameMatch = filter.name
+            ? shift.volunteer_name
+                ?.toLowerCase()
+                .includes(filter.name.toLowerCase())
+            : true;
+
+          const monthMatch = filter.month
+            ? isInMonth(shift.checked_in_at, shift.checked_out_at, filter.month)
+            : true;
+
+          const yearMatch = filter.year
+            ? isInYear(shift.checked_in_at, shift.checked_out_at, filter.year)
+            : true;
+
+          return nameMatch && monthMatch && yearMatch;
+        })
+        ?.map((shift) => (
+          <EditShiftCard
+            key={shift.id}
+            shift={shift}
+            refreshShifts={refreshShifts}
+          />
+        ))}
     </div>
   );
 }
