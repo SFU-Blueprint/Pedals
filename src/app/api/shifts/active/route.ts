@@ -8,6 +8,16 @@ export async function GET() {
     .select("*")
     .eq("is_active", true);
 
+  // Handle network error
+  if (error?.message === "TypeError: fetch failed") {
+    return NextResponse.json(
+      {
+        message: "Network error. Please check your connection and try again."
+      },
+      { status: 503 }
+    );
+  }
+
   // Handle potential errors during the fetch operation
   if (error) {
     return NextResponse.json(

@@ -1,20 +1,28 @@
 import { Tables } from "@/lib/supabase.types";
+import { FeedbackType } from "@/components/Feedback";
 
 interface ActiveShiftsGridProps {
   shifts: Tables<"shifts">[];
   refreshShifts: () => Promise<void>;
+  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
 }
 
 interface ActiveShiftCardProps {
   shift: Tables<"shifts">;
   refreshShifts: () => Promise<void>;
+  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
 }
 
-function ActiveShiftCard({ refreshShifts, shift }: ActiveShiftCardProps) {
+function ActiveShiftCard({
+  refreshShifts,
+  shift,
+  propagateFeedback
+}: ActiveShiftCardProps) {
   const handleCheckout = async (
     shiftId: string,
     volunteerId: string | null
   ) => {
+    propagateFeedback([FeedbackType.Loading, "Loading"]);
     try {
       const response = await fetch("/api/checkout", {
         method: "PATCH",
@@ -26,15 +34,19 @@ function ActiveShiftCard({ refreshShifts, shift }: ActiveShiftCardProps) {
           "Content-Type": "application/json"
         }
       });
+      const data = await response.json();
       if (response.status === 200) {
         await refreshShifts();
-        // This will be handoff to Terry for feedback popup
-      } else {
-        // This will be handoff to Terry for feedback popup
+        propagateFeedback([FeedbackType.Success, data.message]);
+      } else if (response.status >= 400 && response.status < 500) {
+        propagateFeedback([FeedbackType.Warning, data.message]);
+      } else if (response.status >= 500 && response.status < 600) {
+        propagateFeedback([FeedbackType.Error, data.message]);
       }
     } catch (error) {
-      // This will be handoff to Terry for feedback popup
+      propagateFeedback([FeedbackType.Error, "Unknown Error"]);
     }
+    setTimeout(() => propagateFeedback(null), 2500);
   };
   return (
     <div className="flex w-full items-center justify-between border-y-[1px] border-pedals-stroke bg-pedals-grey px-20 py-3">
@@ -69,7 +81,8 @@ function ActiveShiftCard({ refreshShifts, shift }: ActiveShiftCardProps) {
 
 export default function ActiveShiftsGrid({
   shifts,
-  refreshShifts
+  refreshShifts,
+  propagateFeedback
 }: ActiveShiftsGridProps) {
   return (
     <div className="flex h-full flex-col bg-pedals-grey">
@@ -78,6 +91,7 @@ export default function ActiveShiftsGrid({
           key={shift.id}
           shift={shift}
           refreshShifts={refreshShifts}
+          propagateFeedback={propagateFeedback}
         />
       ))}
     </div>

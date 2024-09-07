@@ -5,30 +5,46 @@ import FormInput from "@/components/FormInput";
 import ShiftSelect from "../components/ShiftSelect";
 import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
 import { Tables } from "@/lib/supabase.types";
+import Feedback, { FeedbackType } from "@/components/Feedback";
 
 export default function CheckinPage() {
   const [username, setUsername] = useState("");
   const [shiftType, setShiftType] = useState<string | null>(null);
   const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
+  const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
 
-  const fetchActiveShifts = useCallback(async () => {
-    try {
-      const response = await fetch("/api/shifts/active", {
-        method: "GET"
-      });
-      if (response.status === 500) {
-        // This will be handoff to Terry for feedback popup
-      } else if (response.status === 200) {
-        setActiveShifts((await response.json()) as Tables<"shifts">[]);
+  const fetchActiveShifts = useCallback(
+    async (
+      options: { showSuccessFeedback: boolean } = { showSuccessFeedback: true }
+    ) => {
+      setFeedback([FeedbackType.Loading, "Loading"]);
+      try {
+        const response = await fetch("/api/shifts/active", {
+          method: "GET"
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          setActiveShifts(data as Tables<"shifts">[]);
+          if (options.showSuccessFeedback) {
+            setFeedback([FeedbackType.Success, "Active shifts loaded."]);
+          }
+        } else if (response.status >= 400 && response.status < 500) {
+          setFeedback([FeedbackType.Warning, data.message]);
+        } else if (response.status >= 500 && response.status < 600) {
+          setFeedback([FeedbackType.Error, data.message]);
+        }
+      } catch (error) {
+        setFeedback([FeedbackType.Error, "Unknown Error"]);
       }
-    } catch (error) {
-      // This will be handoff to Terry for feedback popup
-    }
-  }, []);
+      setTimeout(() => setFeedback(null), 2500);
+    },
+    []
+  );
 
   const handleCheckin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      setFeedback([FeedbackType.Loading, "Loading"]);
       const response = await fetch("/api/checkin", {
         method: "POST",
         body: JSON.stringify({
@@ -39,15 +55,19 @@ export default function CheckinPage() {
           "Content-Type": "application/json"
         }
       });
+      const data = await response.json();
       if (response.status === 200) {
-        await fetchActiveShifts();
-        // This will be handoff to Terry for feedback popup
-      } else {
-        // This will be handoff to Terry for feedback popup
+        await fetchActiveShifts({ showSuccessFeedback: false });
+        setFeedback([FeedbackType.Success, data.message]);
+      } else if (response.status >= 400 && response.status < 500) {
+        setFeedback([FeedbackType.Warning, data.message]);
+      } else if (response.status >= 500 && response.status < 600) {
+        setFeedback([FeedbackType.Error, data.message]);
       }
     } catch (error) {
-      // This will be handoff to Terry for feedback popup
+      setFeedback([FeedbackType.Error, "Unknown Error"]);
     }
+    setTimeout(() => setFeedback(null), 2500);
   };
 
   useEffect(() => {
@@ -86,8 +106,10 @@ export default function CheckinPage() {
       </form>
       <ActiveShiftsGrid
         shifts={activeShifts}
-        refreshShifts={fetchActiveShifts}
+        refreshShifts={() => fetchActiveShifts({ showSuccessFeedback: false })}
+        propagateFeedback={setFeedback}
       />
+      {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
     </div>
   );
 }

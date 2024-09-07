@@ -14,9 +14,6 @@ export default function ManageLoginPage() {
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
   const router = useRouter();
 
-  const handleFeedback = () => {
-      setTimeout(() => setFeedback(null), 2500);
-  };
   const closePopUpAction = () => setIsPopupVisible(false);
   const handleAccessCodeSubmission = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,7 +42,7 @@ export default function ManageLoginPage() {
     } catch (error) {
       setFeedback([FeedbackType.Error, "Unknown Error"]);
     }
-    handleFeedback();
+    setTimeout(() => setFeedback(null), 2500);
   };
 
   useEffect(() => {
