@@ -139,8 +139,8 @@ export default function EditShiftsGrid({
   filter
 }: EditShiftsGridProps) {
   return (
-    <div className="flex h-full flex-col bg-pedals-grey">
-      <div className="flex items-center justify-start px-20 py-2">
+    <div className="flex h-full flex-col overflow-x-auto bg-pedals-grey">
+      <div className="sticky flex items-center justify-start px-20 py-2">
         <p className="w-96">Name</p>
         <p className="w-72">Date</p>
         <div className="flex justify-between gap-3">
@@ -149,31 +149,37 @@ export default function EditShiftsGrid({
         </div>
         <p className="ml-40">Shift</p>
       </div>
-      {shifts
-        ?.filter((shift) => {
-          const nameMatch = filter.name
-            ? shift.volunteer_name
-                ?.toLowerCase()
-                .includes(filter.name.toLowerCase())
-            : true;
+      <div className="overflow-x-scroll">
+        {shifts
+          ?.filter((shift) => {
+            const nameMatch = filter.name
+              ? shift.volunteer_name
+                  ?.toLowerCase()
+                  .includes(filter.name.toLowerCase())
+              : true;
 
-          const monthMatch = filter.month
-            ? isInMonth(shift.checked_in_at, shift.checked_out_at, filter.month)
-            : true;
+            const monthMatch = filter.month
+              ? isInMonth(
+                  shift.checked_in_at,
+                  shift.checked_out_at,
+                  filter.month
+                )
+              : true;
 
-          const yearMatch = filter.year
-            ? isInYear(shift.checked_in_at, shift.checked_out_at, filter.year)
-            : true;
+            const yearMatch = filter.year
+              ? isInYear(shift.checked_in_at, shift.checked_out_at, filter.year)
+              : true;
 
-          return nameMatch && monthMatch && yearMatch;
-        })
-        ?.map((shift) => (
-          <EditShiftCard
-            key={shift.id}
-            shift={shift}
-            refreshShifts={refreshShifts}
-          />
-        ))}
+            return nameMatch && monthMatch && yearMatch;
+          })
+          ?.map((shift) => (
+            <EditShiftCard
+              key={shift.id}
+              shift={shift}
+              refreshShifts={refreshShifts}
+            />
+          ))}
+      </div>
     </div>
   );
 }
