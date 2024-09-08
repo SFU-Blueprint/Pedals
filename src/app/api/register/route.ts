@@ -1,200 +1,82 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
-// Function to get user by username
-async function getUserByUsername(username: string) {
-  const { data, error } = await supabase
+/* eslint-disable-next-line import/prefer-default-export */
+export async function POST(req: NextRequest) {
+  const { username, fullName, dob } = await req.json();
+
+  if (!username || !fullName || !dob) {
+    return NextResponse.json(
+      {
+        message:
+          "Please provide your username, your full name and your date of birth"
+      },
+      { status: 400 }
+    );
+  }
+
+  // Check if a username exists
+  const { data: user, error: userError } = await supabase
     .from("users")
-    .select("*")
+    .select("username")
     .eq("username", username)
     .single();
 
-  if (error && error.code !== "PGRST116") {
-    // Ignore "no rows" error
-    // console.error("Error fetching user:", error);
-  }
-
-  return data;
-}
-
-// Function to get volunteere
-async function getVolunteerByUsername(user_id: string) {
-  const { data, error } = await supabase
-    .from("volunteers")
-    .select("*")
-    .eq("user_id", user_id)
-    .single();
-
-  if (error && error.code !== "PGRST116") {
-    // Ignore "no rows" error
-    // console.error("Error fetching user:", error);
-  }
-
-  return data;
-}
-
-// Function to see if volunteer is already checked in
-async function getVolunteeShiftInfo(volunteer_id: string) {
-  const { data, error } = await supabase
-    .from("volunteer_shifts")
-    .select("*")
-    .eq("volunteer_id", volunteer_id)
-    .single();
-
-  if (error && error.code !== "PGRST116") {
-    // Ignore "no rows" error
-    // console.error("Error fetching user:", error);
-  }
-
-  if (data) {
-    return true;
-  }
-  return false;
-}
-
-// Function to create a new user
-async function createUser(
-  userName: string,
-  fullName: string,
-  dob: Date,
-  timestamp: Date
-) {
-  const createdAt = new Date(timestamp);
-  const { data, error } = await supabase
-    .from("users")
-    .insert([
-      { username: userName, name: fullName, dob: dob, created_at: createdAt }
-    ])
-    .single();
-
-  if (error) {
-    return NextResponse.json({
-      message: error
-    });
-  }
-
-  return NextResponse.json({
-    data: data,
-    message: "Create successful"
-  });
-}
-
-// Function to create a volunteer
-async function createVolunteer(userId: string, name: string, timestamp: Date) {
-  const createdAt = new Date(timestamp);
-  const { data, error } = await supabase
-    .from("volunteers")
-    .insert([{ user_id: userId, name: name, created_at: createdAt }])
-    .single();
-
-  if (error) {
-    // console.log(error);
-  }
-
-  return data;
-}
-
-// Function to check in volunteer
-async function checkInVolunteer(volunteer: any, shiftId: any) {
-  const { data: shift, error: errorShift } = await supabase
-    .from("volunteer_shifts")
-    .insert({
-      volunteer_id: volunteer.vid,
-      shift_id: shiftId,
-      status: "Available",
-      checked_in_at: new Date().toISOString()
-    });
-
-  if (errorShift || !shift) {
-    return NextResponse.json({
-      message: errorShift
-    });
-  }
-
-  return NextResponse.json({
-    message: "Checkin successfully"
-  });
-}
-
-/* eslint-disable-next-line import/prefer-default-export */
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    // console.log(body);
-    const { userName, shiftType, fullName, dob } = body;
-
-    const currentDate = new Date();
-    const timestamp = currentDate;
-
-    if (!userName || !shiftType || !fullName || !dob) {
-      // console.log(body);
-      return NextResponse.json(
-        {
-          message: "Missing required fields"
-        },
-        { status: 400 }
-      );
-    }
-    const { data: shiftId, error: shiftIdError } = await supabase
-      .from("shifts")
-      .select("id")
-      .eq("shift_name", shiftType.toUpperCase())
-      .single();
-
-    if (shiftIdError) {
-      return NextResponse.json(
-        {
-          message: shiftIdError
-        },
-        { status: 400 }
-      );
-    }
-
-    // Check if user exists
-    let user = await getUserByUsername(userName);
-    // If user does not exist, create the user
-    if (!user) {
-      await createUser(userName, fullName, dob, timestamp);
-      user = await getUserByUsername(userName);
-      await createVolunteer(user.sid, user.name, timestamp);
-      const volunteer = await getVolunteerByUsername(user.sid);
-      // Check to see if volunteer is already checked in
-      const checkedIn = await getVolunteeShiftInfo(volunteer.vid);
-
-      if (!checkedIn) {
-        checkInVolunteer(volunteer, shiftId);
-      } else {
-        return NextResponse.json(
-          {
-            message: "Volunteer already checked in"
-          },
-          { status: 300 }
-        );
-      }
-    } else {
-      const volunteer = await getVolunteerByUsername(user.sid);
-
-      // Check to see if volunteer is already checked in
-      const checkedIn = await getVolunteeShiftInfo(volunteer.vid);
-
-      if (!checkedIn) {
-        checkInVolunteer(volunteer, shiftId);
-      } else {
-        return NextResponse.json(
-          {
-            message: "Volunteer already checked in"
-          },
-          { status: 300 }
-        );
-      }
-    }
-
+  // Handle network error
+  if (userError?.message === "TypeError: fetch failed") {
     return NextResponse.json(
-      { message: "Success, registered and checked in volunteer" },
-      { status: 200 }
+      {
+        message: "Network error. Please check your connection and try again."
+      },
+      { status: 503 }
     );
-  } catch (error) {
-    // console.error("Error:", error);
-    return NextResponse.json({ message: "An error occurred" }, { status: 500 });
   }
+
+  // Handle error on the supabase
+  if (
+    userError &&
+    userError?.message !==
+      "JSON object requested, multiple (or no) rows returned"
+  ) {
+    return NextResponse.json(
+      {
+        message: `Error while trying to validate username: ${userError}`
+      },
+      { status: 500 }
+    );
+  }
+
+  // Handle the case where the username is already found in the database
+  if (user) {
+    return NextResponse.json(
+      {
+        message: "Username already exists. Please try different username"
+      },
+      { status: 401 }
+    );
+  }
+
+  // Insert a new user record to the database
+  const { error: registerError } = await supabase.from("users").insert({
+    name: fullName,
+    dob: dob,
+    username: username
+  });
+
+  if (registerError) {
+    return NextResponse.json(
+      {
+        message: `Error occurred while register user on database: ${registerError.message}`
+      },
+      { status: 500 }
+    );
+  }
+
+  // Confirm successful register
+  return NextResponse.json(
+    {
+      message: "Register successfully"
+    },
+    { status: 200 }
+  );
 }
