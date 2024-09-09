@@ -30,6 +30,8 @@ describe("validate-access-code API Route", () => {
     const response = await POST(mockReq);
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ message: "Missing required field" });
+    expect(await response.json()).toEqual({
+      message: "Missing required field"
+    });
   });
 });

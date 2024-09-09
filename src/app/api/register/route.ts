@@ -60,7 +60,8 @@ export async function POST(req: NextRequest) {
   const { error: registerError } = await supabase.from("users").insert({
     name: fullName,
     dob: dob,
-    username: username
+    username: username,
+    is_volunteer: true
   });
 
   if (registerError) {

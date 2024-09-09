@@ -55,6 +55,7 @@ export default function RegisterPage() {
           dob
         })
       });
+      const registerData = await registerResponse.json();
 
       if (registerResponse.status === 200) {
         const checkinResponse = await fetch("/api/checkin", {
@@ -79,6 +80,16 @@ export default function RegisterPage() {
         ) {
           setFeedback([FeedbackType.Error, data.message]);
         }
+      } else if (
+        registerResponse.status >= 400 &&
+        registerResponse.status < 500
+      ) {
+        setFeedback([FeedbackType.Warning, registerData.message]);
+      } else if (
+        registerResponse.status >= 500 &&
+        registerResponse.status < 600
+      ) {
+        setFeedback([FeedbackType.Error, registerData.message]);
       }
     } catch (error) {
       // Handle any error that occurs in the try block
