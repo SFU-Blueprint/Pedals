@@ -139,7 +139,7 @@ export default function EditShiftsGrid({
   filter
 }: EditShiftsGridProps) {
   return (
-    <div className="flex h-full flex-col overflow-x-auto bg-pedals-grey">
+    <div className="flex h-full flex-col overflow-y-auto bg-pedals-grey">
       <div className="sticky flex items-center justify-start px-20 py-2">
         <p className="w-96">Name</p>
         <p className="w-72">Date</p>
@@ -149,7 +149,7 @@ export default function EditShiftsGrid({
         </div>
         <p className="ml-40">Shift</p>
       </div>
-      <div className="overflow-x-scroll">
+      <div className="overflow-y-scroll">
         {shifts
           ?.filter((shift) => {
             const nameMatch = filter.name
