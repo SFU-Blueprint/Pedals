@@ -33,7 +33,7 @@ export default function ManageLoginPage() {
       const data = await response.json();
       if (response.status === 200) {
         setFeedback([FeedbackType.Success, data.message]);
-        router.push("/manage");
+        router.push("/manage/shift");
       } else if (response.status >= 400 && response.status < 500) {
         setFeedback([FeedbackType.Warning, data.message]);
       } else if (response.status >= 500 && response.status < 600) {
