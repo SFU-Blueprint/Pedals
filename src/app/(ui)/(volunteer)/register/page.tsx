@@ -6,7 +6,7 @@ import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
 import FormInput from "@/components/FormInput";
 import DateSelector from "@/components/DateSelector";
 import { Tables } from "@/lib/supabase.types";
-import { FeedbackType } from "@/components/Feedback";
+import Feedback, { FeedbackType } from "@/components/Feedback";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState<string>("");
@@ -16,20 +16,33 @@ export default function RegisterPage() {
   const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
 
-  const fetchActiveShifts = useCallback(async () => {
-    try {
-      const response = await fetch("/api/shifts/active", {
-        method: "GET"
-      });
-      if (response.status === 500) {
-        // This will be handoff to Terry for feedback popup
-      } else if (response.status === 200) {
-        setActiveShifts((await response.json()) as Tables<"shifts">[]);
+  const fetchActiveShifts = useCallback(
+    async (
+      options: { showSuccessFeedback: boolean } = { showSuccessFeedback: true }
+    ) => {
+      setFeedback([FeedbackType.Loading, "Loading"]);
+      try {
+        const response = await fetch("/api/shifts/active", {
+          method: "GET"
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          setActiveShifts(data as Tables<"shifts">[]);
+          if (options.showSuccessFeedback) {
+            setFeedback([FeedbackType.Success, "Active shifts loaded."]);
+          }
+        } else if (response.status >= 400 && response.status < 500) {
+          setFeedback([FeedbackType.Warning, data.message]);
+        } else if (response.status >= 500 && response.status < 600) {
+          setFeedback([FeedbackType.Error, data.message]);
+        }
+      } catch (error) {
+        setFeedback([FeedbackType.Error, "Unknown Error"]);
       }
-    } catch (error) {
-      // This will be handoff to Terry for feedback popup
-    }
-  }, []);
+      setTimeout(() => setFeedback(null), 2500);
+    },
+    []
+  );
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,6 +55,8 @@ export default function RegisterPage() {
           dob
         })
       });
+      const registerData = await registerResponse.json();
+
       if (registerResponse.status === 200) {
         const checkinResponse = await fetch("/api/checkin", {
           method: "POST",
@@ -50,18 +65,38 @@ export default function RegisterPage() {
             shiftType
           })
         });
+        const data = await checkinResponse.json();
         if (checkinResponse.status === 200) {
-          await fetchActiveShifts();
-          // This will be handoff to Terry for feedback popup
-        } else {
-          // This will be handoff to Terry for feedback popup
+          await fetchActiveShifts({ showSuccessFeedback: false });
+          setFeedback([FeedbackType.Success, data.message]);
+        } else if (
+          checkinResponse.status >= 400 &&
+          checkinResponse.status < 500
+        ) {
+          setFeedback([FeedbackType.Warning, data.message]);
+        } else if (
+          checkinResponse.status >= 500 &&
+          checkinResponse.status < 600
+        ) {
+          setFeedback([FeedbackType.Error, data.message]);
         }
-      } else {
-        // This will be handoff to Terry for feedback popup
+      } else if (
+        registerResponse.status >= 400 &&
+        registerResponse.status < 500
+      ) {
+        setFeedback([FeedbackType.Warning, registerData.message]);
+      } else if (
+        registerResponse.status >= 500 &&
+        registerResponse.status < 600
+      ) {
+        setFeedback([FeedbackType.Error, registerData.message]);
       }
     } catch (error) {
-      // This will be handoff to Terry for feedback popup
+      // Handle any error that occurs in the try block
+      setFeedback([FeedbackType.Error, "An unexpected error occurred."]);
     }
+
+    setTimeout(() => setFeedback(null), 2500);
   };
 
   useEffect(() => {
@@ -117,6 +152,7 @@ export default function RegisterPage() {
         refreshShifts={fetchActiveShifts}
         propagateFeedback={setFeedback}
       />
+      {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
     </div>
   );
 }
