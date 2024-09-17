@@ -46,6 +46,7 @@ export default function RegisterPage() {
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFeedback([FeedbackType.Loading, "Loading"]);
     try {
       const registerResponse = await fetch("/api/register", {
         method: "POST",

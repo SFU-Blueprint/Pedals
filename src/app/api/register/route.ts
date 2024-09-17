@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
-/* eslint-disable-next-line import/prefer-default-export */
 export async function POST(req: NextRequest) {
   const { username, fullName, dob } = await req.json();
 
+  // Handle missing required parameters
   if (!username || !fullName || !dob) {
     return NextResponse.json(
       {
@@ -15,44 +15,29 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Check if a username exists
+  // Retrieve any users associated with the current username
   const { data: user, error: userError } = await supabase
     .from("users")
     .select("username")
-    .eq("username", username)
-    .single();
+    .eq("username", username);
 
-  // Handle network error
-  if (userError?.message === "TypeError: fetch failed") {
+  // Handle potential errors during the retrieve operation
+  if (userError || !user) {
     return NextResponse.json(
       {
-        message: "Network error. Please check your connection and try again."
-      },
-      { status: 503 }
-    );
-  }
-
-  // Handle error on the supabase
-  if (
-    userError &&
-    userError?.message !==
-      "JSON object requested, multiple (or no) rows returned"
-  ) {
-    return NextResponse.json(
-      {
-        message: `Error while trying to validate username: ${userError}`
+        message: "Error occurred while registering. Please try again."
       },
       { status: 500 }
     );
   }
 
   // Handle the case where the username is already found in the database
-  if (user) {
+  if (user.length !== 0) {
     return NextResponse.json(
       {
         message: "Username already exists. Please try different username"
       },
-      { status: 401 }
+      { status: 409 }
     );
   }
 
@@ -64,6 +49,7 @@ export async function POST(req: NextRequest) {
     is_volunteer: true
   });
 
+  // Handle potential errors during the insert operation
   if (registerError) {
     return NextResponse.json(
       {

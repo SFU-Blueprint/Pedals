@@ -59,13 +59,13 @@ export async function POST(req: NextRequest) {
     .eq("volunteer_id", user.id)
     .eq("is_active", true);
 
-  // Handle network error
+  // Handle potential errors during the retrieve operation
   if (activeShiftError || !activeShift) {
     return NextResponse.json(
       {
-        message: "Network error. Please check your connection and try again."
+        message: "Error occurred while checking in. Please try again."
       },
-      { status: 503 }
+      { status: 500 }
     );
   }
 

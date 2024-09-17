@@ -41,8 +41,6 @@ export async function PATCH(req: NextRequest) {
     );
   }
 
-  console.log(user);
-
   // Retrieve the shift details from the database using the provided Shift ID
   const { data: shift, error: shiftError } = await supabase
     .from("shifts")
