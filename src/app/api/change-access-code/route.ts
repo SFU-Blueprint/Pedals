@@ -1,113 +1,101 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { NextRequest, NextResponse } from "next/server";
+import supabase from "@/lib/supabase";
 
-const minLength = 8;
-const maxLength = 15;
-
-const hasNumbers = (string: string) => /\d/.test(string);
-const hasLetters = (string: string) => /[a-zA-Z]/.test(string);
+// const minLength = 8;
+// const maxLength = 15;
+//
+// const hasNumbers = (string: string) => /\d/.test(string);
+// const hasLetters = (string: string) => /[a-zA-Z]/.test(string);
 
 // eslint-disable-next-line import/prefer-default-export
-export async function POST(req: Request) {
-  const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL;
-  const key = process.env.SUPABASE_KEY;
-
-  const body = await req.json();
-  const { currCode, newCode } = body;
+export async function POST(req: NextRequest) {
+  const { currCode, newCode } = await req.json();
 
   if (!currCode || !newCode) {
     return NextResponse.json(
-      { error: "Current and New Code are required" },
-      { status: 400 }
-    );
-  }
-
-  if (newCode.length < minLength) {
-    return NextResponse.json(
       {
-        error: `New Code must be at least ${minLength} characters long`
+        message:
+          "Please provide your the current password and the new password."
       },
       { status: 400 }
     );
   }
+  // Retrieve the current code and check if correct
+  const { data: currentPassword, error: currentPasswordError } = await supabase
+    .from("access_codes")
+    .select("access_code")
+    .eq("active", true)
+    .single();
 
-  if (newCode.length > maxLength) {
+  // Handle network error
+  if (currentPasswordError?.message === "TypeError: fetch failed") {
     return NextResponse.json(
       {
-        error: `New Code must be at most ${maxLength} characters long`
+        message: "Network error. Please check your connection and try again."
       },
-      { status: 400 }
+      { status: 503 }
     );
   }
 
-  if (!hasNumbers(newCode)) {
+  if (currentPassword?.access_code !== currCode) {
     return NextResponse.json(
-      { error: "New Code must contain at least one number" },
-      { status: 400 }
+      {
+        message:
+          "The provided current password does not match the record in the database"
+      },
+      { status: 401 }
     );
   }
 
-  if (!hasLetters(newCode)) {
+  // If two password is the same raise error
+  if (currCode === newCode) {
     return NextResponse.json(
-      { error: "New Code must contain at least one letter" },
-      { status: 400 }
+      {
+        message: "The new password must be different from the old password"
+      },
+      { status: 402 }
     );
   }
 
-  if (supabaseUrl && key) {
-    const supabase = createClient(supabaseUrl, key);
-    try {
-      const { data: codeData } = await supabase
-        .from("access_codes")
-        .select("access_code")
-        .eq("access_code", currCode)
-        .single();
+  const { error: oldPasswordError } = await supabase
+    .from("access_codes")
+    .update({
+      active: false
+    })
+    .eq("access_code", currCode);
 
-      if (!codeData) {
-        return NextResponse.json(
-          { error: "Your input current access code does not exist." },
-          { status: 400 }
-        );
-      }
-
-      if (currCode === newCode) {
-        return NextResponse.json(
-          { error: "Current and New Code cannot be the same" },
-          { status: 400 }
-        );
-      }
-
-      const { data, error } = await supabase
-        .from("access_codes")
-        .update({
-          access_code: newCode
-        })
-        .eq("access_code", currCode);
-
-      if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-      }
-
-      return NextResponse.json(
-        {
-          message: "Code changed successfully",
-          data
-        },
-        { status: 200 }
-      );
-    } catch (error) {
-      let errorMessage = "An unknown error occurred";
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-
-      return NextResponse.json({ error: errorMessage }, { status: 500 });
-    }
+  // Handle network error
+  if (oldPasswordError?.message === "TypeError: fetch failed") {
+    return NextResponse.json(
+      {
+        message: "Network error. Please check your connection and try again."
+      },
+      { status: 503 }
+    );
   }
 
+  // Insert a new password to the database
+  const { error: newPasswordError } = await supabase
+    .from("access_codes")
+    .insert({
+      access_code: newCode,
+      active: true
+    });
+
+  // Handle potential errors during the insert operation
+  if (newPasswordError) {
+    return NextResponse.json(
+      {
+        message: "Error occurred while updating password. Please try again."
+      },
+      { status: 500 }
+    );
+  }
+  // Confirm successful change in password
   return NextResponse.json(
-    { error: "Supabase URL and Key are required" },
-    { status: 500 }
+    {
+      message: "Change poassword succesfully"
+    },
+    { status: 200 }
   );
 }
