@@ -11,22 +11,22 @@ export type Database = {
     Tables: {
       access_codes: {
         Row: {
-          access_code: string | null;
-          active: boolean | null;
+          code: string;
           created_at: string;
           id: number;
+          is_active: boolean;
         };
         Insert: {
-          access_code?: string | null;
-          active?: boolean | null;
+          code: string;
           created_at?: string;
           id?: number;
+          is_active?: boolean;
         };
         Update: {
-          access_code?: string | null;
-          active?: boolean | null;
+          code?: string;
           created_at?: string;
           id?: number;
+          is_active?: boolean;
         };
         Relationships: [];
       };
@@ -92,6 +92,7 @@ export type Database = {
           dob: string | null;
           id: string;
           is_volunteer: boolean | null;
+          last_seen: string | null;
           name: string;
           total_time: number;
           username: string;
@@ -101,6 +102,7 @@ export type Database = {
           dob?: string | null;
           id?: string;
           is_volunteer?: boolean | null;
+          last_seen?: string | null;
           name: string;
           total_time?: number;
           username: string;
@@ -110,6 +112,7 @@ export type Database = {
           dob?: string | null;
           id?: string;
           is_volunteer?: boolean | null;
+          last_seen?: string | null;
           name?: string;
           total_time?: number;
           username?: string;

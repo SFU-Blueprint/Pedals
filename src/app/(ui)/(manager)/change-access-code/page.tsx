@@ -1,174 +1,138 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import React, { useState } from "react";
-import chevron_left from "./image/chevron-left.svg";
-import close_X from "./image/xclose-x.svg";
+import React, { FormEvent, useState } from "react";
 import FormInput from "@/components/FormInput";
+import Feedback, { FeedbackType } from "@/components/Feedback";
 
-interface ErrorPopUpProps {
-  open: boolean;
-  onClose: () => void;
-  message: string;
-}
-
-function ErrorPopUp({ open, onClose, message }: ErrorPopUpProps) {
-  return open ? (
-    <div
-      className="flex h-full w-full items-center justify-center rounded-xl"
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        zIndex: 1040,
-        backgroundColor: "rgba(0, 0, 0, 0.4)",
-        backdropFilter: "blur(15px)"
-      }}
+function ChevronLeft() {
+  return (
+    <svg
+      width="24"
+      height="25"
+      viewBox="0 0 24 25"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <div className="mx-auto flex h-1/2 w-1/2 flex-col rounded-xl bg-pedals-white">
-        <div className="flex h-1/4 w-full flex-row items-center justify-between rounded-t-xl bg-pedals-yellow px-10 align-middle">
-          <h3> Change Access Code </h3>
-          <button
-            type="button"
-            onClick={() => onClose()}
-            className="!bg-transparent"
-          >
-            <Image src={close_X} alt="Close" />
-          </button>
-        </div>
-
-        <div className="flex h-full flex-col justify-around px-10 py-10">
-          <div>
-            <h3>{message}</h3>
-          </div>
-          <div className="flex w-full justify-between gap-[70px]">
-            <button
-              className="!bg-pedals-grey hover:!bg-pedals-yellow"
-              type="submit"
-              onClick={onClose}
-            >
-              CANCEL
-            </button>
-            <button
-              className="grow !bg-pedals-grey hover:!bg-pedals-yellow"
-              type="submit"
-              onClick={onClose}
-            >
-              FINISHED
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  ) : null;
+      <path
+        d="M15 18.5L9 12.5L15 6.5"
+        stroke="#252525"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 export default function ChangeAccessCodePage() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [currCode, setCurrCode] = useState("");
+  const [oldCode, setOldCode] = useState("");
   const [newCode, setNewCode] = useState("");
   const [confirmNewCode, setConfirmNewCode] = useState("");
-  const [message, setMessage] = useState("");
+  const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async () => {
-    if (newCode !== confirmNewCode) {
-      setMessage("New access codes do not match");
-      setIsOpen(true);
-      return;
-    }
+  const minCodeLength = 8;
+  const maxCodeLength = 15;
 
-    try {
-      const response = await fetch("/api/change-access-code", {
-        method: "POST",
-        body: JSON.stringify({
-          currCode,
-          newCode
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.error) {
-        setMessage(data.error);
-      } else {
-        setMessage("Access code changed successfully");
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (confirmNewCode !== newCode) {
+      setFeedback([
+        FeedbackType.Warning,
+        "New access code and confirmation access code do not match."
+      ]);
+    } else if (
+      newCode.length < minCodeLength ||
+      newCode.length > maxCodeLength
+    ) {
+      setFeedback([
+        FeedbackType.Warning,
+        "The access code length must be between 8 and 15 characters."
+      ]);
+    } else if (!/\d/.test(newCode) || !/[a-zA-Z]/.test(newCode)) {
+      setFeedback([
+        FeedbackType.Warning,
+        "The code must contain at least one letter and one number."
+      ]);
+    } else {
+      setFeedback([FeedbackType.Loading, "Loading"]);
+      try {
+        const response = await fetch("/api/change-access-code", {
+          method: "POST",
+          body: JSON.stringify({
+            oldCode,
+            newCode
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          setFeedback([FeedbackType.Success, data.message]);
+          setSuccess(true);
+        } else if (response.status >= 400 && response.status < 500) {
+          setFeedback([FeedbackType.Warning, data.message]);
+        } else if (response.status >= 500 && response.status < 600) {
+          setFeedback([FeedbackType.Error, data.message]);
+        }
+      } catch (error) {
+        setFeedback([FeedbackType.Error, "Unknown Error"]);
       }
-
-      setIsOpen(true);
-    } catch (error) {
-      setMessage("An unknown error occurred");
-      setIsOpen(true);
     }
+    setTimeout(() => setFeedback(null), 2500);
   };
 
   return (
     <div className="h-screen bg-pedals-lightgrey">
-      <div className="flex h-full w-fit flex-col justify-center gap-8 pl-28 pt-16">
-        <div className="flex flex-col">
-          <Link
-            className="group mb-2 flex items-center text-lg font-medium text-pedals-black hover:font-bold hover:text-black"
-            href="/manage/shift"
-          >
-            <Image src={chevron_left} alt="Back" className="" />
-            <span className="ml-2 group-hover:text-black">BACK</span>
-          </Link>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <FormInput>Current access code:</FormInput>
-          <input
-            className="grow"
-            placeholder="Current Access Code"
-            type="text"
-            value={currCode}
-            onChange={(e) => setCurrCode(e.target.value)}
-            required
+      <Link
+        className="flex items-start gap-2 pl-24 pt-48 font-medium hover:font-bold"
+        href="/manage/shift"
+      >
+        <ChevronLeft />
+        <span className="text-lg">BACK</span>
+      </Link>
+      {success ? (
+        <h3 className="pl-24 pt-9">Access Code Successfully Changed</h3>
+      ) : (
+        <form
+          className="flex w-fit flex-col justify-center gap-6 bg-pedals-lightgrey pl-24 pt-9"
+          onSubmit={handleSubmit}
+        >
+          <FormInput
+            label="Current access code:"
+            type="password"
+            placeholder="TYPE"
+            onChange={(e) => setOldCode(e.target.value)}
           />
-        </div>
-
-        <div className="flex flex-col">
-          <p>Your new code must be between 8-15 characters,</p>
-          <p>and must have both numbers and letters.</p>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <FormInput>New access code:</FormInput>
-          <input
-            className="grow"
-            placeholder="New access code"
-            type="text"
+          <p>
+            Your new code must be between 8-15 characters,
+            <br />
+            and must have both numbers and letters.
+          </p>
+          <FormInput
+            label="New access code:"
+            type="password"
+            placeholder="TYPE"
             onChange={(e) => setNewCode(e.target.value)}
-            required
           />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <FormInput>Confirm new access code:</FormInput>
-          <input
-            className="grow"
-            placeholder="Confirm new access code"
-            type="text"
+          <FormInput
+            label="Confirm new access code:"
+            type="password"
+            placeholder="TYPE"
             onChange={(e) => setConfirmNewCode(e.target.value)}
-            required
           />
-        </div>
-
-        <div className="mt-8">
           <button
             type="submit"
-            className="!bg-pedals-grey hover:!bg-pedals-yellow"
-            onClick={handleSubmit}
+            disabled={!oldCode || !newCode || !confirmNewCode}
+            className="mt-6 w-fit uppercase"
           >
-            CHANGE ACCESS CODE
+            Change Access Code
           </button>
-          <ErrorPopUp
-            open={isOpen}
-            onClose={() => setIsOpen(false)}
-            message={message}
-          />
-        </div>
-      </div>
+        </form>
+      )}
+      {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
     </div>
   );
 }

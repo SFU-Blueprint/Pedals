@@ -43,8 +43,8 @@ export default function CheckinPage() {
 
   const handleCheckin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFeedback([FeedbackType.Loading, "Loading"]);
     try {
-      setFeedback([FeedbackType.Loading, "Loading"]);
       const response = await fetch("/api/checkin", {
         method: "POST",
         body: JSON.stringify({
@@ -99,7 +99,7 @@ export default function CheckinPage() {
         <button
           disabled={!username || !shiftType}
           type="submit"
-          className={`whitespace-nowrap uppercase ${username && shiftType ? "!bg-pedals-yellow" : "cursor-not-allowed !bg-transparent"}`}
+          className="whitespace-nowrap uppercase"
         >
           Check In
         </button>

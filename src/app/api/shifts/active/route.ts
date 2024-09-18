@@ -8,16 +8,6 @@ export async function GET() {
     .select("*")
     .eq("is_active", true);
 
-  // Handle network error
-  if (error?.message === "TypeError: fetch failed") {
-    return NextResponse.json(
-      {
-        message: "Network error. Please check your connection and try again."
-      },
-      { status: 503 }
-    );
-  }
-
   // Handle potential errors during the fetch operation
   if (error) {
     return NextResponse.json(
@@ -25,7 +15,7 @@ export async function GET() {
         message:
           "Error occurred while fetching active shifts. Please reload the page."
       },
-      { status: 500 } // 500 Internal Server Error for unexpected issues
+      { status: 500 }
     );
   }
   return NextResponse.json(data, { status: 200 });

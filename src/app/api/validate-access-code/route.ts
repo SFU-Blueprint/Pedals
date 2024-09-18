@@ -15,7 +15,10 @@ export async function POST(req: Request) {
   // Retrieve access codes from the database
   const { data, error } = await supabase
     .from("access_codes")
-    .select("access_code");
+    .select("code, is_active")
+    .eq("code", accessCode)
+    .eq("is_active", true)
+    .single();
 
   // Handle network error
   if (error?.message === "TypeError: fetch failed") {
@@ -27,21 +30,10 @@ export async function POST(req: Request) {
     );
   }
 
-  // Handle the case where the access_code table is empty
-  if (!data) {
+  // Handle the case where the access code is incorrect or unavailable
+  if (error || !data) {
     return NextResponse.json(
-      { message: "Empty access code table. Please contact the manager." },
-      { status: 500 }
-    );
-  }
-
-  // Check if the provided access code exists in the database
-  const hasAccessCode = data.some((code) => code.access_code === accessCode);
-
-  // Handle the case where the access code is incorrect
-  if (!hasAccessCode) {
-    return NextResponse.json(
-      { message: "Incorrect access code. Please try again." },
+      { message: "Incorrect or unavailable access code. Please try again." },
       { status: 401 }
     );
   }

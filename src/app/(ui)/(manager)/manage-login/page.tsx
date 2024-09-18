@@ -18,9 +18,7 @@ export default function ManageLoginPage() {
   const handleAccessCodeSubmission = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFeedback([FeedbackType.Loading, "Loading"]);
-    // TODO: standardize method to make request and handle response
     try {
-      // set state to loading right after the form is submitted
       const response = await fetch("/api/validate-access-code", {
         method: "POST",
         body: JSON.stringify({
@@ -71,8 +69,9 @@ export default function ManageLoginPage() {
             onChange={(e) => setCurrentAccessCode(e.target.value)}
           />
           <button
+            disabled={!currentAccessCode}
             type="submit"
-            className="!bg-pedals-grey !px-16 uppercase hover:!bg-pedals-yellow"
+            className="!px-16 uppercase"
           >
             Go
           </button>

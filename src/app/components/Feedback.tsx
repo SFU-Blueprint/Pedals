@@ -109,7 +109,13 @@ export default function Feedback({ type, ...props }: FeedbackProps) {
       </svg>
     ),
     [FeedbackType.Loading]: (
-      <Image src="/loading.gif" alt="loading" width={20} height={20} />
+      <Image
+        src="/loading.gif"
+        alt="loading"
+        width={20}
+        height={20}
+        unoptimized
+      />
     )
   };
   const styles = `${colorMap[type]} absolute bottom-9 right-1/2 flex w-fit translate-x-1/2 flex-row gap-[13px] px-[20px] py-[15px] rounded-[3px] items-center`;

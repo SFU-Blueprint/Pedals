@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
-// const minLength = 8;
-// const maxLength = 15;
-//
-// const hasNumbers = (string: string) => /\d/.test(string);
-// const hasLetters = (string: string) => /[a-zA-Z]/.test(string);
-
-// eslint-disable-next-line import/prefer-default-export
 export async function POST(req: NextRequest) {
-  const { currCode, newCode } = await req.json();
+  const { oldCode, newCode } = await req.json();
 
-  if (!currCode || !newCode) {
+  // Handle missing required parameters
+  if (!oldCode || !newCode) {
     return NextResponse.json(
       {
         message:
@@ -20,11 +14,12 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  // Retrieve the current code and check if correct
+
+  // Retrieve the current password
   const { data: currentPassword, error: currentPasswordError } = await supabase
     .from("access_codes")
-    .select("access_code")
-    .eq("active", true)
+    .select("code")
+    .eq("is_active", true)
     .single();
 
   // Handle network error
@@ -37,40 +32,42 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (currentPassword?.access_code !== currCode) {
+  // Handle the case where the provided password does not match the current password
+  if (currentPassword?.code !== oldCode) {
     return NextResponse.json(
       {
         message:
-          "The provided current password does not match the record in the database"
+          "The provided current password does not match the record in the database."
       },
-      { status: 401 }
+      { status: 409 }
     );
   }
 
-  // If two password is the same raise error
-  if (currCode === newCode) {
+  // Handle the case where the old and new passwords are the same
+  if (oldCode === newCode) {
     return NextResponse.json(
       {
-        message: "The new password must be different from the old password"
+        message: "The new access code must be different from the old one."
       },
-      { status: 402 }
+      { status: 409 }
     );
   }
 
+  // Update the status of the old password
   const { error: oldPasswordError } = await supabase
     .from("access_codes")
     .update({
-      active: false
+      is_active: false
     })
-    .eq("access_code", currCode);
+    .eq("code", oldCode);
 
-  // Handle network error
-  if (oldPasswordError?.message === "TypeError: fetch failed") {
+  // Handle potential errors during the update operation
+  if (oldPasswordError) {
     return NextResponse.json(
       {
-        message: "Network error. Please check your connection and try again."
+        message: "Error occurred while updating access code. Please try again."
       },
-      { status: 503 }
+      { status: 500 }
     );
   }
 
@@ -78,23 +75,24 @@ export async function POST(req: NextRequest) {
   const { error: newPasswordError } = await supabase
     .from("access_codes")
     .insert({
-      access_code: newCode,
-      active: true
+      code: newCode,
+      is_active: true
     });
 
   // Handle potential errors during the insert operation
   if (newPasswordError) {
     return NextResponse.json(
       {
-        message: "Error occurred while updating password. Please try again."
+        message: "Error occurred while inserting access code. Please try again."
       },
       { status: 500 }
     );
   }
-  // Confirm successful change in password
+
+  // Confirm successful password change
   return NextResponse.json(
     {
-      message: "Change poassword succesfully"
+      message: "Change access code succesfully."
     },
     { status: 200 }
   );

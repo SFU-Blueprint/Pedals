@@ -53,11 +53,15 @@
   }
 
   button[type="submit"] {
-    @apply rounded-full bg-white px-6 py-2 hover:bg-pedals-grey;
+    @apply rounded-full bg-pedals-yellow px-6 py-2 hover:shadow-xl;
+  }
+
+  button[type="submit"]:disabled {
+    @apply cursor-not-allowed bg-pedals-grey hover:shadow-none;
   }
 
   button[type="button"] {
-    @apply rounded-[3px] bg-white px-3 py-2 hover:bg-pedals-grey;
+    @apply rounded-[3px] bg-white px-3 py-2 hover:bg-pedals-lightgrey;
   }
 
   input[type="text"],

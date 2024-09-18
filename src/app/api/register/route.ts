@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         message:
-          "Please provide your username, your full name and your date of birth"
+          "Please provide your username, your full name and your date of birth."
       },
       { status: 400 }
     );
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (user.length !== 0) {
     return NextResponse.json(
       {
-        message: "Username already exists. Please try different username"
+        message: "Username already exists. Please try a different username."
       },
       { status: 409 }
     );
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   if (registerError) {
     return NextResponse.json(
       {
-        message: `Error occurred while register user on database: ${registerError.message}`
+        message: `Error occurred while registering user. Please try again.`
       },
       { status: 500 }
     );
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
   // Confirm successful register
   return NextResponse.json(
     {
-      message: "Register successfully"
+      message: "Register successfully."
     },
     { status: 200 }
   );

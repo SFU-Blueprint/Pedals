@@ -9,8 +9,7 @@ export async function GET() {
   if (error) {
     return NextResponse.json(
       {
-        message:
-          "Error occurred while fetching active shifts. Please reload the page."
+        message: "Error occurred while fetching shifts. Please reload the page."
       },
       { status: 500 } // 500 Internal Server Error for unexpected issues
     );

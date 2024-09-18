@@ -143,7 +143,7 @@ export default function RegisterPage() {
         <button
           disabled={!username || !shiftType || !fullName || !dob}
           type="submit"
-          className={`mt-[34px] whitespace-nowrap uppercase ${username && shiftType && fullName && dob ? "!bg-pedals-yellow" : "cursor-not-allowed !bg-transparent"}`}
+          className="mt-[34px] whitespace-nowrap uppercase"
         >
           Check In
         </button>
