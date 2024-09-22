@@ -2,9 +2,19 @@
 
 import { useState } from "react";
 import FormInput from "@/components/FormInput";
+import RadioMultiple from "@/components/RadioMultiple";
 
 export default function ManagePeoplePage() {
-  const [searchName, setSearchName] = useState("");
+  const [searchName, setSearchName] = useState<string>("");
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+
+  const handleChange = (value: string) => {
+    setSelectedOptions((prevSelected) =>
+      prevSelected.includes(value)
+        ? prevSelected.filter((option) => option !== value)
+        : [...prevSelected, value]
+    );
+  }
   return (
     <>
       <FormInput
@@ -22,24 +32,24 @@ export default function ManagePeoplePage() {
         </div>
         <div className="flex w-full justify-between px-20 py-2">
           <div className="flex items-center gap-4">
-            <label className="font-mono uppercase" htmlFor="select-all">
-              <input
-                type="radio"
-                name="options"
-                value="option1"
-                className="mr-2"
-              />
-              Select All
-            </label>
-            <label className="font-mono uppercase" htmlFor="inactive">
-              <input
-                type="radio"
-                name="options"
-                value="option2"
-                className="mr-2"
-              />
-              Inactive
-            </label>
+            <RadioMultiple
+              label="Select All"
+              value="Select All"
+              isSelected={selectedOptions.includes("Select All")}
+              onChange={handleChange}
+            />
+            <RadioMultiple
+              label="Inactive"
+              value="Inactive"
+              isSelected={selectedOptions.includes("Inactive")}
+              onChange={handleChange}
+            />
+            <RadioMultiple
+              label="Under 18"
+              value="Under 18"
+              isSelected={selectedOptions.includes("Under 18")}
+              onChange={handleChange}
+            />
           </div>
           <button
             type="submit"
