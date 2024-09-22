@@ -2,23 +2,19 @@
 
 import { useState } from "react";
 import FormInput from "@/components/FormInput";
-import RadioMultiple from "@/components/RadioMultiple";
+import RadioButton from "@/components/RadioButton";
 
 export default function ManagePeoplePage() {
-  const [searchName, setSearchName] = useState<string>("");
+  const [searchName, setSearchName] = useState("");
+  const [searchInactive, setSearchInactive] = useState(false);
+  const [searchUnder18, setSearchUnder18] = useState(false);
+  const [selectedAll, setSelectedAll] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
-  const handleChange = (value: string) => {
-    setSelectedOptions((prevSelected) =>
-      prevSelected.includes(value)
-        ? prevSelected.filter((option) => option !== value)
-        : [...prevSelected, value]
-    );
-  }
   return (
     <>
       <FormInput
-        className="ml-auto flex w-80 pr-20 pt-36"
+        className="ml-auto flex w-96 pr-20 pt-36"
         type="text"
         placeholder="Search Name"
         onChange={(e) => setSearchName(e.target.value)}
@@ -31,24 +27,18 @@ export default function ManagePeoplePage() {
           />
         </div>
         <div className="flex w-full justify-between px-20 py-2">
-          <div className="flex items-center gap-4">
-            <RadioMultiple
+          <div className="flex items-center gap-6">
+            <RadioButton
               label="Select All"
-              value="Select All"
-              isSelected={selectedOptions.includes("Select All")}
-              onChange={handleChange}
+              onClick={() => setSelectedAll(!selectedAll)}
             />
-            <RadioMultiple
+            <RadioButton
               label="Inactive"
-              value="Inactive"
-              isSelected={selectedOptions.includes("Inactive")}
-              onChange={handleChange}
+              onClick={() => setSearchInactive(!searchInactive)}
             />
-            <RadioMultiple
+            <RadioButton
               label="Under 18"
-              value="Under 18"
-              isSelected={selectedOptions.includes("Under 18")}
-              onChange={handleChange}
+              onClick={() => setSearchUnder18(!searchUnder18)}
             />
           </div>
           <button
