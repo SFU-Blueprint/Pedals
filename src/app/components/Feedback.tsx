@@ -118,7 +118,7 @@ export default function Feedback({ type, ...props }: FeedbackProps) {
       />
     )
   };
-  const styles = `${colorMap[type]} absolute bottom-9 right-1/2 flex w-fit translate-x-1/2 flex-row gap-[13px] px-[20px] py-[15px] rounded-[3px] items-center`;
+  const styles = `${colorMap[type]} fixed bottom-9 right-1/2 flex w-fit translate-x-1/2 flex-row gap-[13px] px-[20px] py-[15px] rounded-[3px] items-center`;
   return (
     <div className={styles}>
       {svgMap[type]}
