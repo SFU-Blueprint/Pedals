@@ -1,5 +1,3 @@
-import TimeDisplay from "./components/TimeDisplay";
-
 export default function VolunteerLayout({
   children
 }: {
@@ -7,7 +5,7 @@ export default function VolunteerLayout({
 }) {
   return (
     <section className="flex h-screen w-screen flex-col bg-pedals-lightgrey">
-      <TimeDisplay className="pl-20 pt-20" />
+      {/* <TimeDisplay className="pl-20 pt-20 sticky top-0" /> */}
       {children}
     </section>
   );
