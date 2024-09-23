@@ -6,6 +6,7 @@ import ShiftSelect from "../components/ShiftSelect";
 import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
 import { Tables } from "@/lib/supabase.types";
 import Feedback, { FeedbackType } from "@/components/Feedback";
+import TimeDisplay from "../components/TimeDisplay";
 
 export default function CheckinPage() {
   const [username, setUsername] = useState("");
@@ -76,34 +77,37 @@ export default function CheckinPage() {
 
   const mockOptions = ["option 1", "option 2", "option 3"];
   return (
-    <div className="flex flex-grow flex-col">
-      <form
-        className="flex items-end justify-between gap-96 px-20 py-10"
-        onSubmit={handleCheckin}
-      >
-        <div className="flex justify-start gap-96">
-          <FormInput
-            className="w-96"
-            label="Username"
-            type="text"
-            placeholder="Type"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <ShiftSelect
-            className="w-96"
-            options={mockOptions}
-            selectedOption={shiftType}
-            onChange={setShiftType}
-          />
-        </div>
-        <button
-          disabled={!username || !shiftType}
-          type="submit"
-          className="whitespace-nowrap uppercase"
+    <div className="flex flex-grow flex-col overflow-y-hidden">
+      <div className="sticky top-0 bg-pedals-lightgrey">
+        <TimeDisplay className="pl-20 pt-20" />
+        <form
+          className="flex items-end justify-between gap-96 px-20 py-10"
+          onSubmit={handleCheckin}
         >
-          Check In
-        </button>
-      </form>
+          <div className="flex justify-start gap-96">
+            <FormInput
+              className="w-96"
+              label="Username"
+              type="text"
+              placeholder="Type"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <ShiftSelect
+              className="w-96"
+              options={mockOptions}
+              selectedOption={shiftType}
+              onChange={setShiftType}
+            />
+          </div>
+          <button
+            disabled={!username || !shiftType}
+            type="submit"
+            className="whitespace-nowrap uppercase"
+          >
+            Check In
+          </button>
+        </form>
+      </div>
       <ActiveShiftsGrid
         shifts={activeShifts}
         refreshShifts={() => fetchActiveShifts({ showSuccessFeedback: false })}

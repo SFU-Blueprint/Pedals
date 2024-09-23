@@ -7,6 +7,7 @@ import FormInput from "@/components/FormInput";
 import DateSelector from "@/components/DateSelector";
 import { Tables } from "@/lib/supabase.types";
 import Feedback, { FeedbackType } from "@/components/Feedback";
+import TimeDisplay from "../components/TimeDisplay";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState<string>("");
@@ -106,48 +107,54 @@ export default function RegisterPage() {
 
   const mockOptions = ["Option 1", "Option 2", "Option 3"];
   return (
-    <div className="flex flex-grow flex-col">
-      <form
-        className="flex items-start justify-between gap-40 px-20 py-10"
-        onSubmit={handleRegister}
-      >
-        <div className="flex flex-col gap-3">
-          <div className="flex justify-start gap-96">
-            <FormInput
-              className="w-96"
-              label="Username"
-              type="text"
-              placeholder="Type"
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <ShiftSelect
-              className="w-96"
-              options={mockOptions}
-              selectedOption={shiftType}
-              onChange={setShiftType}
-            />
-          </div>
-          <div className="flex justify-start gap-96">
-            <FormInput
-              className="w-96"
-              label="Full Name"
-              type="text"
-              placeholder="Type"
-              onChange={(e) => setFullName(e.target.value)}
-            />
-            <FormInput label="Date of Birth">
-              <DateSelector selected={dob} onChange={(date) => setDOB(date)} />
-            </FormInput>
-          </div>
-        </div>
-        <button
-          disabled={!username || !shiftType || !fullName || !dob}
-          type="submit"
-          className="mt-[34px] whitespace-nowrap uppercase"
+    <div className="flex flex-grow flex-col overflow-y-hidden">
+      <div className="sticky top-0 bg-pedals-lightgrey">
+        <TimeDisplay className="pl-20 pt-20" />
+        <form
+          className="flex items-start justify-between gap-40 px-20 py-10"
+          onSubmit={handleRegister}
         >
-          Check In
-        </button>
-      </form>
+          <div className="flex flex-col gap-3">
+            <div className="flex justify-start gap-96">
+              <FormInput
+                className="w-96"
+                label="Username"
+                type="text"
+                placeholder="Type"
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <ShiftSelect
+                className="w-96"
+                options={mockOptions}
+                selectedOption={shiftType}
+                onChange={setShiftType}
+              />
+            </div>
+            <div className="flex justify-start gap-96">
+              <FormInput
+                className="w-96"
+                label="Full Name"
+                type="text"
+                placeholder="Type"
+                onChange={(e) => setFullName(e.target.value)}
+              />
+              <FormInput label="Date of Birth">
+                <DateSelector
+                  selected={dob}
+                  onChange={(date) => setDOB(date)}
+                />
+              </FormInput>
+            </div>
+          </div>
+          <button
+            disabled={!username || !shiftType || !fullName || !dob}
+            type="submit"
+            className="mt-[34px] whitespace-nowrap uppercase"
+          >
+            Check In
+          </button>
+        </form>
+      </div>
       <ActiveShiftsGrid
         shifts={activeShifts}
         refreshShifts={fetchActiveShifts}
