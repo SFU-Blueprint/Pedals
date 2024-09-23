@@ -5,29 +5,42 @@ import Dropdown from "@/components/Dropdown";
 import FormInput from "@/components/FormInput";
 import EditShiftsGrid from "./components/EditShiftsGrid";
 import { Tables } from "@/lib/supabase.types";
+import Feedback, { FeedbackType } from "@/components/Feedback";
 
 export default function ManageShiftPage() {
   const [searchName, setSearchName] = useState("");
   const [searchMonth, setSearchMonth] = useState<string | null>(null);
   const [searchYear, setSearchYear] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
 
   const [shifts, setShifts] = useState<Tables<"shifts">[]>([]);
 
-  const fetchShifts = useCallback(async () => {
-    try {
-      const response = await fetch("/api/shifts", {
-        method: "GET"
-      });
-      if (response.status === 200) {
-        setShifts((await response.json()) as Tables<"shifts">[]);
-        // This will be handoff to Terry for feedback popup
-      } else {
-        // This will be handoff to Terry for feedback popup
+  const fetchShifts = useCallback(
+    async (
+      options: { showSuccessFeedback: boolean } = { showSuccessFeedback: true }
+    ) => {
+      try {
+        const response = await fetch("/api/shifts", {
+          method: "GET"
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          setShifts(data as Tables<"shifts">[]);
+          if (options.showSuccessFeedback) {
+            setFeedback([FeedbackType.Success, "Shifts loaded."]);
+          }
+        } else if (response.status >= 400 && response.status < 500) {
+          setFeedback([FeedbackType.Warning, data.message]);
+        } else if (response.status >= 500 && response.status < 600) {
+          setFeedback([FeedbackType.Error, data.message]);
+        }
+      } catch (error) {
+        setFeedback([FeedbackType.Error, "Unknown Error"]);
       }
-    } catch (error) {
-      // This will be handoff to Terry for feedback popup
-    }
-  }, []);
+      setTimeout(() => setFeedback(null), 2500);
+    },
+    []
+  );
 
   useEffect(() => {
     fetchShifts();
@@ -72,13 +85,15 @@ export default function ManageShiftPage() {
       </div>
       <EditShiftsGrid
         shifts={shifts}
-        refreshShifts={fetchShifts}
+        refreshShifts={() => fetchShifts({ showSuccessFeedback: false })}
+        propagateFeedback={setFeedback}
         filter={{
           name: searchName,
           month: searchMonth,
           year: searchYear
         }}
       />
+      {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
     </>
   );
 }

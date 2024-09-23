@@ -47,3 +47,10 @@ export const isInYear = (
     getYear(timestamp2 ? new Date(timestamp2) : null) === year
   );
 };
+
+export const combineDateTime = (date: Date, time: string): Date => {
+  const [hours, minutes] = time.split(":").map(Number);
+  const resultDate: Date = new Date(date);
+  resultDate.setHours(hours, minutes, 0, 0);
+  return resultDate;
+};

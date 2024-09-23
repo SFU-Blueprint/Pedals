@@ -18,5 +18,7 @@ export async function GET() {
       { status: 500 }
     );
   }
+
+  // Confirm success
   return NextResponse.json(data, { status: 200 });
 }

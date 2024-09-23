@@ -14,7 +14,7 @@ export default function ManagePeoplePage() {
   return (
     <>
       <FormInput
-        className="ml-auto flex w-96 pr-20 pt-36"
+        className="ml-auto mr-20 mt-36 flex w-80"
         type="text"
         placeholder="Search Name"
         onChange={(e) => setSearchName(e.target.value)}

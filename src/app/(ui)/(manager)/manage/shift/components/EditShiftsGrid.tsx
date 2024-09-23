@@ -4,11 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import DateSelector from "@/components/DateSelector";
 import { Tables } from "@/lib/supabase.types";
-import { formatDate, formatTime, isInMonth, isInYear } from "../utils";
+import {
+  combineDateTime,
+  formatDate,
+  formatTime,
+  isInMonth,
+  isInYear
+} from "../utils";
+import { FeedbackType } from "@/components/Feedback";
 
 interface EditShiftsGridProps {
   shifts: Tables<"shifts">[];
   refreshShifts: () => Promise<void>;
+  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
   filter: {
     name: string;
     month: string | null;
@@ -19,9 +27,48 @@ interface EditShiftsGridProps {
 interface EditShiftCardProps {
   shift: Tables<"shifts">;
   refreshShifts: () => Promise<void>;
+  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
 }
 
-function EditShiftCard({ shift, refreshShifts }: EditShiftCardProps) {
+function EditShiftCard({
+  shift,
+  refreshShifts,
+  propagateFeedback
+}: EditShiftCardProps) {
+  const handleEditShift = async (
+    shiftId: string,
+    inTime: Date,
+    outTime: Date,
+    type: string
+  ) => {
+    propagateFeedback([FeedbackType.Loading, "Loading"]);
+    try {
+      const response = await fetch("/api/shifts", {
+        method: "PATCH",
+        body: JSON.stringify({
+          shiftId,
+          inTime,
+          outTime,
+          type
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        await refreshShifts();
+        propagateFeedback([FeedbackType.Success, data.message]);
+      } else if (response.status >= 400 && response.status < 500) {
+        propagateFeedback([FeedbackType.Warning, data.message]);
+      } else if (response.status >= 500 && response.status < 600) {
+        propagateFeedback([FeedbackType.Error, data.message]);
+      }
+    } catch (error) {
+      propagateFeedback([FeedbackType.Error, "Unknown Error"]);
+    }
+    setTimeout(() => propagateFeedback(null), 2500);
+  };
   const [date, setDate] = useState<Date | null>(() => {
     const checkinDate = formatDate(shift.checked_in_at);
     const checkoutDate = formatDate(shift.checked_out_at);
@@ -122,8 +169,18 @@ function EditShiftCard({ shift, refreshShifts }: EditShiftCardProps) {
       </div>
       <button
         type="button"
-        className="!rounded-[30px] !px-12 uppercase"
+        className={`!rounded-[30px] !px-12 uppercase ${isEditing && "hover:!bg-pedals-grey"}`}
         onClick={() => {
+          if (isEditing) {
+            if (date && checkinTime && checkoutTime && shiftType) {
+              handleEditShift(
+                shift.id,
+                combineDateTime(date, checkinTime),
+                combineDateTime(date, checkoutTime),
+                shiftType
+              );
+            }
+          }
           setIsEditing(!isEditing);
         }}
       >
@@ -136,7 +193,8 @@ function EditShiftCard({ shift, refreshShifts }: EditShiftCardProps) {
 export default function EditShiftsGrid({
   shifts,
   refreshShifts,
-  filter
+  filter,
+  propagateFeedback
 }: EditShiftsGridProps) {
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-pedals-grey">
@@ -177,6 +235,7 @@ export default function EditShiftsGrid({
               key={shift.id}
               shift={shift}
               refreshShifts={refreshShifts}
+              propagateFeedback={propagateFeedback}
             />
           ))}
       </div>
