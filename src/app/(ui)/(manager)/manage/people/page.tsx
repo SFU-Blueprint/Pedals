@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import FormInput from "@/components/FormInput";
 import RadioButton from "@/components/RadioButton";
+import EditPeopleGrid from "@/(ui)/(manager)/manage/people/component/EditPeopleGrid";
+import {Tables} from "@/lib/supabase.types";
 
 export default function ManagePeoplePage() {
   const [searchName, setSearchName] = useState("");
@@ -10,6 +12,28 @@ export default function ManagePeoplePage() {
   const [searchUnder18, setSearchUnder18] = useState(false);
   const [selectedAll, setSelectedAll] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+
+  const [people, setPeople] = useState<Tables<"users">[]>([]);
+
+  const fetchPeople = useCallback(async () => {
+    try {
+      const response = await fetch("/api/people", {
+        method: "GET"
+      });
+      if (response.status === 200) {
+        setPeople((await response.json()) as Tables<"users">[]);
+        // This will be handoff to Terry for feedback popup
+      } else {
+        // This will be handoff to Terry for feedback popup
+      }
+    } catch (error) {
+      // This will be handoff to Terry for feedback popup
+    }
+  }, []);
+
+    useEffect(() => {
+        fetchPeople()
+    }, [fetchPeople]);
 
   return (
     <>
@@ -49,13 +73,13 @@ export default function ManagePeoplePage() {
           </button>
         </div>
       </div>
-      <div className="flex items-center justify-between bg-pedals-grey px-16 py-2">
-        <div className="text-center">Name</div>
-        <div className="text-center">Username</div>
-        <div className="text-center">Date of Birth</div>
-        <div className="text-center">Last Seen</div>
-        <div className="text-center">Total</div>
-      </div>
+      <EditPeopleGrid
+          people={people}
+          refreshPeople={fetchPeople}
+          filter={{
+              name: searchName
+          }
+      }/>
     </>
   );
 }
