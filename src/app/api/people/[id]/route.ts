@@ -1,29 +1,35 @@
 import { NextResponse, NextRequest } from "next/server";
 import supabase from "@/lib/supabase";
 
-// DELERE /api/people/:id
-/* eslint-enable import/prefer-default-export */
-export const DELETE = async (request: NextRequest) => {
-  try {
-    const { pathname } = new URL(request.url);
-    const id = pathname.split("/").pop();
+export const DELETE = async (req: NextRequest) => {
+  const id = new URL(req.url).pathname.split("/").pop();
 
-    if (!id) {
-      return NextResponse.json({
-        message: "Please provide an id"
-      });
-    }
-    const { error } = await supabase.from("users").delete().eq("sid", id);
-
-    if (error) {
-      return NextResponse.json({ message: error });
-    }
-
+  // Handle missing required parameters
+  if (!id) {
     return NextResponse.json(
-      { message: "User deleted successfully" },
-      { status: 200 }
+      {
+        message: "No users selected"
+      },
+      { status: 400 }
     );
-  } catch (error) {
-    return NextResponse.json({ message: error }, { status: 500 });
   }
+
+  // Delete the user with the associated ID
+  const { error } = await supabase.from("users").delete().eq("id", id);
+
+  // Handle potential errors during the delete operation
+  if (error) {
+    return NextResponse.json(
+      {
+        message: "Error occurred while deleting the user. Please try again."
+      },
+      { status: 500 }
+    );
+  }
+
+  // Confirm successful user deletion
+  return NextResponse.json(
+    { message: "User deleted successfully" },
+    { status: 200 }
+  );
 };

@@ -1,28 +1,28 @@
-// Copied from Duc's index in shof
-export const formatDate = (timestamp: string | null): string | null => {
-  const dateTime = timestamp ? new Date(timestamp) : null;
-  return dateTime
-    ? dateTime.toLocaleDateString("en-US", {
+export const isSameDate = (date1: Date, date2: Date): boolean =>
+  date1.getFullYear() === date2.getFullYear() &&
+  date1.getMonth() === date2.getMonth() &&
+  date1.getDate() === date2.getDate();
+
+export const formatDate = (timestamp: Date | null): string =>
+  timestamp
+    ? timestamp.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric"
       })
-    : null;
-};
+    : "Error";
 
 export const formatTime = (
   timestamp: string | null,
   options: { hour12: boolean } = { hour12: false }
-): string | null => {
-  const dateTime = timestamp ? new Date(timestamp) : null;
-  return dateTime
-    ? dateTime.toLocaleTimeString("en-US", {
+): string =>
+  timestamp
+    ? new Date(timestamp).toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "numeric",
         hour12: options.hour12
       })
-    : null;
-};
+    : "Error";
 
 export const isInMonth = (
   checkinTime: string | null,
@@ -47,4 +47,11 @@ export const isInYear = (
     getYear(timestamp1 ? new Date(timestamp1) : null) === year ||
     getYear(timestamp2 ? new Date(timestamp2) : null) === year
   );
+};
+
+export const combineDateTime = (date: Date, time: string) => {
+  const [hours, minutes] = time.split(":").map(Number);
+  const resultDate: Date = new Date(date);
+  resultDate.setHours(hours, minutes, 0, 0);
+  return resultDate.toISOString();
 };

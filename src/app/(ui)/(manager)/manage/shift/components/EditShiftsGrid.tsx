@@ -10,7 +10,7 @@ import {
   formatTime,
   isInMonth,
   isInYear
-} from "../utils";
+} from "@/utils";
 import { FeedbackType } from "@/components/Feedback";
 
 interface EditShiftsGridProps {
@@ -37,16 +37,15 @@ function EditShiftCard({
 }: EditShiftCardProps) {
   const handleEditShift = async (
     shiftId: string,
-    inTime: Date,
-    outTime: Date,
+    inTime: string,
+    outTime: string,
     type: string
   ) => {
     propagateFeedback([FeedbackType.Loading, "Loading"]);
     try {
-      const response = await fetch("/api/shifts", {
+      const response = await fetch(`/api/shifts/${shiftId}`, {
         method: "PATCH",
         body: JSON.stringify({
-          shiftId,
           inTime,
           outTime,
           type
@@ -69,13 +68,9 @@ function EditShiftCard({
     }
     setTimeout(() => propagateFeedback(null), 2500);
   };
-  const [date, setDate] = useState<Date | null>(() => {
-    const checkinDate = formatDate(shift.checked_in_at);
-    const checkoutDate = formatDate(shift.checked_out_at);
-    return checkinDate && (!checkoutDate || checkoutDate === checkinDate)
-      ? new Date(checkinDate)
-      : null;
-  });
+  const [date, setDate] = useState<Date | null>(
+    shift.checked_in_at ? new Date(shift.checked_in_at) : null
+  );
   const [checkinTime, setCheckinTime] = useState<string | null>(
     formatTime(shift.checked_in_at)
   );
@@ -113,13 +108,7 @@ function EditShiftCard({
             onChange={(d) => setDate(d)}
           />
         ) : (
-          <p className="w-72">
-            {date?.toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric"
-            }) ?? "Error"}
-          </p>
+          <p className="w-72">{formatDate(date)}</p>
         )}
         <div className="flex items-center justify-between">
           {isEditing ? (
@@ -132,7 +121,7 @@ function EditShiftCard({
             </div>
           ) : (
             <p className="flex w-48 justify-center uppercase">
-              {formatTime(shift.checked_in_at, { hour12: true }) ?? "Error"}
+              {formatTime(shift.checked_in_at, { hour12: true })}
             </p>
           )}
           <p>-</p>
@@ -148,7 +137,7 @@ function EditShiftCard({
             <p className="flex w-48 justify-center uppercase">
               {shift.is_active
                 ? "Active"
-                : formatTime(shift.checked_out_at, { hour12: true }) ?? "Error"}
+                : formatTime(shift.checked_out_at, { hour12: true })}
             </p>
           )}
         </div>
@@ -197,7 +186,7 @@ export default function EditShiftsGrid({
   propagateFeedback
 }: EditShiftsGridProps) {
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-pedals-grey">
+    <div className="flex h-full flex-col overflow-y-auto">
       <div className="sticky flex items-center justify-start px-20 py-2">
         <p className="w-96">Name</p>
         <p className="w-72">Date</p>

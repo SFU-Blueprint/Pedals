@@ -8,6 +8,7 @@ import DateSelector from "@/components/DateSelector";
 import { Tables } from "@/lib/supabase.types";
 import Feedback, { FeedbackType } from "@/components/Feedback";
 import TimeDisplay from "../components/TimeDisplay";
+import Popup from "@/components/Popup";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState<string>("");
@@ -16,6 +17,7 @@ export default function RegisterPage() {
   const [dob, setDOB] = useState<Date | null>(new Date());
   const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
+  const [popup, setPopup] = useState(false);
 
   const fetchActiveShifts = useCallback(
     async (
@@ -94,7 +96,6 @@ export default function RegisterPage() {
         setFeedback([FeedbackType.Error, registerData.message]);
       }
     } catch (error) {
-      // Handle any error that occurs in the try block
       setFeedback([FeedbackType.Error, "An unexpected error occurred."]);
     }
 
@@ -120,7 +121,7 @@ export default function RegisterPage() {
                 className="w-96"
                 label="Username"
                 type="text"
-                placeholder="Type"
+                placeholder="TYPE"
                 onChange={(e) => setUsername(e.target.value)}
               />
               <ShiftSelect
@@ -135,7 +136,7 @@ export default function RegisterPage() {
                 className="w-96"
                 label="Full Name"
                 type="text"
-                placeholder="Type"
+                placeholder="TYPE"
                 onChange={(e) => setFullName(e.target.value)}
               />
               <FormInput label="Date of Birth">
@@ -159,8 +160,18 @@ export default function RegisterPage() {
         shifts={activeShifts}
         refreshShifts={fetchActiveShifts}
         propagateFeedback={setFeedback}
+        propagatePopup={() => setPopup(false)}
       />
       {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
+      {popup && (
+        <Popup title="Warning" closeAction={() => setPopup(false)}>
+          <p className="px-10 py-10">
+            Your shift has been marked as checked out. However, the checkout
+            date does not match the check-in date. Please notify the coordinator
+            to update the shift details manually.
+          </p>
+        </Popup>
+      )}
     </div>
   );
 }

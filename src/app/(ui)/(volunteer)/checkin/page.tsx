@@ -7,12 +7,14 @@ import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
 import { Tables } from "@/lib/supabase.types";
 import Feedback, { FeedbackType } from "@/components/Feedback";
 import TimeDisplay from "../components/TimeDisplay";
+import Popup from "@/components/Popup";
 
 export default function CheckinPage() {
   const [username, setUsername] = useState("");
   const [shiftType, setShiftType] = useState<string | null>(null);
   const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
+  const [popup, setPopup] = useState(false);
 
   const fetchActiveShifts = useCallback(
     async (
@@ -89,7 +91,7 @@ export default function CheckinPage() {
               className="w-96"
               label="Username"
               type="text"
-              placeholder="Type"
+              placeholder="TYPE"
               onChange={(e) => setUsername(e.target.value)}
             />
             <ShiftSelect
@@ -112,8 +114,18 @@ export default function CheckinPage() {
         shifts={activeShifts}
         refreshShifts={() => fetchActiveShifts({ showSuccessFeedback: false })}
         propagateFeedback={setFeedback}
+        propagatePopup={() => setPopup(true)}
       />
       {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
+      {popup && (
+        <Popup title="Warning" closeAction={() => setPopup(false)}>
+          <p className="px-10 py-10">
+            Your shift has been marked as checked out. However, the checkout
+            date does not match the check-in date. Please notify the coordinator
+            to update the shift details manually.
+          </p>
+        </Popup>
+      )}
     </div>
   );
 }

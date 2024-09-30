@@ -1,19 +1,20 @@
 import { NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
-// https://maryetokwudo.hashnode.dev/nextjs-13-route-handlers-with-typescript
-/* eslint-enable import/prefer-default-export */
-export const GET = async () => {
-  try {
-    const { data, error } = await supabase.from("users").select("name");
-    if (error) {
-      return NextResponse.json({ message: error });
-    }
+export async function GET() {
+  // Fetch all users from the database
+  const { data, error } = await supabase.from("users").select("*");
 
-    return NextResponse.json(data, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ message: error }, { status: 500 });
+  // Handle potential errors during the fetch operation
+  if (error) {
+    return NextResponse.json(
+      {
+        message: "Error occurred while fetching users. Please reload the page."
+      },
+      { status: 500 }
+    );
   }
-};
 
-// sid, created_at, name, dob, pronoun, email, phone
+  // Confirm success
+  return NextResponse.json(data, { status: 200 });
+}

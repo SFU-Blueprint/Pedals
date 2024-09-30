@@ -1,39 +1,50 @@
 "use client";
 
-import {useCallback, useEffect, useState} from "react";
+import { useCallback, useEffect, useState } from "react";
 import FormInput from "@/components/FormInput";
 import RadioButton from "@/components/RadioButton";
-import EditPeopleGrid from "@/(ui)/(manager)/manage/people/component/EditPeopleGrid";
-import {Tables} from "@/lib/supabase.types";
+import EditPeopleGrid from "./component/EditPeopleGrid";
+import { Tables } from "@/lib/supabase.types";
+import Feedback, { FeedbackType } from "@/components/Feedback";
 
 export default function ManagePeoplePage() {
   const [searchName, setSearchName] = useState("");
   const [searchInactive, setSearchInactive] = useState(false);
   const [searchUnder18, setSearchUnder18] = useState(false);
   const [selectedAll, setSelectedAll] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-
   const [people, setPeople] = useState<Tables<"users">[]>([]);
+  const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
 
-  const fetchPeople = useCallback(async () => {
-    try {
-      const response = await fetch("/api/people", {
-        method: "GET"
-      });
-      if (response.status === 200) {
-        setPeople((await response.json()) as Tables<"users">[]);
-        // This will be handoff to Terry for feedback popup
-      } else {
-        // This will be handoff to Terry for feedback popup
+  const fetchPeople = useCallback(
+    async (
+      options: { showSuccessFeedback: boolean } = { showSuccessFeedback: true }
+    ) => {
+      try {
+        const response = await fetch("/api/people", {
+          method: "GET"
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          setPeople(data as Tables<"users">[]);
+          if (options.showSuccessFeedback) {
+            setFeedback([FeedbackType.Success, "Volunteers loaded."]);
+          }
+        } else if (response.status >= 400 && response.status < 500) {
+          setFeedback([FeedbackType.Warning, data.message]);
+        } else if (response.status >= 500 && response.status < 600) {
+          setFeedback([FeedbackType.Error, data.message]);
+        }
+      } catch (error) {
+        setFeedback([FeedbackType.Error, "Unknown Error"]);
       }
-    } catch (error) {
-      // This will be handoff to Terry for feedback popup
-    }
-  }, []);
+      setTimeout(() => setFeedback(null), 2500);
+    },
+    []
+  );
 
-    useEffect(() => {
-        fetchPeople()
-    }, [fetchPeople]);
+  useEffect(() => {
+    fetchPeople();
+  }, [fetchPeople]);
 
   return (
     <>
@@ -47,10 +58,10 @@ export default function ManagePeoplePage() {
         <div className="flex w-full items-center px-10">
           <hr
             className="flex-grow bg-gray-300"
-            style={{ height: "3px", margin: "0 40px" }}
+            style={{ height: "2px", margin: "0 40px" }}
           />
         </div>
-        <div className="flex w-full justify-between px-20 py-2">
+        <div className="flex w-full justify-between px-20 py-6">
           <div className="flex items-center gap-6">
             <RadioButton
               label="Select All"
@@ -74,12 +85,13 @@ export default function ManagePeoplePage() {
         </div>
       </div>
       <EditPeopleGrid
-          people={people}
-          refreshPeople={fetchPeople}
-          filter={{
-              name: searchName
-          }
-      }/>
+        people={people}
+        refreshPeople={fetchPeople}
+        filter={{
+          name: searchName
+        }}
+      />
+      {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
     </>
   );
 }

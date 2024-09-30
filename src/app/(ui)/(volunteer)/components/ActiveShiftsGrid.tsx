@@ -5,18 +5,21 @@ interface ActiveShiftsGridProps {
   shifts: Tables<"shifts">[];
   refreshShifts: () => Promise<void>;
   propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
+  propagatePopup: () => void;
 }
 
 interface ActiveShiftCardProps {
   shift: Tables<"shifts">;
   refreshShifts: () => Promise<void>;
   propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
+  propagatePopup: () => void;
 }
 
 function ActiveShiftCard({
   refreshShifts,
   shift,
-  propagateFeedback
+  propagateFeedback,
+  propagatePopup
 }: ActiveShiftCardProps) {
   const handleCheckout = async (
     shiftId: string,
@@ -25,7 +28,7 @@ function ActiveShiftCard({
     propagateFeedback([FeedbackType.Loading, "Loading"]);
     try {
       const response = await fetch("/api/checkout", {
-        method: "PATCH",
+        method: "POST",
         body: JSON.stringify({
           shiftId,
           volunteerId
@@ -35,9 +38,12 @@ function ActiveShiftCard({
         }
       });
       const data = await response.json();
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         await refreshShifts();
         propagateFeedback([FeedbackType.Success, data.message]);
+        if (response.status === 201) {
+          propagatePopup();
+        }
       } else if (response.status >= 400 && response.status < 500) {
         propagateFeedback([FeedbackType.Warning, data.message]);
       } else if (response.status >= 500 && response.status < 600) {
@@ -82,16 +88,18 @@ function ActiveShiftCard({
 export default function ActiveShiftsGrid({
   shifts,
   refreshShifts,
-  propagateFeedback
+  propagateFeedback,
+  propagatePopup
 }: ActiveShiftsGridProps) {
   return (
-    <div className="flex h-full flex-col bg-pedals-grey overflow-y-scroll">
+    <div className="flex h-full flex-col overflow-y-scroll bg-pedals-grey">
       {shifts?.map((shift) => (
         <ActiveShiftCard
           key={shift.id}
           shift={shift}
           refreshShifts={refreshShifts}
           propagateFeedback={propagateFeedback}
+          propagatePopup={propagatePopup}
         />
       ))}
     </div>

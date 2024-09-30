@@ -1,8 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
 import supabase from "@/lib/supabase";
 import { Tables } from "@/lib/supabase.types";
+import { isSameDate } from "@/utils";
 
-export async function PATCH(req: NextRequest) {
+export async function POST(req: NextRequest) {
   const { shiftId, volunteerId } = await req.json();
 
   // Handle missing required parameters
@@ -69,6 +70,7 @@ export async function PATCH(req: NextRequest) {
     );
   }
 
+  const currentTime = new Date();
   const currentUser = user as Tables<"users">;
   const currentShift = shift as Tables<"shifts">;
 
@@ -92,16 +94,20 @@ export async function PATCH(req: NextRequest) {
     );
   }
 
+  // Handle discrepancies between check-in date and check-out date
+  const checkInTime = new Date(currentShift.checked_in_at);
+  const checkOutTime = isSameDate(currentTime, checkInTime)
+    ? currentTime
+    : null;
+  const duration =
+    checkOutTime &&
+    Math.floor((currentTime.getTime() - checkOutTime.getTime()) / 1000);
+
   // Update the current shift to check out
-  const currentTime = new Date();
-  const duration = Math.floor(
-    (currentTime.getTime() - new Date(currentShift.checked_in_at).getTime()) /
-      1000
-  );
   const { error: shiftUpdateError } = await supabase
     .from("shifts")
     .update({
-      checked_out_at: currentTime.toISOString(),
+      checked_out_at: checkOutTime,
       is_active: false,
       duration: duration
     })
@@ -117,29 +123,39 @@ export async function PATCH(req: NextRequest) {
     );
   }
 
-  // Update the current user
-  const { error: userUpdateError } = await supabase
-    .from("users")
-    .update({
-      total_time: currentUser.total_time + duration
-    })
-    .eq("id", currentUser.id);
+  // Update the current user if no date discrepancy was found
+  if (duration !== null && checkOutTime) {
+    const { error: userUpdateError } = await supabase
+      .from("users")
+      .update({
+        total_time: currentUser.total_time + duration
+      })
+      .eq("id", currentUser.id);
 
-  // Handle potential errors during the user update operation
-  if (userUpdateError) {
+    // Handle potential errors during the user update operation
+    if (userUpdateError) {
+      return NextResponse.json(
+        {
+          message: "Error occurred while checking out. Please try again."
+        },
+        { status: 500 }
+      );
+    }
+    // Confirm successful check-out
     return NextResponse.json(
       {
-        message: "Error occurred while checking out. Please try again."
+        message: "Check-out successful."
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 
-  // Confirm successful check-out
+  // Confirm successful shift update with date discrepancy.
   return NextResponse.json(
     {
-      message: "Check-out successful."
+      message:
+        "Shift updated successfully, but there were issues in the check-out date."
     },
-    { status: 200 }
+    { status: 201 }
   );
 }

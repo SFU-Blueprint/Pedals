@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
+import { Tables } from "@/lib/supabase.types";
 
 export async function POST(req: NextRequest) {
   const { username, shiftType } = await req.json();
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
   // Retrieve user details from the database using the provided username
   const { data: user, error: userError } = await supabase
     .from("users")
-    .select("id, username, name, is_volunteer")
+    .select("*")
     .eq("username", username)
     .single();
 
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest) {
   // Retrieve any active shifts associated with the current volunteer
   const { data: activeShift, error: activeShiftError } = await supabase
     .from("shifts")
-    .select("volunteer_id, is_active")
+    .select("*")
     .eq("volunteer_id", user.id)
     .eq("is_active", true);
 
@@ -79,17 +80,28 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const currentTime = new Date();
+  const currentUser = user as Tables<"users">;
+
   // Insert a new shift record to mark the user as checked in
   const { error: checkinError } = await supabase.from("shifts").insert({
-    volunteer_id: user.id,
-    volunteer_name: user.name,
+    volunteer_id: currentUser.id,
+    volunteer_name: currentUser.name,
     is_active: true,
-    checked_in_at: new Date().toISOString(),
+    checked_in_at: currentTime.toISOString(),
     shift_type: shiftType
   });
 
+  // Update the user's last active date
+  const { error: lastSeenError } = await supabase
+    .from("users")
+    .update({
+      last_seen: currentTime
+    })
+    .eq("id", currentUser.id);
+
   // Handle potential errors during the insert operation
-  if (checkinError) {
+  if (checkinError || lastSeenError) {
     return NextResponse.json(
       {
         message: "Error occurred while checking in. Please try again."

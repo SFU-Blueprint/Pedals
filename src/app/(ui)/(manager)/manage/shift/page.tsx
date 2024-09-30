@@ -19,6 +19,7 @@ export default function ManageShiftPage() {
     async (
       options: { showSuccessFeedback: boolean } = { showSuccessFeedback: true }
     ) => {
+      setFeedback([FeedbackType.Loading, "Loading"]);
       try {
         const response = await fetch("/api/shifts", {
           method: "GET"
@@ -48,7 +49,7 @@ export default function ManageShiftPage() {
 
   return (
     <>
-      <div className="sticky top-0 flex justify-end gap-2 bg-pedals-grey pb-9 pr-20 pt-36">
+      <div className="sticky top-0 flex justify-end gap-2 pb-9 pr-20 pt-36">
         <FormInput
           className="w-80"
           type="text"
