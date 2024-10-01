@@ -187,7 +187,7 @@ export default function EditShiftsGrid({
 }: EditShiftsGridProps) {
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      <div className="sticky flex items-center justify-start px-20 py-2">
+      <div className="flex items-center justify-start px-20 py-2">
         <p className="w-96">Name</p>
         <p className="w-72">Date</p>
         <div className="flex justify-between gap-3">
