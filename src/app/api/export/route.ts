@@ -1,62 +1,45 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import supabase from "@/lib/supabase";
 
-function convertToCSV(arr: any[]): string {
-  if (arr.length === 0) return "";
+function jsonToCsv(jsonData: any[]) {
+  if (!jsonData || jsonData.length === 0) {
+    return "";
+  }
 
-  const headers = Object.keys(arr[0]);
-  const csvRows = [
-    headers.join(","), // CSV header row
-    ...arr.map((row) =>
-      headers.map((fieldName) => JSON.stringify(row[fieldName] ?? "")).join(",")
-    )
-  ];
+  // Extract headers (keys) from the first object
+  const headers = Object.keys(jsonData[0]);
 
-  return csvRows.join("\n");
+  // Map through the data to create CSV rows
+  const rows = jsonData.map((obj) => {
+    return headers.map((header) => obj[header]).join(",");
+  });
+
+  // Combine headers and rows
+  return [headers.join(","), ...rows].join("\n");
 }
-// I don't know why but this need to not be export default inorder for it to function right. If anyone know how to solve it please proceed
-/* eslint-disable-next-line import/prefer-default-export */
+
 export async function GET() {
-  const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
-  const key = process.env.SUPABASE_KEY as string;
 
-  try {
-    const supabase = createClient(supabaseUrl, key);
-    const { data, error } = await supabase.from("access_codes").select("*");
+  //get_volunteer_hour is a SQL function create in SQL Editor in supabase. To update this function, go to the SQL editor and drop this function first: DROP FUNCTION get_volunteer_hours(). Create another SQL function like you would with SQL
+  const { data, error } = await supabase.rpc("get_volunteer_hours");
 
-    if (error) {
-      return NextResponse.json({ message: error.message }, { status: 500 });
-    }
-
-    if (!data) {
-      return NextResponse.json({ message: "No data found" }, { status: 404 });
-    }
-
-    // Convert data to CSV
-    const csv = convertToCSV(data);
-
-    // // Set headers for CSV download
-    const headers = new Headers();
-    headers.append("Content-Type", "text/csv");
-    headers.append(
-      "Content-Disposition",
-      "attachment; filename=volunteers.csv"
-    );
-
-    // Return the CSV data
-    return new NextResponse(csv, {
-      /* eslint-disable-next-line object-shorthand */
-      status: 200,
-      /* eslint-disable-next-line object-shorthand */
-      headers: headers
-    });
-
-    // return NextResponse.json({ message: "Success"}, { status: 200});
-  } catch (error) {
-    // console.error("Error:", error);
+  // Handle network error
+  if (error?.message === "TypeError: fetch failed") {
     return NextResponse.json(
-      { message: "An unexpected error occurred" },
-      { status: 500 }
+      {
+        message: "Network error. Please check your connection and try again."
+      },
+      { status: 503 }
     );
   }
+
+  //Convert the data to CSV and return
+  const csvContent = jsonToCsv(data);
+
+  return NextResponse.json(
+    {
+      data: csvContent
+    },
+    { status: 200 }
+  );
 }
