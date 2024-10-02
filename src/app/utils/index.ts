@@ -18,8 +18,8 @@ export const formatTime = (
 ): string =>
   timestamp
     ? new Date(timestamp).toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
         hour12: options.hour12
       })
     : "Error";

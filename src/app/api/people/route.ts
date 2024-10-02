@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
 export async function GET() {
@@ -17,4 +17,37 @@ export async function GET() {
 
   // Confirm success
   return NextResponse.json(data, { status: 200 });
+}
+
+export async function DELETE(req: NextRequest) {
+  const { ids } = await req.json();
+
+  // Handle missing required parameters
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return NextResponse.json(
+      {
+        message: "No users selected"
+      },
+      { status: 400 }
+    );
+  }
+
+  // Delete the users with the associated IDs
+  const { error } = await supabase.from("users").delete().in("id", ids);
+
+  // Handle potential errors during the delete operation
+  if (error) {
+    return NextResponse.json(
+      {
+        message: "Error occurred while deleting the users. Please try again."
+      },
+      { status: 500 }
+    );
+  }
+
+  // Confirm successful user deletion
+  return NextResponse.json(
+    { message: "Users deleted successfully" },
+    { status: 200 }
+  );
 }

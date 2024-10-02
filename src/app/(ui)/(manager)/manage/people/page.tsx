@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, MouseEvent } from "react";
 import FormInput from "@/components/FormInput";
 import RadioButton from "@/components/RadioButton";
-import EditPeopleGrid from "./component/EditPeopleGrid";
+import EditPeopleGrid from "./components/EditPeopleGrid";
 import { Tables } from "@/lib/supabase.types";
 import Feedback, { FeedbackType } from "@/components/Feedback";
 
@@ -13,6 +13,7 @@ export default function ManagePeoplePage() {
   const [searchUnder18, setSearchUnder18] = useState(false);
   const [selectedAll, setSelectedAll] = useState(false);
   const [people, setPeople] = useState<Tables<"users">[]>([]);
+  const [selectedIDs, setSelectedIDs] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
 
   const fetchPeople = useCallback(
@@ -41,6 +42,35 @@ export default function ManagePeoplePage() {
     },
     []
   );
+
+  const handleRemovePeople = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setFeedback([FeedbackType.Loading, "Loading"]);
+    try {
+      const response = await fetch("/api/people", {
+        method: "DELETE",
+        body: JSON.stringify({ ids: selectedIDs }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        await fetchPeople({ showSuccessFeedback: false });
+        setFeedback([
+          FeedbackType.Success,
+          "Volunteers successfully removed from the database."
+        ]);
+      } else if (response.status >= 400 && response.status < 500) {
+        setFeedback([FeedbackType.Warning, data.message]);
+      } else if (response.status >= 500 && response.status < 600) {
+        setFeedback([FeedbackType.Error, data.message]);
+      }
+    } catch (error) {
+      setFeedback([FeedbackType.Error, "Unknown Error"]);
+    }
+    setTimeout(() => setFeedback(null), 2500);
+  };
 
   useEffect(() => {
     fetchPeople();
@@ -79,6 +109,7 @@ export default function ManagePeoplePage() {
           <button
             type="submit"
             className="rounded-full bg-yellow-400 uppercase"
+            onClick={handleRemovePeople}
           >
             Remove from database
           </button>
@@ -90,6 +121,8 @@ export default function ManagePeoplePage() {
         filter={{
           name: searchName
         }}
+        selectedIDs={selectedIDs}
+        setSelectedIDs={setSelectedIDs}
       />
       {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
     </>

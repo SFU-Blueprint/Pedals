@@ -12,7 +12,6 @@ export default function ManageShiftPage() {
   const [searchMonth, setSearchMonth] = useState<string | null>(null);
   const [searchYear, setSearchYear] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
-
   const [shifts, setShifts] = useState<Tables<"shifts">[]>([]);
 
   const fetchShifts = useCallback(
