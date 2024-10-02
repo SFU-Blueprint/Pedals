@@ -18,6 +18,7 @@ export default function RegisterPage() {
   const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
   const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
   const [popup, setPopup] = useState(false);
+  const today = new Date();
 
   const fetchActiveShifts = useCallback(
     async (
@@ -141,9 +142,11 @@ export default function RegisterPage() {
               />
               <FormInput label="Date of Birth">
                 <DateSelector
-                  selected={dob}
-                  onChange={(date) => setDOB(date)}
-                />
+                selected={dob}
+                onChange={(date) => setDOB(date)}
+                maxDate={today}
+                showIcon
+              />
               </FormInput>
             </div>
           </div>

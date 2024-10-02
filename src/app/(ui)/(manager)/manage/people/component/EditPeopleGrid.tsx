@@ -87,7 +87,7 @@ export default function EditPeopleGrid({
 }: EditPeopleGridProps) {
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      <div className="sticky flex items-center justify-start px-20 py-2">
+      <div className="z-10 bg-pedals-lightgrey flex items-center justify-start px-20 py-2">
         <p className="w-80">Name</p>
         <p className="w-80">Username</p>
         <p className="w-80">Date of Birth</p>
