@@ -78,19 +78,17 @@ export default function ManagePeoplePage() {
 
   return (
     <>
-      <FormInput
-        className="ml-auto mr-20 mt-36 flex w-80"
-        type="text"
-        placeholder="Search Name"
-        onChange={(e) => setSearchName(e.target.value)}
-      />
-      <div className="flex w-full flex-col bg-pedals-lightgrey pt-6">
-        <div className="flex w-full items-center px-10">
-          <hr
-            className="flex-grow bg-gray-300"
-            style={{ height: "2px", margin: "0 40px" }}
-          />
-        </div>
+      <div className="z-10 flex w-full flex-col bg-pedals-lightgrey">
+        <FormInput
+          className="mb-6 ml-auto mr-20 mt-36 flex w-80"
+          type="text"
+          placeholder="Search Name"
+          onChange={(e) => setSearchName(e.target.value)}
+        />
+        <hr
+          className="bg-pedals-grey"
+          style={{ height: "2px", margin: "0 80px" }}
+        />
         <div className="flex w-full justify-between px-20 py-6">
           <div className="flex items-center gap-6">
             <RadioButton

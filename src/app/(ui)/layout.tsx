@@ -45,7 +45,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${supply.variable}`}>
       <body>
         <NavBar
-          className="fixed right-20 top-20 z-10"
+          className="fixed right-20 top-20 z-30"
           links={[
             { href: "/checkin", label: "CHECK IN" },
             { href: "/register", label: "REGISTER" },

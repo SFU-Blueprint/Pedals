@@ -48,7 +48,7 @@ export default function ManageShiftPage() {
 
   return (
     <>
-      <div className="sticky top-0 flex justify-end gap-2 pb-9 pr-20 pt-36">
+      <div className="sticky top-0 flex justify-end gap-2 pb-9 pr-20 pt-36 bg-pedals-lightgrey z-20">
         <FormInput
           className="w-80"
           type="text"

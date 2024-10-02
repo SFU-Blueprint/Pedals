@@ -143,6 +143,7 @@ export default function RegisterPage() {
                 <DateSelector
                   selected={dob}
                   onChange={(date) => setDOB(date)}
+                  maxDate={new Date()}
                 />
               </FormInput>
             </div>

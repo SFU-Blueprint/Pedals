@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import { Tables } from "@/lib/supabase.types";
 import EditPeopleCard from "./EditPeopleCard";
@@ -92,7 +90,7 @@ export default function EditPeopleGrid({
 
   return (
     <div className="flex h-full select-none flex-col overflow-y-auto" ref={ref}>
-      <div className="sticky flex items-center justify-start border-b-2 border-pedals-black px-20 py-2">
+      <div className="z-10 flex items-center justify-start border-b-2 border-pedals-black bg-pedals-lightgrey px-20 py-2">
         <p className="w-80">Name</p>
         <p className="w-80">Username</p>
         <p className="w-80">Date of Birth</p>

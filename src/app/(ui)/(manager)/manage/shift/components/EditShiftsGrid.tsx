@@ -1,5 +1,3 @@
-"use client";
-
 import { Tables } from "@/lib/supabase.types";
 import { isInMonth, isInYear } from "@/utils";
 import { FeedbackType } from "@/components/Feedback";
@@ -37,7 +35,7 @@ export default function EditShiftsGrid({
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      <div className="sticky flex items-center justify-start border-b-2 border-pedals-black px-20 py-2">
+      <div className="z-10 flex items-center justify-start border-b-2 border-pedals-black bg-pedals-lightgrey px-20 py-2">
         <p className="w-96">Name</p>
         <p className="w-72">Date</p>
         <div className="flex justify-between gap-3">

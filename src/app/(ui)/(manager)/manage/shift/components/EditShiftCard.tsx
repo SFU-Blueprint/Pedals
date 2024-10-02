@@ -84,7 +84,7 @@ export default function EditShiftCard({
         <h3 className="w-96">{shift.volunteer_name ?? "Error"}</h3>
         {isEditing ? (
           <DateSelector
-            className="-ml-3 w-[18.75rem] pl-4"
+            className="-ml-[10px] w-[298px]"
             selected={date}
             onChange={(d) => setDate(d)}
           />

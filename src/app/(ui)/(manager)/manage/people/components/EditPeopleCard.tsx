@@ -60,7 +60,7 @@ export default function EditPeopleCard({
         <h3 className="w-80">{person.name ?? "Error"}</h3>
         <h2 className="w-80">{person.username ?? "Error"}</h2>
         {isEditing ? (
-          <div className="-ml-3 w-80 pr-4">
+          <div className="-ml-[10px] w-80 pr-4">
             <DateSelector selected={dob} onChange={(d) => setDob(d)} />
           </div>
         ) : (
