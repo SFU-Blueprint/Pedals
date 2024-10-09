@@ -394,7 +394,7 @@ h2.react-datepicker__current-month {
   place-content: center;
   align-items: center;
   gap: 16px;
-  font-family: 'Roboto';
+  font-family: "Roboto";
 }
 
 .react-datepicker__week {
@@ -419,7 +419,7 @@ h2.react-datepicker__current-month {
   height: 48px;
   padding: 13.2px 8px 13.8px 8px;
   line-height: 21px;
-  font-family:'Roboto';
+  font-family: "Roboto";
 }
 
 .react-datepicker__day,

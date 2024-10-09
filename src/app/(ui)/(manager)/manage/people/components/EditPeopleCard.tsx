@@ -40,11 +40,11 @@ export default function EditPeopleCard({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
+
   const handleEditPeople = async (
-      personId: string,
-      dob: Date | null,
-      lastSeen: Date | null
+    personId: string,
+    dob: Date | null,
+    lastSeen: Date | null
   ) => {
     propagateFeedback([FeedbackType.Loading, "Loading"]);
     try {
@@ -70,7 +70,7 @@ export default function EditPeopleCard({
     }
     setTimeout(() => propagateFeedback(null), 2500);
   };
-  
+
   let background = "bg-pedals-stroke";
   if (isEditing) {
     background = "bg-pedals-lightgrey";
