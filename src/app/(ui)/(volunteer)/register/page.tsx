@@ -106,7 +106,17 @@ export default function RegisterPage() {
     fetchActiveShifts();
   }, [fetchActiveShifts]);
 
-  const mockOptions = ["Option 1", "Option 2", "Option 3"];
+  const mockOptions = [
+    "General Onsite",
+    "Wheel Service",
+    "Wheel Building",
+    "Wheel Recycling",
+    "Bike Stripping",
+    "Inner Tubes",
+    "Shop Organizing",
+    "Offsite Event",
+    "Youth Volunteering"
+  ];
   return (
     <div className="flex flex-grow flex-col overflow-y-hidden">
       <div className="sticky top-0 bg-pedals-lightgrey">

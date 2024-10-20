@@ -125,7 +125,19 @@ export default function EditShiftCard({
         {isEditing ? (
           <Dropdown
             className="ml-40 w-40 -translate-x-3"
-            options={["WTQ", "PFTP", "Option 1", "Option 2", "Option 3"]}
+            options={[
+              "WTQ",
+              "PFTP",
+              "General Onsite",
+              "Wheel Service",
+              "Wheel Building",
+              "Wheel Recycling",
+              "Bike Stripping",
+              "Inner Tubes",
+              "Shop Organizing",
+              "Offsite Event",
+              "Youth Volunteering"
+            ]}
             currentOption={shiftType}
             onClick={(e) => {
               e.preventDefault();

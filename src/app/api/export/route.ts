@@ -10,17 +10,15 @@ function jsonToCsv(jsonData: any[]) {
   const headers = Object.keys(jsonData[0]);
 
   // Map through the data to create CSV rows
-  const rows = jsonData.map((obj) => {
-    return headers.map((header) => obj[header]).join(",");
-  });
+  const rows = jsonData.map((obj) =>
+    headers.map((header) => obj[header]).join(",")
+  );
 
   // Combine headers and rows
   return [headers.join(","), ...rows].join("\n");
 }
 
 export async function GET() {
-
-  //get_volunteer_hour is a SQL function create in SQL Editor in supabase. To update this function, go to the SQL editor and drop this function first: DROP FUNCTION get_volunteer_hours(). Create another SQL function like you would with SQL
   const { data, error } = await supabase.rpc("get_volunteer_hours");
 
   // Handle network error
@@ -33,7 +31,7 @@ export async function GET() {
     );
   }
 
-  //Convert the data to CSV and return
+  // Convert the data to CSV and return
   const csvContent = jsonToCsv(data);
 
   return NextResponse.json(
