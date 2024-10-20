@@ -25,6 +25,7 @@ export default function EditPeopleCard({
   const [lastSeen, setLastSeen] = useState<Date | null>(
     person.last_seen ? new Date(person.last_seen) : null
   );
+  const [userName, setUserName] = useState<string>(person.username ?? "Error");
   const [isEditing, setIsEditing] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -91,7 +92,17 @@ export default function EditPeopleCard({
     >
       <div className="flex items-center justify-start">
         <h3 className="w-80">{person.name ?? "Error"}</h3>
-        <h2 className="w-80">{person.username ?? "Error"}</h2>
+        {isEditing ? (
+          <div className="-ml-[10px] w-80 pr-4">
+            <input
+              className="mr-[4rem] w-[16rem]"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+          </div>
+        ) : (
+          <h2 className="w-80">{userName}</h2>
+        )}
         {isEditing ? (
           <div className="-ml-[10px] w-80 pr-4">
             <DateSelector selected={dob} onChange={(d) => setDob(d)} />
