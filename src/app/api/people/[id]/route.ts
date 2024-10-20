@@ -35,7 +35,8 @@ export const PATCH = async (req: NextRequest) => {
   if (userError || !user) {
     return NextResponse.json(
       {
-        message: "User ID not found. Please contact your manager for assistance."
+        message:
+          "User ID not found. Please contact your manager for assistance."
       },
       { status: 404 }
     );
@@ -70,5 +71,3 @@ export const PATCH = async (req: NextRequest) => {
     { status: 200 }
   );
 };
-
-

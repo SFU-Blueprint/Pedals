@@ -100,7 +100,7 @@ export default function EditPeopleGrid({
         <p className="w-80">Last Seen</p>
         <p className="ml-[340px]">{`Total: ${people.length}`}</p>
       </div>
-      <div className="overflow-y-scroll">
+      <div className="h-full overflow-y-scroll">
         {filteredPeople?.map((person, index) => (
           <EditPeopleCard
             key={person.id}
