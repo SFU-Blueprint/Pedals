@@ -2,19 +2,22 @@ import { useEffect, useRef, useState } from "react";
 import { Tables } from "@/lib/supabase.types";
 import DateSelector from "@/components/DateSelector";
 import { formatDate } from "@/utils";
+import { FeedbackType } from "@/components/Feedback";
 
 interface EditPeopleCardProps {
   person: Tables<"users">;
   refreshPeople: () => Promise<void>;
   onClick: () => void;
   isSelected: boolean;
+  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
 }
 
 export default function EditPeopleCard({
   person,
   refreshPeople,
   onClick,
-  isSelected
+  isSelected,
+  propagateFeedback
 }: EditPeopleCardProps) {
   const [dob, setDob] = useState<Date | null>(
     person.dob ? new Date(person.dob) : null
@@ -22,6 +25,7 @@ export default function EditPeopleCard({
   const [lastSeen, setLastSeen] = useState<Date | null>(
     person.last_seen ? new Date(person.last_seen) : null
   );
+  const [userName, setUserName] = useState<string>(person.username ?? "Error");
   const [isEditing, setIsEditing] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -37,6 +41,36 @@ export default function EditPeopleCard({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleEditPeople = async (
+    personId: string,
+    dob: Date | null,
+    lastSeen: Date | null
+  ) => {
+    propagateFeedback([FeedbackType.Loading, "Loading"]);
+    try {
+      const response = await fetch(`/api/people/${personId}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          dob: dob ? dob.toISOString() : null,
+          last_seen: lastSeen ? lastSeen.toISOString() : null
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        await refreshPeople();
+        propagateFeedback([FeedbackType.Success, data.message]);
+      } else {
+        propagateFeedback([FeedbackType.Warning, data.message]);
+      }
+    } catch (error) {
+      propagateFeedback([FeedbackType.Error, "Unknown Error"]);
+    }
+    setTimeout(() => propagateFeedback(null), 2500);
+  };
 
   let background = "bg-pedals-stroke";
   if (isEditing) {
@@ -58,7 +92,17 @@ export default function EditPeopleCard({
     >
       <div className="flex items-center justify-start">
         <h3 className="w-80">{person.name ?? "Error"}</h3>
-        <h2 className="w-80">{person.username ?? "Error"}</h2>
+        {isEditing ? (
+          <div className="-ml-[10px] w-80 pr-4">
+            <input
+              className="mr-[4rem] w-[16rem]"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+          </div>
+        ) : (
+          <h2 className="w-80">{userName}</h2>
+        )}
         {isEditing ? (
           <div className="-ml-[10px] w-80 pr-4">
             <DateSelector selected={dob} onChange={(d) => setDob(d)} />
@@ -81,6 +125,9 @@ export default function EditPeopleCard({
         type="button"
         className={`!rounded-[30px] !px-12 uppercase ${isEditing && "hover:!bg-pedals-grey"}`}
         onClick={() => {
+          if (isEditing) {
+            handleEditPeople(person.id, dob, lastSeen);
+          }
           setIsEditing(!isEditing);
         }}
       >

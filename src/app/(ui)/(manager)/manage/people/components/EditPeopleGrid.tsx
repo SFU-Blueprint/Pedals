@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Tables } from "@/lib/supabase.types";
 import EditPeopleCard from "./EditPeopleCard";
+import { FeedbackType } from "@/components/Feedback";
 
 interface EditPeopleGridProps {
   people: Tables<"users">[];
   refreshPeople: () => Promise<void>;
   selectedIDs: string[];
   setSelectedIDs: React.Dispatch<React.SetStateAction<string[]>>;
+  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
   filter: {
     name: string;
   };
@@ -17,7 +19,8 @@ export default function EditPeopleGrid({
   refreshPeople,
   selectedIDs,
   setSelectedIDs,
-  filter
+  filter,
+  propagateFeedback
 }: EditPeopleGridProps) {
   const filteredPeople = people?.filter((person) =>
     filter.name
@@ -97,7 +100,7 @@ export default function EditPeopleGrid({
         <p className="w-80">Last Seen</p>
         <p className="ml-[340px]">{`Total: ${people.length}`}</p>
       </div>
-      <div className="overflow-y-scroll">
+      <div className="h-full overflow-y-scroll">
         {filteredPeople?.map((person, index) => (
           <EditPeopleCard
             key={person.id}
@@ -105,6 +108,7 @@ export default function EditPeopleGrid({
             refreshPeople={refreshPeople}
             onClick={() => handleCardClick(index)}
             isSelected={selectedIDs.includes(person.id)}
+            propagateFeedback={propagateFeedback}
           />
         ))}
       </div>

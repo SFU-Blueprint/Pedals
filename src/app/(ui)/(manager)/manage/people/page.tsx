@@ -116,6 +116,7 @@ export default function ManagePeoplePage() {
       <EditPeopleGrid
         people={people}
         refreshPeople={fetchPeople}
+        propagateFeedback={setFeedback}
         filter={{
           name: searchName
         }}
