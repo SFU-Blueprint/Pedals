@@ -4,6 +4,7 @@ import "./dateselector.css";
 type DateSelectorProps = React.ComponentProps<typeof DatePicker>;
 
 export default function DateSelector(props: DateSelectorProps) {
+  const { selected, onSelect, maxDate, className } = props;
   return (
     <DatePicker
       showYearDropdown
@@ -13,7 +14,11 @@ export default function DateSelector(props: DateSelectorProps) {
       scrollableYearDropdown
       toggleCalendarOnIconClick
       showIcon
-      {...props}
+      placeholderText="Select Date"
+      className={`${className} uppercase`}
+      maxDate={maxDate}
+      selected={selected}
+      onSelect={onSelect}
     />
   );
 }

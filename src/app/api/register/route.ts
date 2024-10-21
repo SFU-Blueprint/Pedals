@@ -5,11 +5,10 @@ export async function POST(req: NextRequest) {
   const { username, fullName, dob } = await req.json();
 
   // Handle missing required parameters
-  if (!username || !fullName || !dob) {
+  if (!username || !fullName) {
     return NextResponse.json(
       {
-        message:
-          "Please provide your username, your full name and your date of birth."
+        message: "Please provide your username and your full name"
       },
       { status: 400 }
     );
@@ -53,7 +52,7 @@ export async function POST(req: NextRequest) {
   if (registerError) {
     return NextResponse.json(
       {
-        message: `Error occurred while registering user. Please try again.`
+        message: "Error occurred while registering. Please try again."
       },
       { status: 500 }
     );
@@ -62,7 +61,8 @@ export async function POST(req: NextRequest) {
   // Confirm successful register
   return NextResponse.json(
     {
-      message: "Register successfully."
+      message:
+        "Registration successful! You can now check in on the Check In page."
     },
     { status: 200 }
   );

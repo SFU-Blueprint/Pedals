@@ -3,7 +3,9 @@
 import Link from "next/link";
 import React, { FormEvent, useState } from "react";
 import FormInput from "@/components/FormInput";
-import Feedback, { FeedbackType } from "@/components/Feedback";
+import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
+import { FeedbackType } from "@/components/Feedback";
+import useFeedbackFetch from "@/hooks/FeedbackFetch";
 
 function ChevronLeft() {
   return (
@@ -29,36 +31,31 @@ export default function ChangeAccessCodePage() {
   const [oldCode, setOldCode] = useState("");
   const [newCode, setNewCode] = useState("");
   const [confirmNewCode, setConfirmNewCode] = useState("");
-  const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
   const [success, setSuccess] = useState(false);
+  const { setFeedback } = useUIComponentsContext();
+  const feedbackFetch = useFeedbackFetch();
 
   const minCodeLength = 8;
   const maxCodeLength = 15;
 
+  let message = "";
+  if (confirmNewCode !== newCode) {
+    message = "The new access code and confirmation code do not match.";
+  } else if (newCode.length < minCodeLength || newCode.length > maxCodeLength) {
+    message = `Access code must be ${minCodeLength}-${maxCodeLength} characters long.`;
+  } else if (!/\d/.test(newCode) || !/[a-zA-Z]/.test(newCode)) {
+    message = "Access code must include at least one letter and one number.";
+  }
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (confirmNewCode !== newCode) {
-      setFeedback([
-        FeedbackType.Warning,
-        "New access code and confirmation access code do not match."
-      ]);
-    } else if (
-      newCode.length < minCodeLength ||
-      newCode.length > maxCodeLength
-    ) {
-      setFeedback([
-        FeedbackType.Warning,
-        "The access code length must be between 8 and 15 characters."
-      ]);
-    } else if (!/\d/.test(newCode) || !/[a-zA-Z]/.test(newCode)) {
-      setFeedback([
-        FeedbackType.Warning,
-        "The code must contain at least one letter and one number."
-      ]);
+    if (message) {
+      setFeedback({ type: FeedbackType.Warning, message });
+      setTimeout(() => setFeedback(null), 2500);
     } else {
-      setFeedback([FeedbackType.Loading, "Loading"]);
-      try {
-        const response = await fetch("/api/change-access-code", {
+      await feedbackFetch(
+        "/api/change-access-code",
+        {
           method: "POST",
           body: JSON.stringify({
             oldCode,
@@ -67,21 +64,10 @@ export default function ChangeAccessCodePage() {
           headers: {
             "Content-Type": "application/json"
           }
-        });
-        const data = await response.json();
-        if (response.status === 200) {
-          setFeedback([FeedbackType.Success, data.message]);
-          setSuccess(true);
-        } else if (response.status >= 400 && response.status < 500) {
-          setFeedback([FeedbackType.Warning, data.message]);
-        } else if (response.status >= 500 && response.status < 600) {
-          setFeedback([FeedbackType.Error, data.message]);
-        }
-      } catch (error) {
-        setFeedback([FeedbackType.Error, "Unknown Error"]);
-      }
+        },
+        { callback: () => setSuccess(true) }
+      );
     }
-    setTimeout(() => setFeedback(null), 2500);
   };
 
   return (
@@ -107,9 +93,9 @@ export default function ChangeAccessCodePage() {
             onChange={(e) => setOldCode(e.target.value)}
           />
           <p>
-            Your new code must be between 8-15 characters,
+            Your new code must be 8-15 characters long,
             <br />
-            and must have both numbers and letters.
+            and must include both numbers and letters.
           </p>
           <FormInput
             label="New access code:"
@@ -132,7 +118,6 @@ export default function ChangeAccessCodePage() {
           </button>
         </form>
       )}
-      {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
     </div>
   );
 }

@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Tables } from "@/lib/supabase.types";
 import EditPeopleCard from "./EditPeopleCard";
-import { FeedbackType } from "@/components/Feedback";
 
 interface EditPeopleGridProps {
   people: Tables<"users">[];
   refreshPeople: () => Promise<void>;
   selectedIDs: string[];
   setSelectedIDs: React.Dispatch<React.SetStateAction<string[]>>;
-  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
   filter: {
     name: string;
+    inactive: boolean;
+    under18: boolean;
   };
 }
 
@@ -19,8 +19,7 @@ export default function EditPeopleGrid({
   refreshPeople,
   selectedIDs,
   setSelectedIDs,
-  filter,
-  propagateFeedback
+  filter
 }: EditPeopleGridProps) {
   const filteredPeople = people?.filter((person) =>
     filter.name
@@ -28,26 +27,12 @@ export default function EditPeopleGrid({
       : true
   );
   const [isShiftKeyDown, setIsShiftKeyDown] = useState(false);
-  const [isCtrlKeyDown, setIsCtrlKeyDown] = useState(false);
   const [pivot, setPivot] = useState<number | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Shift") {
-        setIsShiftKeyDown(true);
-      }
-      if (event.key === "Control" || event.key === "Meta") {
-        setIsCtrlKeyDown(true);
-      }
-    };
-    const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.key === "Shift") {
-        setIsShiftKeyDown(false);
-      }
-      if (event.key === "Control" || event.key === "Meta") {
-        setIsCtrlKeyDown(false);
-      }
+    const handleKey = (event: KeyboardEvent) => {
+      setIsShiftKeyDown(event.key === "Shift" && event.type === "keydown");
     };
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -59,13 +44,12 @@ export default function EditPeopleGrid({
         setPivot(null);
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("keydown", handleKey);
+    window.addEventListener("keyup", handleKey);
     document.addEventListener("click", handleClickOutside);
-
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("keydown", handleKey);
+      window.removeEventListener("keyup", handleKey);
       document.removeEventListener("click", handleClickOutside);
     };
   }, [selectedIDs.length, setSelectedIDs]);
@@ -78,15 +62,12 @@ export default function EditPeopleGrid({
           : filteredPeople.slice(pivot, index + 1)
       ).map((p) => p.id);
       setSelectedIDs(newSelected);
-    } else if (isCtrlKeyDown) {
+    } else {
       setSelectedIDs((prev) =>
         prev.includes(filteredPeople[index].id)
           ? prev.filter((id) => id !== filteredPeople[index].id)
           : [...prev, filteredPeople[index].id]
       );
-      setPivot(index);
-    } else {
-      setSelectedIDs([filteredPeople[index].id]);
       setPivot(index);
     }
   };
@@ -108,7 +89,6 @@ export default function EditPeopleGrid({
             refreshPeople={refreshPeople}
             onClick={() => handleCardClick(index)}
             isSelected={selectedIDs.includes(person.id)}
-            propagateFeedback={propagateFeedback}
           />
         ))}
       </div>

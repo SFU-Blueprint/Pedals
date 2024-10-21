@@ -2,29 +2,28 @@ import { useEffect, useRef, useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import DateSelector from "@/components/DateSelector";
 import { Tables } from "@/lib/supabase.types";
-import { FeedbackType } from "@/components/Feedback";
 import { combineDateTime, formatDate, formatTime } from "@/utils";
+import useFeedbackFetch from "@/hooks/FeedbackFetch";
 
 interface EditShiftCardProps {
   shift: Tables<"shifts">;
   refreshShifts: () => Promise<void>;
-  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
 }
 
 export default function EditShiftCard({
   shift,
-  refreshShifts,
-  propagateFeedback
+  refreshShifts
 }: EditShiftCardProps) {
+  const feedbackFetch = useFeedbackFetch();
   const handleEditShift = async (
     shiftId: string,
     inTime: string,
     outTime: string,
     type: string
   ) => {
-    propagateFeedback([FeedbackType.Loading, "Loading"]);
-    try {
-      const response = await fetch(`/api/shifts/${shiftId}`, {
+    await feedbackFetch(
+      `/api/shifts/${shiftId}`,
+      {
         method: "PATCH",
         body: JSON.stringify({
           inTime,
@@ -34,20 +33,11 @@ export default function EditShiftCard({
         headers: {
           "Content-Type": "application/json"
         }
-      });
-      const data = await response.json();
-      if (response.status === 200) {
-        await refreshShifts();
-        propagateFeedback([FeedbackType.Success, data.message]);
-      } else if (response.status >= 400 && response.status < 500) {
-        propagateFeedback([FeedbackType.Warning, data.message]);
-      } else if (response.status >= 500 && response.status < 600) {
-        propagateFeedback([FeedbackType.Error, data.message]);
+      },
+      {
+        callback: async () => refreshShifts()
       }
-    } catch (error) {
-      propagateFeedback([FeedbackType.Error, "Unknown Error"]);
-    }
-    setTimeout(() => propagateFeedback(null), 2500);
+    );
   };
   const [date, setDate] = useState<Date | null>(
     shift.checked_in_at ? new Date(shift.checked_in_at) : null
@@ -86,10 +76,10 @@ export default function EditShiftCard({
           <DateSelector
             className="-ml-[10px] w-[298px]"
             selected={date}
-            onChange={(d) => setDate(d)}
+            onSelect={(d) => setDate(d)}
           />
         ) : (
-          <p className="w-72">{formatDate(date)}</p>
+          <p className="w-72 uppercase">{formatDate(date)}</p>
         )}
         <div className="flex items-center justify-between">
           {isEditing ? (
@@ -124,7 +114,7 @@ export default function EditShiftCard({
         </div>
         {isEditing ? (
           <Dropdown
-            className="ml-40 w-40 -translate-x-3"
+            className="ml-40 w-60 -translate-x-3"
             options={[
               "WTQ",
               "PFTP",

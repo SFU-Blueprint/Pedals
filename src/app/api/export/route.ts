@@ -19,7 +19,7 @@ function jsonToCsv(jsonData: any[]) {
 }
 
 export async function GET() {
-  //get_volunteer_hour is a SQL function create in SQL Editor in supabase. To update this function, go to the SQL editor and drop this function first: DROP FUNCTION get_volunteer_hours(). Create another SQL function like you would with SQL
+  // get_volunteer_hour is a SQL function create in SQL Editor in supabase. To update this function, go to the SQL editor and drop this function first: DROP FUNCTION get_volunteer_hours(). Create another SQL function like you would with SQL
   const { data, error } = await supabase.rpc("get_volunteer_hours");
 
   // Handle network error

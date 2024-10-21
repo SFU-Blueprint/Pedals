@@ -2,24 +2,22 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import Popup from "@/components/Popup";
-import Feedback, { FeedbackType } from "@/components/Feedback";
 import FormInput from "@/components/FormInput";
+import useFeedbackFetch from "@/hooks/FeedbackFetch";
+import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
 
 export default function ManageLoginPage() {
   const [currentAccessCode, setCurrentAccessCode] = useState<string>("");
   const [isLargeScreen, setIsLargeScreen] = useState(true);
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-
-  const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
   const router = useRouter();
+  const feedbackFetch = useFeedbackFetch();
+  const { setPopup } = useUIComponentsContext();
 
-  const closePopUpAction = () => setIsPopupVisible(false);
   const handleAccessCodeSubmission = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFeedback([FeedbackType.Loading, "Loading"]);
-    try {
-      const response = await fetch("/api/validate-access-code", {
+    await feedbackFetch(
+      "/api/validate-access-code",
+      {
         method: "POST",
         body: JSON.stringify({
           accessCode: currentAccessCode
@@ -27,20 +25,9 @@ export default function ManageLoginPage() {
         headers: {
           "Content-Type": "application/json"
         }
-      });
-      const data = await response.json();
-      if (response.status === 200) {
-        setFeedback([FeedbackType.Success, data.message]);
-        router.push("/manage/shift");
-      } else if (response.status >= 400 && response.status < 500) {
-        setFeedback([FeedbackType.Warning, data.message]);
-      } else if (response.status >= 500 && response.status < 600) {
-        setFeedback([FeedbackType.Error, data.message]);
-      }
-    } catch (error) {
-      setFeedback([FeedbackType.Error, "Unknown Error"]);
-    }
-    setTimeout(() => setFeedback(null), 2500);
+      },
+      { callback: () => router.push("/manage/shift") }
+    );
   };
 
   useEffect(() => {
@@ -65,7 +52,6 @@ export default function ManageLoginPage() {
             className="w-full"
             placeholder="TYPE"
             type="password"
-            onClick={() => setFeedback(null)}
             onChange={(e) => setCurrentAccessCode(e.target.value)}
           />
           <button
@@ -79,38 +65,31 @@ export default function ManageLoginPage() {
         <button
           type="button"
           className="mt-40 !h-fit w-fit !bg-transparent !pl-0 font-mono text-lg text-pedals-darkgrey hover:font-bold hover:text-pedals-black"
-          onClick={() => setIsPopupVisible(true)}
+          onClick={() =>
+            setPopup({
+              title: "Password Recovery",
+              component: (
+                <div className="flex h-full flex-col justify-around px-10 py-10">
+                  <p>
+                    An email has been set to coordinator@gmail.com. Please
+                    follow the instruction in the email to reset your access
+                    code.
+                  </p>
+                  <button
+                    className="!rounded-3xl !bg-pedals-lightgrey"
+                    type="button"
+                    onClick={() => setPopup(null)}
+                  >
+                    FINISHED
+                  </button>
+                </div>
+              )
+            })
+          }
         >
           FORGOT PASSWORD?
         </button>
       </form>
-      {isPopupVisible && (
-        <Popup title="Password Recovery" closeAction={closePopUpAction}>
-          <div className="flex h-full flex-col justify-around px-10 py-10">
-            <p>
-              An email has been set to cavan@gmail.com. Please follow the
-              instruction in the email to reset your access code.
-            </p>
-            <div className="flex w-full justify-between gap-[50px]">
-              <button
-                type="button"
-                onClick={() => setIsPopupVisible(false)}
-                className="grow basis-1/3 !rounded-3xl !bg-pedals-yellow !px-5"
-              >
-                CANCEL
-              </button>
-              <button
-                className="grow basis-2/3 !rounded-3xl !bg-pedals-lightgrey"
-                type="button"
-                onClick={closePopUpAction}
-              >
-                FINISHED
-              </button>
-            </div>
-          </div>
-        </Popup>
-      )}
-      {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
     </div>
   ) : (
     <h3 className="flex h-screen items-center px-10 font-semibold">

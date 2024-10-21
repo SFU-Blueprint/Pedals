@@ -11,6 +11,11 @@ export enum FeedbackType {
   Loading
 }
 
+export interface FeedbackInterface {
+  type: FeedbackType;
+  message: string;
+}
+
 export default function Feedback({ type, ...props }: FeedbackProps) {
   const colorMap: Record<FeedbackType, string> = {
     [FeedbackType.Success]: "bg-pedals-green text-pedals-white",
@@ -118,7 +123,7 @@ export default function Feedback({ type, ...props }: FeedbackProps) {
       />
     )
   };
-  const styles = `${colorMap[type]} fixed bottom-9 right-1/2 flex w-fit translate-x-1/2 flex-row gap-[13px] px-[20px] py-[15px] rounded-[3px] items-center`;
+  const styles = `${colorMap[type]} ${props.className} flex w-fit translate-x-1/2 gap-4 px-4 py-4 rounded-[3px] items-center`;
   return (
     <div className={styles}>
       {svgMap[type]}

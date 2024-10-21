@@ -1,33 +1,53 @@
 import { Tables } from "@/lib/supabase.types";
-import { FeedbackType } from "@/components/Feedback";
+import useFeedbackFetch from "@/hooks/FeedbackFetch";
 
 interface ActiveShiftsGridProps {
   shifts: Tables<"shifts">[];
   refreshShifts: () => Promise<void>;
-  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
-  propagatePopup: () => void;
 }
 
 interface ActiveShiftCardProps {
   shift: Tables<"shifts">;
   refreshShifts: () => Promise<void>;
-  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
-  propagatePopup: () => void;
 }
 
-function ActiveShiftCard({
-  refreshShifts,
-  shift,
-  propagateFeedback,
-  propagatePopup
-}: ActiveShiftCardProps) {
+function ActiveShiftCard({ refreshShifts, shift }: ActiveShiftCardProps) {
+  const feedbackFetch = useFeedbackFetch();
   const handleCheckout = async (
     shiftId: string,
     volunteerId: string | null
   ) => {
-    propagateFeedback([FeedbackType.Loading, "Loading"]);
-    try {
-      const response = await fetch("/api/checkout", {
+    // propagateFeedback([FeedbackType.Loading, "Loading"]);
+    // try {
+    //   const response = await fetch("/api/checkout", {
+    //     method: "POST",
+    //     body: JSON.stringify({
+    //       shiftId,
+    //       volunteerId
+    //     }),
+    //     headers: {
+    //       "Content-Type": "application/json"
+    //     }
+    //   });
+    //   const data = await response.json();
+    //   if (response.status === 200 || response.status === 201) {
+    //     await refreshShifts();
+    //     propagateFeedback([FeedbackType.Success, data.message]);
+    //     if (response.status === 201) {
+    //       propagatePopup();
+    //     }
+    //   } else if (response.status >= 400 && response.status < 500) {
+    //     propagateFeedback([FeedbackType.Warning, data.message]);
+    //   } else if (response.status >= 500 && response.status < 600) {
+    //     propagateFeedback([FeedbackType.Error, data.message]);
+    //   }
+    // } catch (error) {
+    //   propagateFeedback([FeedbackType.Error, "Unknown Error"]);
+    // }
+    // setTimeout(() => propagateFeedback(null), 2500);
+    await feedbackFetch(
+      "api/checkout",
+      {
         method: "POST",
         body: JSON.stringify({
           shiftId,
@@ -36,23 +56,18 @@ function ActiveShiftCard({
         headers: {
           "Content-Type": "application/json"
         }
-      });
-      const data = await response.json();
-      if (response.status === 200 || response.status === 201) {
-        await refreshShifts();
-        propagateFeedback([FeedbackType.Success, data.message]);
-        if (response.status === 201) {
-          propagatePopup();
-        }
-      } else if (response.status >= 400 && response.status < 500) {
-        propagateFeedback([FeedbackType.Warning, data.message]);
-      } else if (response.status >= 500 && response.status < 600) {
-        propagateFeedback([FeedbackType.Error, data.message]);
+      },
+      {
+        callback: async () => refreshShifts(),
+        warningPopup: (
+          <p className="px-10 py-10">
+            Your shift has been marked as checked out. However, the checkout
+            date does not match the check-in date. Please notify the coordinator
+            to update the shift details manually.
+          </p>
+        )
       }
-    } catch (error) {
-      propagateFeedback([FeedbackType.Error, "Unknown Error"]);
-    }
-    setTimeout(() => propagateFeedback(null), 2500);
+    );
   };
   return (
     <div className="flex w-full items-center justify-between border-y-[1px] border-pedals-stroke bg-pedals-grey px-20 py-3">
@@ -87,9 +102,7 @@ function ActiveShiftCard({
 
 export default function ActiveShiftsGrid({
   shifts,
-  refreshShifts,
-  propagateFeedback,
-  propagatePopup
+  refreshShifts
 }: ActiveShiftsGridProps) {
   return (
     <div className="flex h-full flex-col overflow-y-scroll bg-pedals-grey">
@@ -98,8 +111,6 @@ export default function ActiveShiftsGrid({
           key={shift.id}
           shift={shift}
           refreshShifts={refreshShifts}
-          propagateFeedback={propagateFeedback}
-          propagatePopup={propagatePopup}
         />
       ))}
     </div>

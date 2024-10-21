@@ -1,124 +1,72 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import ShiftSelect from "../components/ShiftSelect";
 import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
 import FormInput from "@/components/FormInput";
 import DateSelector from "@/components/DateSelector";
 import { Tables } from "@/lib/supabase.types";
-import Feedback, { FeedbackType } from "@/components/Feedback";
 import TimeDisplay from "../components/TimeDisplay";
-import Popup from "@/components/Popup";
+import useFeedbackFetch from "@/hooks/FeedbackFetch";
+import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
+import { FeedbackType } from "@/components/Feedback";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
-  const [shiftType, setShiftType] = useState<string | null>(null);
-  const [dob, setDOB] = useState<Date | null>(new Date());
+  const [dob, setDOB] = useState<Date | null>();
   const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
-  const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
-  const [popup, setPopup] = useState(false);
+  const feedbackFetch = useFeedbackFetch();
+  const { setFeedback } = useUIComponentsContext();
 
   const fetchActiveShifts = useCallback(
     async (
       options: { showSuccessFeedback: boolean } = { showSuccessFeedback: true }
     ) => {
-      setFeedback([FeedbackType.Loading, "Loading"]);
-      try {
-        const response = await fetch("/api/shifts/active", {
-          method: "GET"
-        });
-        const data = await response.json();
-        if (response.status === 200) {
-          setActiveShifts(data as Tables<"shifts">[]);
-          if (options.showSuccessFeedback) {
-            setFeedback([FeedbackType.Success, "Active shifts loaded."]);
-          }
-        } else if (response.status >= 400 && response.status < 500) {
-          setFeedback([FeedbackType.Warning, data.message]);
-        } else if (response.status >= 500 && response.status < 600) {
-          setFeedback([FeedbackType.Error, data.message]);
+      await feedbackFetch(
+        "/api/shifts/active",
+        { method: "GET" },
+        {
+          callback: (data) => setActiveShifts(data as Tables<"shifts">[]),
+          showSuccessFeedback: options.showSuccessFeedback
         }
-      } catch (error) {
-        setFeedback([FeedbackType.Error, "Unknown Error"]);
-      }
-      setTimeout(() => setFeedback(null), 2500);
+      );
     },
-    []
+    [feedbackFetch]
   );
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFeedback([FeedbackType.Loading, "Loading"]);
-    try {
-      const registerResponse = await fetch("/api/register", {
-        method: "POST",
-        body: JSON.stringify({
-          username,
-          fullName,
-          dob
-        })
+    if (!/^[a-z0-9]{1,30}$/.test(username)) {
+      setFeedback({
+        type: FeedbackType.Warning,
+        message:
+          "Username must be lowercase, alphanumeric, and less than 30 characters."
       });
-      const registerData = await registerResponse.json();
-
-      if (registerResponse.status === 200) {
-        const checkinResponse = await fetch("/api/checkin", {
+      setTimeout(() => setFeedback(null), 2500);
+    } else {
+      await feedbackFetch(
+        "/api/register", // URL
+        {
           method: "POST",
           body: JSON.stringify({
             username,
-            shiftType
-          })
-        });
-        const data = await checkinResponse.json();
-        if (checkinResponse.status === 200) {
-          await fetchActiveShifts({ showSuccessFeedback: false });
-          setFeedback([FeedbackType.Success, data.message]);
-        } else if (
-          checkinResponse.status >= 400 &&
-          checkinResponse.status < 500
-        ) {
-          setFeedback([FeedbackType.Warning, data.message]);
-        } else if (
-          checkinResponse.status >= 500 &&
-          checkinResponse.status < 600
-        ) {
-          setFeedback([FeedbackType.Error, data.message]);
+            fullName,
+            dob
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          }
         }
-      } else if (
-        registerResponse.status >= 400 &&
-        registerResponse.status < 500
-      ) {
-        setFeedback([FeedbackType.Warning, registerData.message]);
-      } else if (
-        registerResponse.status >= 500 &&
-        registerResponse.status < 600
-      ) {
-        setFeedback([FeedbackType.Error, registerData.message]);
-      }
-    } catch (error) {
-      setFeedback([FeedbackType.Error, "An unexpected error occurred."]);
+      );
     }
-
-    setTimeout(() => setFeedback(null), 2500);
   };
 
   useEffect(() => {
     fetchActiveShifts();
   }, [fetchActiveShifts]);
 
-  const mockOptions = [
-    "General Onsite",
-    "Wheel Service",
-    "Wheel Building",
-    "Wheel Recycling",
-    "Bike Stripping",
-    "Inner Tubes",
-    "Shop Organizing",
-    "Offsite Event",
-    "Youth Volunteering"
-  ];
   return (
-    <div className="flex flex-grow flex-col overflow-y-hidden">
+    <div className="flex h-screen w-screen flex-col overflow-y-hidden">
       <div className="sticky top-0 bg-pedals-lightgrey">
         <TimeDisplay className="pl-20 pt-20" />
         <form
@@ -128,20 +76,13 @@ export default function RegisterPage() {
           <div className="flex flex-col gap-3">
             <div className="flex justify-start gap-96">
               <FormInput
+                uppercase
                 className="w-96"
                 label="Username"
                 type="text"
                 placeholder="TYPE"
                 onChange={(e) => setUsername(e.target.value)}
               />
-              <ShiftSelect
-                className="w-96"
-                options={mockOptions}
-                selectedOption={shiftType}
-                onChange={setShiftType}
-              />
-            </div>
-            <div className="flex justify-start gap-96">
               <FormInput
                 className="w-96"
                 label="Full Name"
@@ -149,40 +90,29 @@ export default function RegisterPage() {
                 placeholder="TYPE"
                 onChange={(e) => setFullName(e.target.value)}
               />
-              <FormInput label="Date of Birth">
-                <DateSelector
-                  selected={dob}
-                  onChange={(date) => setDOB(date)}
-                  maxDate={new Date()}
-                />
-              </FormInput>
             </div>
+            <FormInput className="w-96" label="(If Under 18) Date of Birth">
+              <DateSelector
+                className="w-full"
+                selected={dob}
+                onSelect={(date) => setDOB(date)}
+                maxDate={new Date()}
+              />
+            </FormInput>
           </div>
           <button
-            disabled={!username || !shiftType || !fullName || !dob}
+            disabled={!username || !fullName}
             type="submit"
             className="mt-[34px] whitespace-nowrap uppercase"
           >
-            Check In
+            Register
           </button>
         </form>
       </div>
       <ActiveShiftsGrid
         shifts={activeShifts}
         refreshShifts={fetchActiveShifts}
-        propagateFeedback={setFeedback}
-        propagatePopup={() => setPopup(false)}
       />
-      {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
-      {popup && (
-        <Popup title="Warning" closeAction={() => setPopup(false)}>
-          <p className="px-10 py-10">
-            Your shift has been marked as checked out. However, the checkout
-            date does not match the check-in date. Please notify the coordinator
-            to update the shift details manually.
-          </p>
-        </Popup>
-      )}
     </div>
   );
 }

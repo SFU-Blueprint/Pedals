@@ -4,10 +4,10 @@ import { Tables } from "@/lib/supabase.types";
 
 export const PATCH = async (req: NextRequest) => {
   const id = new URL(req.url).pathname.split("/").pop();
-  const { dob, last_seen } = await req.json();
+  const { uname, dateOfBirth, dateLastSeen } = await req.json();
 
   // Handle missing required parameters
-  if (!dob && !last_seen) {
+  if (!dateOfBirth || !dateLastSeen || !uname) {
     return NextResponse.json(
       { message: "Missing details to update." },
       { status: 400 }
@@ -48,8 +48,9 @@ export const PATCH = async (req: NextRequest) => {
   const { error: userUpdateError } = await supabase
     .from("users")
     .update({
-      dob: dob || currentUser.dob,
-      last_seen: last_seen || currentUser.last_seen
+      username: uname,
+      dob: dateOfBirth || currentUser.dob,
+      last_seen: dateLastSeen || currentUser.last_seen
     })
     .eq("id", id);
 

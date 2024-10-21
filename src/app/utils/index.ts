@@ -3,18 +3,23 @@ export const isSameDate = (date1: Date, date2: Date): boolean =>
   date1.getMonth() === date2.getMonth() &&
   date1.getDate() === date2.getDate();
 
-export const formatDate = (timestamp: Date | null): string =>
+export const formatDate = (
+  timestamp: Date | null,
+  options: { nullText: string } = { nullText: "Error" }
+): string =>
   timestamp
     ? timestamp.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric"
       })
-    : "Error";
+    : options.nullText;
 
 export const formatTime = (
   timestamp: string | null,
-  options: { hour12: boolean } = { hour12: false }
+  options: { hour12?: boolean; nullText?: string } = {
+    hour12: false
+  }
 ): string =>
   timestamp
     ? new Date(timestamp).toLocaleTimeString("en-US", {

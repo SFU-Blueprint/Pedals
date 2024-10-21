@@ -16,5 +16,8 @@ export async function GET() {
   }
 
   // Confirm success
-  return NextResponse.json(data, { status: 200 });
+  return NextResponse.json(
+    { data, message: "Shifts Loaded!" },
+    { status: 200 }
+  );
 }

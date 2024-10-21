@@ -1,12 +1,10 @@
 import { Tables } from "@/lib/supabase.types";
 import { isInMonth, isInYear } from "@/utils";
-import { FeedbackType } from "@/components/Feedback";
 import EditShiftCard from "./EditShiftCard";
 
 interface EditShiftsGridProps {
   shifts: Tables<"shifts">[];
   refreshShifts: () => Promise<void>;
-  propagateFeedback: (feedback: [FeedbackType, string] | null) => void;
   filter: {
     name: string;
     month: string | null;
@@ -17,21 +15,34 @@ interface EditShiftsGridProps {
 export default function EditShiftsGrid({
   shifts,
   refreshShifts,
-  filter,
-  propagateFeedback
+  filter
 }: EditShiftsGridProps) {
-  const filteredShifts = shifts?.filter((shift) => {
-    const nameMatch = filter.name
-      ? shift.volunteer_name?.toLowerCase().includes(filter.name.toLowerCase())
-      : true;
-    const monthMatch = filter.month
-      ? isInMonth(shift.checked_in_at, shift.checked_out_at, filter.month)
-      : true;
-    const yearMatch = filter.year
-      ? isInYear(shift.checked_in_at, shift.checked_out_at, filter.year)
-      : true;
-    return nameMatch && monthMatch && yearMatch;
-  });
+  const filteredShifts = shifts
+    ?.filter((shift) => {
+      const nameMatch = filter.name
+        ? shift.volunteer_name
+            ?.toLowerCase()
+            .includes(filter.name.toLowerCase())
+        : true;
+      const monthMatch = filter.month
+        ? isInMonth(shift.checked_in_at, shift.checked_out_at, filter.month)
+        : true;
+      const yearMatch = filter.year
+        ? isInYear(shift.checked_in_at, shift.checked_out_at, filter.year)
+        : true;
+      return nameMatch && monthMatch && yearMatch;
+    })
+    .sort((a, b) => {
+      if (!a.is_active && !a.checked_out_at) return -1;
+      if (!b.is_active && !b.checked_out_at) return 1;
+      const dateA = (
+        a.checked_in_at ? new Date(a.checked_in_at) : new Date()
+      ).getTime();
+      const dateB = (
+        b.checked_in_at ? new Date(b.checked_in_at) : new Date()
+      ).getTime();
+      return dateB - dateA;
+    });
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
@@ -50,7 +61,6 @@ export default function EditShiftsGrid({
             key={shift.id}
             shift={shift}
             refreshShifts={refreshShifts}
-            propagateFeedback={propagateFeedback}
           />
         ))}
       </div>

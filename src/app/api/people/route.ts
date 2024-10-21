@@ -16,7 +16,10 @@ export async function GET() {
   }
 
   // Confirm success
-  return NextResponse.json(data, { status: 200 });
+  return NextResponse.json(
+    { data, message: "Volunteers Loaded!" },
+    { status: 200 }
+  );
 }
 
 export async function DELETE(req: NextRequest) {
@@ -26,7 +29,7 @@ export async function DELETE(req: NextRequest) {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return NextResponse.json(
       {
-        message: "No users selected"
+        message: "No volunteers selected"
       },
       { status: 400 }
     );
@@ -39,7 +42,8 @@ export async function DELETE(req: NextRequest) {
   if (error) {
     return NextResponse.json(
       {
-        message: "Error occurred while deleting the users. Please try again."
+        message:
+          "Error occurred while deleting the volunteers. Please try again."
       },
       { status: 500 }
     );
@@ -47,7 +51,7 @@ export async function DELETE(req: NextRequest) {
 
   // Confirm successful user deletion
   return NextResponse.json(
-    { message: "Users deleted successfully" },
+    { message: "Volunteers successfully removed from the database." },
     { status: 200 }
   );
 }

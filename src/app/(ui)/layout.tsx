@@ -1,59 +1,42 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import localFont from "next/font/local";
-import "./globals.css";
+"use client";
+
+import { useMemo, useState } from "react";
+import UIComponentsContext from "@/contexts/UIComponentsContext";
+import Feedback, { FeedbackInterface } from "@/components/Feedback";
 import NavBar from "@/components/NavBar";
-
-const inter = Inter({
-  weight: ["400"],
-  subsets: ["latin"],
-  variable: "--font-inter"
-});
-const supply = localFont({
-  src: [
-    {
-      path: "../../public/font/PPSupplyMono-Ultralight.woff",
-      weight: "200"
-    },
-    {
-      path: "../../public/font/PPSupplyMono-Regular.woff",
-      weight: "400"
-    },
-    {
-      path: "../../public/font/PPSupplyMono-Medium.woff",
-      weight: "500"
-    },
-    {
-      path: "../../public/font/PPSupplyMono-Bold.woff",
-      weight: "700"
-    }
-  ],
-  variable: "--font-supply"
-});
-
-export const metadata: Metadata = {
-  title: "PEDALS",
-  description: "Volunteer Management System"
-};
+import Popup, { PopupInterface } from "@/components/Popup";
 
 export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [feedback, setFeedback] = useState<FeedbackInterface | null>(null);
+  const [popup, setPopup] = useState<PopupInterface | null>(null);
+
   return (
-    <html lang="en" className={`${inter.variable} ${supply.variable}`}>
-      <body>
-        <NavBar
-          className="fixed right-20 top-20 z-30"
-          links={[
-            { href: "/checkin", label: "CHECK IN" },
-            { href: "/register", label: "REGISTER" },
-            { href: "/manage-login", label: "MANAGE", highlight: "/manage" }
-          ]}
-        />
-        {children}
-      </body>
-    </html>
+    <UIComponentsContext.Provider
+      value={useMemo(() => ({ setFeedback, setPopup }), [])}
+    >
+      <NavBar
+        className="fixed right-20 top-20 z-30"
+        links={[
+          { href: "/checkin", label: "CHECK IN" },
+          { href: "/register", label: "REGISTER" },
+          { href: "/manage-login", label: "MANAGE", highlight: "/manage" }
+        ]}
+      />
+      {children}
+      {feedback && (
+        <Feedback className="fixed bottom-10 right-1/2" type={feedback.type}>
+          {feedback.message}
+        </Feedback>
+      )}
+      {popup && (
+        <Popup title={popup.title} closeAction={() => setPopup(null)}>
+          {popup.component}
+        </Popup>
+      )}
+    </UIComponentsContext.Provider>
   );
 }

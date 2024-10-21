@@ -5,7 +5,7 @@ import FormInput from "@/components/FormInput";
 import RadioButton from "@/components/RadioButton";
 import EditPeopleGrid from "./components/EditPeopleGrid";
 import { Tables } from "@/lib/supabase.types";
-import Feedback, { FeedbackType } from "@/components/Feedback";
+import useFeedbackFetch from "@/hooks/FeedbackFetch";
 
 export default function ManagePeoplePage() {
   const [searchName, setSearchName] = useState("");
@@ -14,62 +14,41 @@ export default function ManagePeoplePage() {
   const [selectedAll, setSelectedAll] = useState(false);
   const [people, setPeople] = useState<Tables<"users">[]>([]);
   const [selectedIDs, setSelectedIDs] = useState<string[]>([]);
-  const [feedback, setFeedback] = useState<[FeedbackType, string] | null>(null);
+  const feedbackFetch = useFeedbackFetch();
 
   const fetchPeople = useCallback(
     async (
       options: { showSuccessFeedback: boolean } = { showSuccessFeedback: true }
     ) => {
-      try {
-        const response = await fetch("/api/people", {
+      await feedbackFetch(
+        "/api/people",
+        {
           method: "GET"
-        });
-        const data = await response.json();
-        if (response.status === 200) {
-          setPeople(data as Tables<"users">[]);
-          if (options.showSuccessFeedback) {
-            setFeedback([FeedbackType.Success, "Volunteers loaded."]);
-          }
-        } else if (response.status >= 400 && response.status < 500) {
-          setFeedback([FeedbackType.Warning, data.message]);
-        } else if (response.status >= 500 && response.status < 600) {
-          setFeedback([FeedbackType.Error, data.message]);
+        },
+        {
+          callback: (data) => setPeople(data as Tables<"users">[]),
+          showSuccessFeedback: options.showSuccessFeedback
         }
-      } catch (error) {
-        setFeedback([FeedbackType.Error, "Unknown Error"]);
-      }
-      setTimeout(() => setFeedback(null), 2500);
+      );
     },
-    []
+    [feedbackFetch]
   );
 
   const handleRemovePeople = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setFeedback([FeedbackType.Loading, "Loading"]);
-    try {
-      const response = await fetch("/api/people", {
+    await feedbackFetch(
+      "/api/people",
+      {
         method: "DELETE",
         body: JSON.stringify({ ids: selectedIDs }),
         headers: {
           "Content-Type": "application/json"
         }
-      });
-      const data = await response.json();
-      if (response.status === 200) {
-        await fetchPeople({ showSuccessFeedback: false });
-        setFeedback([
-          FeedbackType.Success,
-          "Volunteers successfully removed from the database."
-        ]);
-      } else if (response.status >= 400 && response.status < 500) {
-        setFeedback([FeedbackType.Warning, data.message]);
-      } else if (response.status >= 500 && response.status < 600) {
-        setFeedback([FeedbackType.Error, data.message]);
+      },
+      {
+        callback: async () => fetchPeople({ showSuccessFeedback: false })
       }
-    } catch (error) {
-      setFeedback([FeedbackType.Error, "Unknown Error"]);
-    }
-    setTimeout(() => setFeedback(null), 2500);
+    );
   };
 
   useEffect(() => {
@@ -115,15 +94,15 @@ export default function ManagePeoplePage() {
       </div>
       <EditPeopleGrid
         people={people}
-        refreshPeople={fetchPeople}
-        propagateFeedback={setFeedback}
+        refreshPeople={() => fetchPeople({ showSuccessFeedback: false })}
         filter={{
-          name: searchName
+          name: searchName,
+          inactive: searchInactive,
+          under18: searchUnder18
         }}
         selectedIDs={selectedIDs}
         setSelectedIDs={setSelectedIDs}
       />
-      {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}
     </>
   );
 }
