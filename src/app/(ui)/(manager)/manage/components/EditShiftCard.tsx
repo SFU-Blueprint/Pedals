@@ -2,8 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import DateSelector from "@/components/DateSelector";
 import { Tables } from "@/lib/supabase.types";
-import { combineDateTime, formatDate, formatTime } from "@/utils";
+import {
+  combineDateTime,
+  convertTimeAMPM,
+  formatDate,
+  formatTime
+} from "@/utils";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
+import EditConfirmation from "./EditConfirmation";
+import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
 
 interface EditShiftCardProps {
   shift: Tables<"shifts">;
@@ -14,7 +21,21 @@ export default function EditShiftCard({
   shift,
   refreshShifts
 }: EditShiftCardProps) {
+  const [date, setDate] = useState<Date | null>(
+    shift.checked_in_at ? new Date(shift.checked_in_at) : null
+  );
+  const [checkinTime, setCheckinTime] = useState<string | null>(
+    formatTime(shift.checked_in_at)
+  );
+  const [checkoutTime, setCheckoutTime] = useState<string | null>(
+    formatTime(shift.checked_out_at)
+  );
+  const [shiftType, setShiftType] = useState<string | null>(shift.shift_type);
+  const [isEditing, setIsEditing] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
   const feedbackFetch = useFeedbackFetch();
+  const { setPopup } = useUIComponentsContext();
+
   const handleEditShift = async (
     shiftId: string,
     inTime: string,
@@ -35,22 +56,14 @@ export default function EditShiftCard({
         }
       },
       {
-        callback: async () => refreshShifts()
+        callback: async () => {
+          await refreshShifts();
+          setPopup(null);
+          setIsEditing(false);
+        }
       }
     );
   };
-  const [date, setDate] = useState<Date | null>(
-    shift.checked_in_at ? new Date(shift.checked_in_at) : null
-  );
-  const [checkinTime, setCheckinTime] = useState<string | null>(
-    formatTime(shift.checked_in_at)
-  );
-  const [checkoutTime, setCheckoutTime] = useState<string | null>(
-    formatTime(shift.checked_out_at)
-  );
-  const [shiftType, setShiftType] = useState<string | null>(shift.shift_type);
-  const [isEditing, setIsEditing] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -68,7 +81,7 @@ export default function EditShiftCard({
   return (
     <div
       ref={ref}
-      className={`edit-card flex w-full justify-between border-y-[1px] border-y-pedals-darkgrey px-20 py-4 ${isEditing ? "bg-pedals-lightgrey" : "bg-pedals-stroke"}`}
+      className={`edit-card flex w-full justify-between border-y-[1px] border-y-pedals-darkgrey px-20 py-4 ${isEditing ? "bg-pedals-lightgrey" : "bg-pedals-grey"}`}
     >
       <div className="flex items-center justify-start">
         <h3 className="w-96">{shift.volunteer_name ?? "Error"}</h3>
@@ -92,7 +105,7 @@ export default function EditShiftCard({
             </div>
           ) : (
             <p className="flex w-48 justify-center uppercase">
-              {formatTime(shift.checked_in_at, { hour12: true })}
+              {convertTimeAMPM(formatTime(shift.checked_in_at))}
             </p>
           )}
           <p>-</p>
@@ -108,13 +121,13 @@ export default function EditShiftCard({
             <p className="flex w-48 justify-center uppercase">
               {shift.is_active
                 ? "Active"
-                : formatTime(shift.checked_out_at, { hour12: true })}
+                : convertTimeAMPM(formatTime(shift.checked_out_at))}
             </p>
           )}
         </div>
         {isEditing ? (
           <Dropdown
-            className="ml-40 w-60 -translate-x-3"
+            className="ml-40 w-64 -translate-x-3"
             options={[
               "WTQ",
               "PFTP",
@@ -145,15 +158,43 @@ export default function EditShiftCard({
         onClick={() => {
           if (isEditing) {
             if (date && checkinTime && checkoutTime && shiftType) {
-              handleEditShift(
-                shift.id,
-                combineDateTime(date, checkinTime),
-                combineDateTime(date, checkoutTime),
-                shiftType
-              );
+              setPopup({
+                title: "Confirm new shift details",
+                component: (
+                  <EditConfirmation
+                    data={[
+                      {
+                        key: "Name",
+                        value: shift.volunteer_name as string
+                      },
+                      {
+                        key: "Date",
+                        value: formatDate(date)
+                      },
+                      {
+                        key: "Time",
+                        value: `${convertTimeAMPM(checkinTime)} - ${convertTimeAMPM(checkoutTime)}`
+                      },
+                      {
+                        key: "Shift Type",
+                        value: shiftType
+                      }
+                    ]}
+                    onConfirm={() =>
+                      handleEditShift(
+                        shift.id,
+                        combineDateTime(date, checkinTime),
+                        combineDateTime(date, checkoutTime),
+                        shiftType
+                      )
+                    }
+                  />
+                )
+              });
             }
+          } else {
+            setIsEditing(!isEditing);
           }
-          setIsEditing(!isEditing);
         }}
       >
         {isEditing ? "Done" : "Edit"}

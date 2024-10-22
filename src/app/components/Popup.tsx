@@ -14,9 +14,11 @@ export interface PopupInterface {
 
 export default function Popup({ title, closeAction, ...props }: PopUpProps) {
   return (
-    <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black bg-opacity-25">
-      <div className="flex h-1/2 w-2/5 flex-col rounded-xl !bg-pedals-white font-inter leading-normal !text-pedals-black">
-        <div className="flex h-2/5 w-full items-center justify-between rounded-t-xl !bg-pedals-yellow px-10">
+    <div
+      className={`${props.className} flex h-screen w-screen items-center justify-center bg-pedals-black bg-opacity-25`}
+    >
+      <div className="flex h-fit w-2/5 flex-col rounded-xl bg-pedals-white">
+        <div className="flex h-fit w-full items-center justify-between rounded-t-xl bg-pedals-yellow px-10 py-10">
           <h3>{title}</h3>
           <button
             type="button"

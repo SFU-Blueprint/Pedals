@@ -71,7 +71,7 @@ export default function Dropdown({
     <div className={`${props.className} relative`} ref={dropdownRef}>
       {isOpen ? (
         <div
-          className={`${centerParentFix} absolute z-50 w-full rounded-[3px] bg-white outline-none ring-2 ring-pedals-yellow ring-offset-1`}
+          className={`${centerParentFix} absolute z-30 w-full rounded-[3px] bg-white outline-none ring-2 ring-pedals-yellow ring-offset-1`}
         >
           <button
             type="button"

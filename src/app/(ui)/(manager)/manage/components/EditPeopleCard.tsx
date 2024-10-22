@@ -4,6 +4,8 @@ import DateSelector from "@/components/DateSelector";
 import { formatDate } from "@/utils";
 import FormInput from "@/components/FormInput";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
+import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
+import EditConfirmation from "./EditConfirmation";
 
 interface EditPeopleCardProps {
   person: Tables<"users">;
@@ -28,6 +30,7 @@ export default function EditPeopleCard({
   const [isEditing, setIsEditing] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const feedbackFetch = useFeedbackFetch();
+  const { setPopup } = useUIComponentsContext();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -61,16 +64,20 @@ export default function EditPeopleCard({
         }
       },
       {
-        callback: async () => refreshPeople()
+        callback: async () => {
+          await refreshPeople();
+          setPopup(null);
+          setIsEditing(false);
+        }
       }
     );
   };
 
-  let background = "bg-pedals-stroke";
+  let background = "bg-pedals-grey";
   if (isEditing) {
     background = "bg-pedals-lightgrey";
   } else if (isSelected) {
-    background = "bg-pedals-grey";
+    background = "bg-pedals-stroke";
   }
 
   return (
@@ -122,9 +129,39 @@ export default function EditPeopleCard({
         className={`!rounded-[30px] !px-12 uppercase ${isEditing && "hover:!bg-pedals-grey"}`}
         onClick={() => {
           if (isEditing) {
-            handleEditPeople(person.id, username, dob, lastSeen);
+            if (username && lastSeen) {
+              setPopup({
+                title: "Confirm new volunteer details",
+                component: (
+                  <EditConfirmation
+                    data={[
+                      {
+                        key: "Name",
+                        value: person.name
+                      },
+                      {
+                        key: "Username",
+                        value: username
+                      },
+                      {
+                        key: "Date of Birth",
+                        value: formatDate(dob)
+                      },
+                      {
+                        key: "Last Seen",
+                        value: formatDate(lastSeen)
+                      }
+                    ]}
+                    onConfirm={() =>
+                      handleEditPeople(person.id, username, dob, lastSeen)
+                    }
+                  />
+                )
+              });
+            }
+          } else {
+            setIsEditing(!isEditing);
           }
-          setIsEditing(!isEditing);
         }}
       >
         {isEditing ? "Done" : "Edit"}

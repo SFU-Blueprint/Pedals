@@ -77,21 +77,24 @@ export default function RegisterPage() {
             <div className="flex justify-start gap-96">
               <FormInput
                 uppercase
-                className="w-96"
+                className="w-[25rem]"
                 label="Username"
                 type="text"
                 placeholder="TYPE"
                 onChange={(e) => setUsername(e.target.value)}
               />
               <FormInput
-                className="w-96"
+                className="w-[25rem]"
                 label="Full Name"
                 type="text"
                 placeholder="TYPE"
                 onChange={(e) => setFullName(e.target.value)}
               />
             </div>
-            <FormInput className="w-96" label="(If Under 18) Date of Birth">
+            <FormInput
+              className="w-[25rem]"
+              label="(If Under 18) Date of Birth"
+            >
               <DateSelector
                 className="w-full"
                 selected={dob}
@@ -111,7 +114,7 @@ export default function RegisterPage() {
       </div>
       <ActiveShiftsGrid
         shifts={activeShifts}
-        refreshShifts={fetchActiveShifts}
+        refreshShifts={() => fetchActiveShifts({ showSuccessFeedback: false })}
       />
     </div>
   );

@@ -4,8 +4,8 @@ import { useState, FormEvent, useEffect, useCallback } from "react";
 import FormInput from "@/components/FormInput";
 import ShiftSelect from "../components/ShiftSelect";
 import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
-import { Tables } from "@/lib/supabase.types";
 import TimeDisplay from "../components/TimeDisplay";
+import { Tables } from "@/lib/supabase.types";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
 
 export default function CheckinPage() {
@@ -74,14 +74,14 @@ export default function CheckinPage() {
           <div className="flex justify-start gap-96">
             <FormInput
               uppercase
-              className="w-96"
+              className="w-[25rem]"
               label="Username"
               type="text"
               placeholder="TYPE"
               onChange={(e) => setUsername(e.target.value)}
             />
             <ShiftSelect
-              className="w-96"
+              className="w-[25rem]"
               options={shiftOptions}
               selectedOption={shiftType}
               onChange={setShiftType}

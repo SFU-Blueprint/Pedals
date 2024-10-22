@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Tables } from "@/lib/supabase.types";
 import EditPeopleCard from "./EditPeopleCard";
 
@@ -7,33 +7,16 @@ interface EditPeopleGridProps {
   refreshPeople: () => Promise<void>;
   selectedIDs: string[];
   setSelectedIDs: React.Dispatch<React.SetStateAction<string[]>>;
-  filter: {
-    name: string;
-    inactive: boolean;
-    under18: boolean;
-  };
 }
 
 export default function EditPeopleGrid({
   people,
   refreshPeople,
   selectedIDs,
-  setSelectedIDs,
-  filter
+  setSelectedIDs
 }: EditPeopleGridProps) {
-  const filteredPeople = people?.filter((person) =>
-    filter.name
-      ? person.name?.toLowerCase().includes(filter.name.toLowerCase())
-      : true
-  );
-  const [isShiftKeyDown, setIsShiftKeyDown] = useState(false);
-  const [pivot, setPivot] = useState<number | null>(null);
   const ref = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    const handleKey = (event: KeyboardEvent) => {
-      setIsShiftKeyDown(event.key === "Shift" && event.type === "keydown");
-    };
     const handleClickOutside = (event: MouseEvent) => {
       if (
         ref.current &&
@@ -41,35 +24,20 @@ export default function EditPeopleGrid({
         selectedIDs.length > 0
       ) {
         setSelectedIDs([]);
-        setPivot(null);
       }
     };
-    window.addEventListener("keydown", handleKey);
-    window.addEventListener("keyup", handleKey);
     document.addEventListener("click", handleClickOutside);
     return () => {
-      window.removeEventListener("keydown", handleKey);
-      window.removeEventListener("keyup", handleKey);
       document.removeEventListener("click", handleClickOutside);
     };
   }, [selectedIDs.length, setSelectedIDs]);
 
   const handleCardClick = (index: number) => {
-    if (isShiftKeyDown && pivot !== null) {
-      const newSelected = (
-        index < pivot
-          ? filteredPeople.slice(index, pivot + 1)
-          : filteredPeople.slice(pivot, index + 1)
-      ).map((p) => p.id);
-      setSelectedIDs(newSelected);
-    } else {
-      setSelectedIDs((prev) =>
-        prev.includes(filteredPeople[index].id)
-          ? prev.filter((id) => id !== filteredPeople[index].id)
-          : [...prev, filteredPeople[index].id]
-      );
-      setPivot(index);
-    }
+    setSelectedIDs((prev) =>
+      prev.includes(people[index].id)
+        ? prev.filter((id) => id !== people[index].id)
+        : [...prev, people[index].id]
+    );
   };
 
   return (
@@ -82,7 +50,7 @@ export default function EditPeopleGrid({
         <p className="ml-[340px]">{`Total: ${people.length}`}</p>
       </div>
       <div className="h-full overflow-y-scroll">
-        {filteredPeople?.map((person, index) => (
+        {people?.map((person, index) => (
           <EditPeopleCard
             key={person.id}
             person={person}

@@ -28,12 +28,19 @@ export default function RootLayout({
       />
       {children}
       {feedback && (
-        <Feedback className="fixed bottom-10 right-1/2" type={feedback.type}>
+        <Feedback
+          className="fixed bottom-10 right-1/2 z-30 translate-x-1/2"
+          type={feedback.type}
+        >
           {feedback.message}
         </Feedback>
       )}
       {popup && (
-        <Popup title={popup.title} closeAction={() => setPopup(null)}>
+        <Popup
+          className="fixed left-0 top-0 z-30"
+          title={popup.title}
+          closeAction={() => setPopup(null)}
+        >
           {popup.component}
         </Popup>
       )}

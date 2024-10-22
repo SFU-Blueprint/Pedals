@@ -17,7 +17,7 @@ export async function GET() {
 
   // Confirm success
   return NextResponse.json(
-    { data, message: "Volunteers Loaded!" },
+    { data, message: "Volunteers loaded!" },
     { status: 200 }
   );
 }

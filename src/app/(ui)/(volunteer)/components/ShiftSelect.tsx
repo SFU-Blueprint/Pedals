@@ -19,15 +19,15 @@ export default function ShiftSelect({
       <div className="flex gap-2">
         <button
           type="button"
-          className={`${selectedOption === "pftp" && "!bg-pedals-yellow"}`}
-          onClick={() => onChange(selectedOption === "pftp" ? null : "pftp")}
+          className={`${selectedOption === "PFTP" && "!bg-pedals-yellow"}`}
+          onClick={() => onChange(selectedOption === "PFTP" ? null : "PFTP")}
         >
           PFTP
         </button>
         <button
           type="button"
-          className={`${selectedOption === "wtq" && "!bg-pedals-yellow"}`}
-          onClick={() => onChange(selectedOption === "wtq" ? null : "wtq")}
+          className={`${selectedOption === "WTQ" && "!bg-pedals-yellow"}`}
+          onClick={() => onChange(selectedOption === "WTQ" ? null : "WTQ")}
         >
           WTQ
         </button>

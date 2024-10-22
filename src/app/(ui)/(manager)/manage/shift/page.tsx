@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import FormInput from "@/components/FormInput";
-import EditShiftsGrid from "./components/EditShiftsGrid";
+import EditShiftsGrid from "../components/EditShiftsGrid";
 import { Tables } from "@/lib/supabase.types";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
+import { isInMonth, isInYear } from "@/utils";
 
 export default function ManageShiftPage() {
   const [searchName, setSearchName] = useState("");
@@ -35,6 +36,31 @@ export default function ManageShiftPage() {
   useEffect(() => {
     fetchShifts();
   }, [fetchShifts]);
+
+  const filteredShifts = shifts
+    ?.filter((shift) => {
+      const nameMatch = searchName
+        ? shift.volunteer_name?.toLowerCase().includes(searchName.toLowerCase())
+        : true;
+      const monthMatch = searchMonth
+        ? isInMonth(shift.checked_in_at, shift.checked_out_at, searchMonth)
+        : true;
+      const yearMatch = searchYear
+        ? isInYear(shift.checked_in_at, shift.checked_out_at, searchYear)
+        : true;
+      return nameMatch && monthMatch && yearMatch;
+    })
+    .sort((a, b) => {
+      if (!a.is_active && !a.checked_out_at) return -1;
+      if (!b.is_active && !b.checked_out_at) return 1;
+      const dateA = (
+        a.checked_in_at ? new Date(a.checked_in_at) : new Date()
+      ).getTime();
+      const dateB = (
+        b.checked_in_at ? new Date(b.checked_in_at) : new Date()
+      ).getTime();
+      return dateB - dateA;
+    });
 
   return (
     <>
@@ -74,13 +100,8 @@ export default function ManageShiftPage() {
         />
       </div>
       <EditShiftsGrid
-        shifts={shifts}
+        shifts={filteredShifts}
         refreshShifts={() => fetchShifts({ showSuccessFeedback: false })}
-        filter={{
-          name: searchName,
-          month: searchMonth,
-          year: searchYear
-        }}
       />
     </>
   );

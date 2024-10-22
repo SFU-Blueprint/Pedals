@@ -64,30 +64,33 @@ export default function ManageLoginPage() {
         </div>
         <button
           type="button"
-          className="mt-40 !h-fit w-fit !bg-transparent !pl-0 font-mono text-lg text-pedals-darkgrey hover:font-bold hover:text-pedals-black"
+          className="mt-40 !h-fit w-fit !bg-transparent !pl-0 font-mono text-lg uppercase text-pedals-darkgrey hover:font-bold hover:text-pedals-black"
           onClick={() =>
             setPopup({
               title: "Password Recovery",
               component: (
-                <div className="flex h-full flex-col justify-around px-10 py-10">
+                <div className="flex h-full flex-col items-center justify-between gap-10 px-10 py-10">
                   <p>
-                    An email has been set to coordinator@gmail.com. Please
-                    follow the instruction in the email to reset your access
+                    An email has been sent to coordinator@gmail.com. Please
+                    follow the instructions in the email to reset your access
                     code.
                   </p>
                   <button
-                    className="!rounded-3xl !bg-pedals-lightgrey"
-                    type="button"
-                    onClick={() => setPopup(null)}
+                    className="!w-fit !px-10 uppercase"
+                    type="submit"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPopup(null);
+                    }}
                   >
-                    FINISHED
+                    Finished
                   </button>
                 </div>
               )
             })
           }
         >
-          FORGOT PASSWORD?
+          Forgot Password?
         </button>
       </form>
     </div>

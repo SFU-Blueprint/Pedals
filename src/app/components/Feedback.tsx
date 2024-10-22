@@ -123,7 +123,7 @@ export default function Feedback({ type, ...props }: FeedbackProps) {
       />
     )
   };
-  const styles = `${colorMap[type]} ${props.className} flex w-fit translate-x-1/2 gap-4 px-4 py-4 rounded-[3px] items-center`;
+  const styles = `${colorMap[type]} ${props.className} flex w-fit gap-4 px-4 py-4 rounded-[3px] items-center`;
   return (
     <div className={styles}>
       {svgMap[type]}
