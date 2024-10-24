@@ -1,5 +1,3 @@
-"use client";
-
 import { createContext, Dispatch, SetStateAction, useContext } from "react";
 import { FeedbackInterface } from "@/components/Feedback";
 import { PopupInterface } from "@/components/Popup";
@@ -15,7 +13,7 @@ export function useUIComponentsContext() {
   const context = useContext(UIComponentsContext);
   if (!context) {
     throw new Error(
-      "useFeedbackFetch must be used within a <UIComponentsContext.Provider>"
+      "useUIComponentsContext must be used within a <UIComponentsContext.Provider>"
     );
   }
   return context;

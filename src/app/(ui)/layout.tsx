@@ -6,7 +6,7 @@ import Feedback, { FeedbackInterface } from "@/components/Feedback";
 import NavBar from "@/components/NavBar";
 import Popup, { PopupInterface } from "@/components/Popup";
 
-export default function RootLayout({
+export default function UILayout({
   children
 }: Readonly<{
   children: React.ReactNode;

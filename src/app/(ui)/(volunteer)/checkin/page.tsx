@@ -1,34 +1,16 @@
 "use client";
 
-import { useState, FormEvent, useEffect, useCallback } from "react";
+import { useState, FormEvent } from "react";
 import FormInput from "@/components/FormInput";
 import ShiftSelect from "../components/ShiftSelect";
-import ActiveShiftsGrid from "../components/ActiveShiftsGrid";
-import TimeDisplay from "../components/TimeDisplay";
-import { Tables } from "@/lib/supabase.types";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
+import { useVolunteerContext } from "@/contexts/VolunteerPagesContext";
 
 export default function CheckinPage() {
   const [username, setUsername] = useState("");
   const [shiftType, setShiftType] = useState<string | null>(null);
-  const [activeShifts, setActiveShifts] = useState<Tables<"shifts">[]>([]);
   const feedbackFetch = useFeedbackFetch();
-
-  const fetchActiveShifts = useCallback(
-    async (
-      options: { showSuccessFeedback: boolean } = { showSuccessFeedback: true }
-    ) => {
-      await feedbackFetch(
-        "/api/shifts/active",
-        { method: "GET" },
-        {
-          callback: (data) => setActiveShifts(data as Tables<"shifts">[]),
-          showSuccessFeedback: options.showSuccessFeedback
-        }
-      );
-    },
-    [feedbackFetch]
-  );
+  const { fetchActiveShifts } = useVolunteerContext();
 
   const handleCheckin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,10 +29,6 @@ export default function CheckinPage() {
     );
   };
 
-  useEffect(() => {
-    fetchActiveShifts();
-  }, [fetchActiveShifts]);
-
   const shiftOptions = [
     "General Onsite",
     "Wheel Service",
@@ -64,42 +42,35 @@ export default function CheckinPage() {
   ];
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-y-hidden">
-      <div className="sticky top-0 bg-pedals-lightgrey">
-        <TimeDisplay className="pl-20 pt-20" />
-        <form
-          className="flex items-end justify-between gap-96 px-20 py-10"
-          onSubmit={handleCheckin}
-        >
-          <div className="flex justify-start gap-96">
-            <FormInput
-              uppercase
-              className="w-[25rem]"
-              label="Username"
-              type="text"
-              placeholder="TYPE"
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <ShiftSelect
-              className="w-[25rem]"
-              options={shiftOptions}
-              selectedOption={shiftType}
-              onChange={setShiftType}
-            />
-          </div>
-          <button
-            disabled={!username || !shiftType}
-            type="submit"
-            className="whitespace-nowrap uppercase"
-          >
-            Check In
-          </button>
-        </form>
+    <form
+      className="flex items-end justify-between gap-96 px-20 py-10"
+      onSubmit={handleCheckin}
+    >
+      <div className="flex justify-start gap-96">
+        <FormInput
+          uppercase
+          className="w-[25rem]"
+          label="Username"
+          type="text"
+          placeholder="TYPE"
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <ShiftSelect
+          className="w-[25rem]"
+          options={shiftOptions}
+          selectedOption={shiftType}
+          onChange={setShiftType}
+        />
       </div>
-      <ActiveShiftsGrid
-        shifts={activeShifts}
-        refreshShifts={() => fetchActiveShifts({ showSuccessFeedback: false })}
-      />
-    </div>
+      <div>
+        <button
+          disabled={!username || !shiftType}
+          type="submit"
+          className="whitespace-nowrap uppercase"
+        >
+          Check In
+        </button>
+      </div>
+    </form>
   );
 }
