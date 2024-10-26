@@ -11,10 +11,11 @@ export default function ManageLoginPage() {
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const router = useRouter();
   const feedbackFetch = useFeedbackFetch();
-  const { setPopup } = useUIComponentsContext();
+  const { setPopup, loading } = useUIComponentsContext();
 
-  const handleAccessCodeSubmission = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmitAccessCode = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (loading) return;
     await feedbackFetch(
       "/api/validate-access-code",
       {
@@ -43,8 +44,7 @@ export default function ManageLoginPage() {
     <div className="h-screen bg-pedals-lightgrey">
       <form
         className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32 uppercase"
-        method="post"
-        onSubmit={handleAccessCodeSubmission}
+        onSubmit={handleSubmitAccessCode}
       >
         <h1>Enter Access Code</h1>
         <div className="flex items-center gap-5">
@@ -55,7 +55,7 @@ export default function ManageLoginPage() {
             onChange={(e) => setCurrentAccessCode(e.target.value)}
           />
           <button
-            disabled={!currentAccessCode}
+            aria-disabled={!currentAccessCode || loading}
             type="submit"
             className="!px-16 uppercase"
           >

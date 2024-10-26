@@ -1,7 +1,8 @@
-import { formatDate } from "@/utils";
+import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
+import { formatDate } from "@/utils/DateTime";
 
 interface DeleteConfirmationProps {
-  data: { id: string; name: string; lastSeen: string | null }[];
+  data: { id: string; name: string; lastSeen: string }[];
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -11,6 +12,7 @@ export default function DeleteConfirmation({
   onCancel,
   onConfirm
 }: DeleteConfirmationProps) {
+  const { loading } = useUIComponentsContext();
   return (
     <div className="flex flex-col items-center gap-5 px-10 py-10">
       <div className="flex w-full justify-start gap-10 px-5">
@@ -25,7 +27,7 @@ export default function DeleteConfirmation({
           >
             <h3 className="w-2/5">{person.name}</h3>
             <p className="w-2/5 uppercase">
-              {formatDate(person.lastSeen ? new Date(person.lastSeen) : null)}
+              {formatDate(new Date(person.lastSeen))}
             </p>
           </div>
         ))}
@@ -34,8 +36,10 @@ export default function DeleteConfirmation({
         <button
           type="submit"
           className="!w-fit !bg-pedals-grey px-10 uppercase"
+          aria-disabled={loading}
           onClick={(e) => {
             e.preventDefault();
+            if (loading) return;
             onCancel();
           }}
         >
@@ -44,8 +48,10 @@ export default function DeleteConfirmation({
         <button
           type="submit"
           className="!w-fit px-10 uppercase"
+          aria-disabled={loading}
           onClick={(e) => {
             e.preventDefault();
+            if (loading) return;
             onConfirm();
           }}
         >

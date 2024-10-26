@@ -7,7 +7,7 @@ export const PATCH = async (req: NextRequest) => {
   const { uname, dateOfBirth, dateLastSeen } = await req.json();
 
   // Handle missing required parameters
-  if (!dateOfBirth || !dateLastSeen || !uname) {
+  if (!dateLastSeen || !uname) {
     return NextResponse.json(
       { message: "Missing details to update." },
       { status: 400 }

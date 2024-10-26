@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
 import ActiveShiftsGrid from "./components/ActiveShiftsGrid";
 import { Tables } from "@/lib/supabase.types";
@@ -30,6 +30,10 @@ export default function VolunteerLayout({
     },
     [feedbackFetch]
   );
+
+  useEffect(() => {
+    fetchActiveShifts();
+  }, [fetchActiveShifts]);
 
   return (
     <VolunteerContext.Provider

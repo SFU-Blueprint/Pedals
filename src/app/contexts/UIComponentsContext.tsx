@@ -5,6 +5,8 @@ import { PopupInterface } from "@/components/Popup";
 type UIComponentsContextType = {
   setFeedback: Dispatch<SetStateAction<FeedbackInterface | null>>;
   setPopup: Dispatch<SetStateAction<PopupInterface | null>>;
+  loading: boolean;
+  popup: boolean;
 };
 
 const UIComponentsContext = createContext<UIComponentsContextType | null>(null);

@@ -14,28 +14,33 @@ export default function ShiftSelect({
   className,
   onChange
 }: ShiftSelectProps) {
+  const dropdownOptions = options.slice(2);
   return (
     <FormInput className={className} label="Shift Type">
       <div className="flex gap-2">
         <button
           type="button"
-          className={`${selectedOption === "PFTP" && "!bg-pedals-yellow"}`}
-          onClick={() => onChange(selectedOption === "PFTP" ? null : "PFTP")}
+          className={`${selectedOption === options[0] && "!bg-pedals-yellow"}`}
+          onClick={() =>
+            onChange(selectedOption === options[0] ? null : options[0])
+          }
         >
-          PFTP
+          {options[0]}
         </button>
         <button
           type="button"
-          className={`${selectedOption === "WTQ" && "!bg-pedals-yellow"}`}
-          onClick={() => onChange(selectedOption === "WTQ" ? null : "WTQ")}
+          className={`${selectedOption === options[1] && "!bg-pedals-yellow"}`}
+          onClick={() =>
+            onChange(selectedOption === options[1] ? null : options[1])
+          }
         >
-          WTQ
+          {options[1]}
         </button>
         <Dropdown
           className="w-full"
-          options={options}
+          options={dropdownOptions}
           currentOption={
-            selectedOption && options.includes(selectedOption)
+            selectedOption && dropdownOptions.includes(selectedOption)
               ? selectedOption
               : null
           }

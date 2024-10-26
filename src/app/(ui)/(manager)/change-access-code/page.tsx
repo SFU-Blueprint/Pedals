@@ -32,26 +32,28 @@ export default function ChangeAccessCodePage() {
   const [newCode, setNewCode] = useState("");
   const [confirmNewCode, setConfirmNewCode] = useState("");
   const [success, setSuccess] = useState(false);
-  const { setFeedback } = useUIComponentsContext();
+  const { setFeedback, loading } = useUIComponentsContext();
   const feedbackFetch = useFeedbackFetch();
 
   const minCodeLength = 8;
   const maxCodeLength = 15;
 
-  let message = "";
-  if (confirmNewCode !== newCode) {
-    message = "The new access code and confirmation code do not match.";
-  } else if (newCode.length < minCodeLength || newCode.length > maxCodeLength) {
-    message = `Access code must be ${minCodeLength}-${maxCodeLength} characters long.`;
-  } else if (!/\d/.test(newCode) || !/[a-zA-Z]/.test(newCode)) {
-    message = "Access code must include at least one letter and one number.";
-  }
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleChangeAccessCode = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (loading) return;
+    let message = "";
+    if (confirmNewCode !== newCode) {
+      message = "The new access code and confirmation code do not match.";
+    } else if (
+      newCode.length < minCodeLength ||
+      newCode.length > maxCodeLength
+    ) {
+      message = `Access code must be ${minCodeLength}-${maxCodeLength} characters long.`;
+    } else if (!/\d/.test(newCode) || !/[a-zA-Z]/.test(newCode)) {
+      message = "Access code must include at least one letter and one number.";
+    }
     if (message) {
       setFeedback({ type: FeedbackType.Warning, message });
-      setTimeout(() => setFeedback(null), 2500);
     } else {
       await feedbackFetch(
         "/api/change-access-code",
@@ -84,7 +86,7 @@ export default function ChangeAccessCodePage() {
       ) : (
         <form
           className="flex w-fit flex-col justify-center gap-6 bg-pedals-lightgrey pl-24 pt-9"
-          onSubmit={handleSubmit}
+          onSubmit={handleChangeAccessCode}
         >
           <FormInput
             label="Current access code:"
@@ -111,7 +113,7 @@ export default function ChangeAccessCodePage() {
           />
           <button
             type="submit"
-            disabled={!oldCode || !newCode || !confirmNewCode}
+            aria-disabled={!oldCode || !newCode || !confirmNewCode || loading}
             className="mt-6 w-fit uppercase"
           >
             Change Access Code

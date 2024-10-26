@@ -1,8 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import UIComponentsContext from "@/contexts/UIComponentsContext";
-import Feedback, { FeedbackInterface } from "@/components/Feedback";
+import Feedback, {
+  FeedbackInterface,
+  FeedbackType
+} from "@/components/Feedback";
 import NavBar from "@/components/NavBar";
 import Popup, { PopupInterface } from "@/components/Popup";
 
@@ -14,9 +17,27 @@ export default function UILayout({
   const [feedback, setFeedback] = useState<FeedbackInterface | null>(null);
   const [popup, setPopup] = useState<PopupInterface | null>(null);
 
+  useEffect(() => {
+    if (feedback !== null && feedback.type !== FeedbackType.Loading) {
+      const timer = setTimeout(() => {
+        setFeedback(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [feedback]);
+
   return (
     <UIComponentsContext.Provider
-      value={useMemo(() => ({ setFeedback, setPopup }), [])}
+      value={useMemo(
+        () => ({
+          setFeedback,
+          setPopup,
+          loading: feedback !== null && feedback.type === FeedbackType.Loading,
+          popup: popup !== null
+        }),
+        [feedback, popup]
+      )}
     >
       <NavBar
         className="fixed right-20 top-20 z-30"

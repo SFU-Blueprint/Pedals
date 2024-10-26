@@ -1,5 +1,6 @@
 import { Tables } from "@/lib/supabase.types";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
+import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
 
 interface ActiveShiftsGridProps {
   shifts: Tables<"shifts">[];
@@ -13,7 +14,8 @@ interface ActiveShiftCardProps {
 
 function ActiveShiftCard({ refreshShifts, shift }: ActiveShiftCardProps) {
   const feedbackFetch = useFeedbackFetch();
-  const handleCheckout = async (
+  const { loading } = useUIComponentsContext();
+  const executeCheckout = async (
     shiftId: string,
     volunteerId: string | null
   ) => {
@@ -47,24 +49,26 @@ function ActiveShiftCard({ refreshShifts, shift }: ActiveShiftCardProps) {
         <h3 className="w-[25rem]">{shift.volunteer_name}</h3>
         <div className="flex w-[25rem] justify-between">
           <p>
-            {shift.checked_in_at
-              ? `Since ${new Date(shift.checked_in_at).toLocaleTimeString(
-                  "en-US",
-                  {
-                    hour: "numeric",
-                    minute: "numeric",
-                    hour12: true
-                  }
-                )}`
-              : "Error"}
+            `Since $
+            {new Date(shift.checked_in_at).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true
+            })}
+            `
           </p>
           <p className="uppercase">{shift.shift_type}</p>
         </div>
       </div>
       <button
         type="button"
+        aria-disabled={loading}
         className="!rounded-full !px-5 uppercase"
-        onClick={() => handleCheckout(shift.id, shift.volunteer_id)}
+        onClick={() => {
+          if (!loading) {
+            executeCheckout(shift.id, shift.volunteer_id);
+          }
+        }}
       >
         Check Out
       </button>

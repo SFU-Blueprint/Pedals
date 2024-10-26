@@ -47,34 +47,34 @@ export type Database = {
       };
       shifts: {
         Row: {
-          checked_in_at: string | null;
+          checked_in_at: string;
           checked_out_at: string | null;
           duration: number | null;
           id: string;
-          is_active: boolean | null;
-          shift_type: string | null;
+          is_active: boolean;
+          shift_type: string;
           volunteer_id: string | null;
-          volunteer_name: string | null;
+          volunteer_name: string;
         };
         Insert: {
-          checked_in_at?: string | null;
+          checked_in_at: string;
           checked_out_at?: string | null;
           duration?: number | null;
           id?: string;
-          is_active?: boolean | null;
-          shift_type?: string | null;
+          is_active: boolean;
+          shift_type: string;
           volunteer_id?: string | null;
-          volunteer_name?: string | null;
+          volunteer_name: string;
         };
         Update: {
-          checked_in_at?: string | null;
+          checked_in_at?: string;
           checked_out_at?: string | null;
           duration?: number | null;
           id?: string;
-          is_active?: boolean | null;
-          shift_type?: string | null;
+          is_active?: boolean;
+          shift_type?: string;
           volunteer_id?: string | null;
-          volunteer_name?: string | null;
+          volunteer_name?: string;
         };
         Relationships: [
           {
@@ -91,8 +91,8 @@ export type Database = {
           created_at: string;
           dob: string | null;
           id: string;
-          is_volunteer: boolean | null;
-          last_seen: string | null;
+          is_volunteer: boolean;
+          last_seen: string;
           name: string;
           total_time: number;
           username: string;
@@ -101,8 +101,8 @@ export type Database = {
           created_at?: string;
           dob?: string | null;
           id?: string;
-          is_volunteer?: boolean | null;
-          last_seen?: string | null;
+          is_volunteer: boolean;
+          last_seen: string;
           name: string;
           total_time?: number;
           username: string;
@@ -111,8 +111,8 @@ export type Database = {
           created_at?: string;
           dob?: string | null;
           id?: string;
-          is_volunteer?: boolean | null;
-          last_seen?: string | null;
+          is_volunteer?: boolean;
+          last_seen?: string;
           name?: string;
           total_time?: number;
           username?: string;
@@ -124,7 +124,14 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      get_volunteer_hours: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          volunteer_id: string;
+          volunteer_name: string;
+          total_hours: number;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;
@@ -215,4 +222,19 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never;
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database;
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never;

@@ -1,3 +1,5 @@
+import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
+
 interface EditConfirmationProps {
   data: [
     { key: string; value: string },
@@ -12,6 +14,7 @@ export default function EditConfirmation({
   data,
   onConfirm
 }: EditConfirmationProps) {
+  const { loading } = useUIComponentsContext();
   const [
     { key: key1, value: value1 },
     { key: key2, value: value2 },
@@ -43,9 +46,12 @@ export default function EditConfirmation({
       <button
         type="submit"
         className="!w-fit px-10 uppercase"
+        aria-disabled={loading}
         onClick={(e) => {
           e.preventDefault();
-          onConfirm();
+          if (!loading) {
+            onConfirm();
+          }
         }}
       >
         Confirm

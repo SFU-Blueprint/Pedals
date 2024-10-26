@@ -6,7 +6,8 @@ import FormInput from "@/components/FormInput";
 import EditShiftsGrid from "../components/EditShiftsGrid";
 import { Tables } from "@/lib/supabase.types";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
-import { isInMonth, isInYear } from "@/utils";
+import { isInMonth, isInYear } from "@/utils/DateTime";
+import { MONTHS_SHORT, YEARS_RANGE } from "@/utils/Constants";
 
 export default function ManageShiftPage() {
   const [searchName, setSearchName] = useState("");
@@ -43,22 +44,18 @@ export default function ManageShiftPage() {
         ? shift.volunteer_name?.toLowerCase().includes(searchName.toLowerCase())
         : true;
       const monthMatch = searchMonth
-        ? isInMonth(shift.checked_in_at, shift.checked_out_at, searchMonth)
+        ? isInMonth(shift.checked_in_at, searchMonth)
         : true;
       const yearMatch = searchYear
-        ? isInYear(shift.checked_in_at, shift.checked_out_at, searchYear)
+        ? isInYear(shift.checked_in_at, searchYear)
         : true;
       return nameMatch && monthMatch && yearMatch;
     })
     .sort((a, b) => {
       if (!a.is_active && !a.checked_out_at) return -1;
       if (!b.is_active && !b.checked_out_at) return 1;
-      const dateA = (
-        a.checked_in_at ? new Date(a.checked_in_at) : new Date()
-      ).getTime();
-      const dateB = (
-        b.checked_in_at ? new Date(b.checked_in_at) : new Date()
-      ).getTime();
+      const dateA = new Date(a.checked_in_at).getTime();
+      const dateB = new Date(b.checked_in_at).getTime();
       return dateB - dateA;
     });
 
@@ -68,14 +65,12 @@ export default function ManageShiftPage() {
         <FormInput
           className="w-80"
           type="text"
-          placeholder="Search Name"
+          placeholder="SEARCH NAME"
           onChange={(e) => setSearchName(e.target.value)}
         />
         <Dropdown
           className="w-40"
-          options={Array.from({ length: 12 }, (_v, i) =>
-            new Date(0, i).toLocaleString("en", { month: "short" })
-          )}
+          options={MONTHS_SHORT}
           currentOption={searchMonth}
           placeholder="Month"
           onClick={(e) => {
@@ -85,10 +80,7 @@ export default function ManageShiftPage() {
         />
         <Dropdown
           className="w-40"
-          options={Array.from(
-            { length: new Date().getFullYear() - 2020 + 1 },
-            (_v, i) => 2020 + i
-          )}
+          options={YEARS_RANGE}
           currentOption={searchYear}
           placeholder="Year"
           onClick={(e) => {

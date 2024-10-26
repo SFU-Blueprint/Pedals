@@ -40,7 +40,7 @@ export default function ExportPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-12 sm:px-6 lg:px-8">
-      <button onClick={downloadCsv} disabled={isLoading}>
+      <button onClick={downloadCsv} aria-disabled={isLoading}>
         {isLoading ? "Downloading..." : "Download CSV"}
       </button>
       {feedback && <Feedback type={feedback[0]}>{feedback[1]}</Feedback>}

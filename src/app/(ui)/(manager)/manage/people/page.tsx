@@ -1,23 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import EditPeopleGrid from "../components/EditPeopleGrid";
+import DeleteConfirmation from "../components/DeleteConfirmation";
 import FormInput from "@/components/FormInput";
 import RadioButton from "@/components/RadioButton";
-import EditPeopleGrid from "../components/EditPeopleGrid";
 import { Tables } from "@/lib/supabase.types";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
-import { arraysEqual, isInactive, isUnder18 } from "@/utils";
 import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
-import DeleteConfirmation from "../components/DeleteConfirmation";
+import { isInactive, isUnder18 } from "@/utils/DateTime";
+import { setsEqual } from "@/utils/Validators";
 
 export default function ManagePeoplePage() {
   const [people, setPeople] = useState<Tables<"users">[]>([]);
   const [searchName, setSearchName] = useState("");
   const [searchInactive, setSearchInactive] = useState(false);
   const [searchUnder18, setSearchUnder18] = useState(false);
-  const [selectedIDs, setSelectedIDs] = useState<string[]>([]);
+  const [selectedIDs, setSelectedIDs] = useState<Set<string>>(new Set());
   const feedbackFetch = useFeedbackFetch();
-  const { setPopup } = useUIComponentsContext();
+  const { setPopup, loading } = useUIComponentsContext();
 
   const fetchPeople = useCallback(
     async (
@@ -37,7 +38,7 @@ export default function ManagePeoplePage() {
     [feedbackFetch]
   );
 
-  const handleRemovePeople = async () =>
+  const executeRemovePeople = async () =>
     feedbackFetch(
       "/api/people",
       {
@@ -59,15 +60,20 @@ export default function ManagePeoplePage() {
     fetchPeople();
   }, [fetchPeople]);
 
-  const filteredPeople = people?.filter(
-    (person) =>
-      (searchName
-        ? person.name?.toLowerCase().includes(searchName.toLowerCase())
-        : true) &&
-      (searchUnder18 ? isUnder18(person.dob) : true) &&
-      (searchInactive ? isInactive(person.last_seen) : true)
-  );
-  const filteredIDs = filteredPeople.map((p) => p.id);
+  const filteredPeople = people
+    ?.filter(
+      (person) =>
+        (searchName
+          ? person.name?.toLowerCase().includes(searchName.toLowerCase())
+          : true) &&
+        (searchUnder18 ? isUnder18(person.dob) : true) &&
+        (searchInactive ? isInactive(person.last_seen) : true)
+    )
+    ?.sort(
+      (a, b) =>
+        new Date(a.last_seen).getTime() - new Date(b.last_seen).getTime()
+    );
+  const filteredIDs = new Set(filteredPeople.map((p) => p.id));
 
   return (
     <>
@@ -75,7 +81,7 @@ export default function ManagePeoplePage() {
         <FormInput
           className="mb-6 ml-auto mr-20 mt-36 flex w-80"
           type="text"
-          placeholder="Search Name"
+          placeholder="SEARCH NAME"
           onChange={(e) => setSearchName(e.target.value)}
         />
         <hr
@@ -85,11 +91,11 @@ export default function ManagePeoplePage() {
         <div className="flex w-full justify-between px-20 py-6">
           <div className="flex items-center gap-6">
             <RadioButton
-              checked={arraysEqual(selectedIDs, filteredIDs)}
+              checked={setsEqual(selectedIDs, filteredIDs)}
               label="Select All"
               onClick={() => {
                 setSelectedIDs(
-                  arraysEqual(selectedIDs, filteredIDs) ? [] : filteredIDs
+                  setsEqual(selectedIDs, filteredIDs) ? new Set() : filteredIDs
                 );
               }}
             />
@@ -103,24 +109,25 @@ export default function ManagePeoplePage() {
             />
           </div>
           <button
-            disabled={selectedIDs.length === 0}
+            aria-disabled={selectedIDs.size === 0 || loading}
             type="submit"
             className="rounded-full bg-yellow-400 uppercase"
             onClick={(e) => {
               e.preventDefault();
+              if (loading || selectedIDs.size === 0) return;
               setPopup({
-                title: `Remove ${selectedIDs.length} people from the database?`,
+                title: `Remove ${selectedIDs.size} people from the database?`,
                 component: (
                   <DeleteConfirmation
                     data={filteredPeople
-                      .filter((person) => selectedIDs.includes(person.id))
+                      .filter((person) => selectedIDs.has(person.id))
                       .map((person) => ({
                         id: person.id,
                         name: person.name,
                         lastSeen: person.last_seen
                       }))}
                     onCancel={() => setPopup(null)}
-                    onConfirm={async () => handleRemovePeople()}
+                    onConfirm={async () => executeRemovePeople()}
                   />
                 )
               });

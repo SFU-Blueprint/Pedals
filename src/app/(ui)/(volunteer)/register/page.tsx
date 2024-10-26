@@ -6,39 +6,60 @@ import DateSelector from "@/components/DateSelector";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
 import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
 import { FeedbackType } from "@/components/Feedback";
+import { validFullName, validUsername } from "@/utils/Validators";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
   const [dob, setDOB] = useState<Date | null>();
   const feedbackFetch = useFeedbackFetch();
-  const { setFeedback } = useUIComponentsContext();
+  const { setFeedback, loading } = useUIComponentsContext();
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!/^[a-z0-9]{1,30}$/.test(username)) {
+    if (loading) return;
+    if (!username || !fullName) {
+      let message = "";
+      if (!username && !fullName) {
+        message = "Please provide your username and full name!";
+      } else if (!username) {
+        message = "Please provide your username!";
+      } else if (!fullName) {
+        message = "Please provide your full name!";
+      }
+      setFeedback({
+        type: FeedbackType.Warning,
+        message
+      });
+      return;
+    }
+    if (!validUsername(username)) {
       setFeedback({
         type: FeedbackType.Warning,
         message:
-          "Username must be lowercase, alphanumeric, and less than 30 characters."
+          "Username must be lowercase, alphanumeric, wihout spaces, and fewer than 30 characters."
       });
-      setTimeout(() => setFeedback(null), 2500);
-    } else {
-      await feedbackFetch(
-        "/api/register", // URL
-        {
-          method: "POST",
-          body: JSON.stringify({
-            username,
-            fullName,
-            dob
-          }),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      );
+      return;
     }
+    if (!validFullName(fullName)) {
+      setFeedback({
+        type: FeedbackType.Warning,
+        message:
+          "Full name must include a first and last name, with no leading, trailing, or multiple spaces."
+      });
+      return;
+    }
+    await feedbackFetch("/api/register", {
+      method: "POST",
+      body: JSON.stringify({
+        username,
+        fullName,
+        dob
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
   };
 
   return (
@@ -74,7 +95,7 @@ export default function RegisterPage() {
         </FormInput>
       </div>
       <button
-        disabled={!username || !fullName}
+        aria-disabled={!username || !fullName || loading}
         type="submit"
         className="mt-[34px] whitespace-nowrap uppercase"
       >

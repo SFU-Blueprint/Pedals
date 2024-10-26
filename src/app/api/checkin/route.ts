@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   if (!username || !shiftType) {
     return NextResponse.json(
       {
-        message: "Please provide your username and your current type of shift."
+        message: "Please provide your username and current shift type."
       },
       { status: 400 }
     );

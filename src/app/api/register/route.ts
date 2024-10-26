@@ -45,7 +45,8 @@ export async function POST(req: NextRequest) {
     name: fullName,
     dob: dob,
     username: username,
-    is_volunteer: true
+    is_volunteer: true,
+    last_seen: new Date()
   });
 
   // Handle potential errors during the insert operation

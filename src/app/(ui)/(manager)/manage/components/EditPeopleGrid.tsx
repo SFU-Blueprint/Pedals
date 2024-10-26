@@ -5,8 +5,8 @@ import EditPeopleCard from "./EditPeopleCard";
 interface EditPeopleGridProps {
   people: Tables<"users">[];
   refreshPeople: () => Promise<void>;
-  selectedIDs: string[];
-  setSelectedIDs: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedIDs: Set<string>;
+  setSelectedIDs: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
 export default function EditPeopleGrid({
@@ -21,24 +21,16 @@ export default function EditPeopleGrid({
       if (
         ref.current &&
         !ref.current.contains(event.target as Node) &&
-        selectedIDs.length > 0
+        selectedIDs.size > 0
       ) {
-        setSelectedIDs([]);
+        setSelectedIDs(new Set());
       }
     };
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, [selectedIDs.length, setSelectedIDs]);
-
-  const handleCardClick = (index: number) => {
-    setSelectedIDs((prev) =>
-      prev.includes(people[index].id)
-        ? prev.filter((id) => id !== people[index].id)
-        : [...prev, people[index].id]
-    );
-  };
+  }, [selectedIDs.size, setSelectedIDs]);
 
   return (
     <div className="flex h-full select-none flex-col overflow-y-auto" ref={ref}>
@@ -50,13 +42,13 @@ export default function EditPeopleGrid({
         <p className="ml-[340px]">{`Total: ${people.length}`}</p>
       </div>
       <div className="h-full overflow-y-scroll">
-        {people?.map((person, index) => (
+        {people?.map((person) => (
           <EditPeopleCard
             key={person.id}
             person={person}
             refreshPeople={refreshPeople}
-            onClick={() => handleCardClick(index)}
-            isSelected={selectedIDs.includes(person.id)}
+            setSelectedIDs={setSelectedIDs}
+            selectedIDs={selectedIDs}
           />
         ))}
       </div>

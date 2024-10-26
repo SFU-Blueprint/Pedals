@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import supabase from "@/lib/supabase";
 import { Tables } from "@/lib/supabase.types";
-import { isSameDate } from "@/utils";
+import { isSameDate } from "@/utils/DateTime";
 
 export async function POST(req: NextRequest) {
   const { shiftId, volunteerId } = await req.json();

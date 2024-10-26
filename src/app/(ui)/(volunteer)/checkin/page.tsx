@@ -5,15 +5,44 @@ import FormInput from "@/components/FormInput";
 import ShiftSelect from "../components/ShiftSelect";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
 import { useVolunteerContext } from "@/contexts/VolunteerPagesContext";
+import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
+import { FeedbackType } from "@/components/Feedback";
+import { validUsername } from "@/utils/Validators";
+import { SHIFT_TYPES } from "@/utils/Constants";
 
 export default function CheckinPage() {
   const [username, setUsername] = useState("");
   const [shiftType, setShiftType] = useState<string | null>(null);
   const feedbackFetch = useFeedbackFetch();
   const { fetchActiveShifts } = useVolunteerContext();
+  const { setFeedback, loading } = useUIComponentsContext();
 
   const handleCheckin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (loading) return;
+    if (!username || !shiftType) {
+      let message = "";
+      if (!username && !shiftType) {
+        message = "Please provide your username and current shift type!";
+      } else if (!username) {
+        message = "Please provide your username!";
+      } else if (!shiftType) {
+        message = "Please select current shift type!";
+      }
+      setFeedback({
+        type: FeedbackType.Warning,
+        message
+      });
+      return;
+    }
+    if (!validUsername(username)) {
+      setFeedback({
+        type: FeedbackType.Warning,
+        message:
+          "Username must be lowercase, alphanumeric, and less than 30 characters."
+      });
+      return;
+    }
     await feedbackFetch(
       "/api/checkin",
       {
@@ -28,18 +57,6 @@ export default function CheckinPage() {
       }
     );
   };
-
-  const shiftOptions = [
-    "General Onsite",
-    "Wheel Service",
-    "Wheel Building",
-    "Wheel Recycling",
-    "Bike Stripping",
-    "Inner Tubes",
-    "Shop Organizing",
-    "Offsite Event",
-    "Youth Volunteering"
-  ];
 
   return (
     <form
@@ -57,14 +74,14 @@ export default function CheckinPage() {
         />
         <ShiftSelect
           className="w-[25rem]"
-          options={shiftOptions}
+          options={SHIFT_TYPES}
           selectedOption={shiftType}
           onChange={setShiftType}
         />
       </div>
       <div>
         <button
-          disabled={!username || !shiftType}
+          aria-disabled={!username || !shiftType || loading}
           type="submit"
           className="whitespace-nowrap uppercase"
         >

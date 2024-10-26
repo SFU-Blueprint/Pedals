@@ -38,7 +38,6 @@ export default function useFeedbackFetch() {
       } catch (error) {
         setFeedback({ type: FeedbackType.Error, message: "Unknown Error" });
       }
-      setTimeout(() => setFeedback(null), 2500);
     },
     [setFeedback, setPopup]
   );
