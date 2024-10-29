@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
 export async function POST(req: Request) {
-  const { accessCode } = await req.json();
+  const { code } = await req.json();
 
   // Handle missing required parameters
-  if (!accessCode) {
+  if (!code) {
     return NextResponse.json(
       { message: "Please provide the access code" },
       { status: 400 }
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const { data, error } = await supabase
     .from("access_codes")
     .select("code, is_active")
-    .eq("code", accessCode)
+    .eq("code", code)
     .eq("is_active", true)
     .single();
 

@@ -21,7 +21,7 @@ export default function ManageLoginPage() {
       {
         method: "POST",
         body: JSON.stringify({
-          accessCode: currentAccessCode
+          code: currentAccessCode
         }),
         headers: {
           "Content-Type": "application/json"

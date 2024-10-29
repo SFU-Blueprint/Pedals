@@ -4,10 +4,10 @@ import { Tables } from "@/lib/supabase.types";
 
 export const PATCH = async (req: NextRequest) => {
   const id = new URL(req.url).pathname.split("/").pop();
-  const { inTime, outTime, type } = await req.json();
+  const { intime, outtime, type } = await req.json();
 
   // Handle missing required parameters
-  if (!inTime || !outTime || !type) {
+  if (!intime || !outtime || !type) {
     return NextResponse.json(
       { message: "Missing shift details" },
       { status: 400 }
@@ -15,7 +15,7 @@ export const PATCH = async (req: NextRequest) => {
   }
 
   // Validate that check in time is before check out time
-  if (new Date(inTime) > new Date(outTime)) {
+  if (new Date(intime) > new Date(outtime)) {
     return NextResponse.json(
       { message: "Check out time cannot be before check in time." },
       { status: 400 }
@@ -82,15 +82,15 @@ export const PATCH = async (req: NextRequest) => {
 
   const currentUser = user as Tables<"users">;
   const duration = Math.floor(
-    (new Date(outTime).getTime() - new Date(inTime).getTime()) / 1000
+    (new Date(outtime).getTime() - new Date(intime).getTime()) / 1000
   );
 
   // Update the shift with new shift type and times
   const { error: shiftUpdateError } = await supabase
     .from("shifts")
     .update({
-      checked_in_at: inTime,
-      checked_out_at: outTime,
+      checked_in_at: intime,
+      checked_out_at: outtime,
       shift_type: type,
       duration: duration
     })

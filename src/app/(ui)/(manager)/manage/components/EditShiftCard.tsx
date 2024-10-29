@@ -38,18 +38,18 @@ export default function EditShiftCard({
   const { setPopup, setFeedback, loading, popup } = useUIComponentsContext();
 
   const executeEditShift = async (
-    shiftId: string,
-    inTime: string,
-    outTime: string,
+    id: string,
+    intime: string,
+    outtime: string,
     type: string
   ) => {
     await feedbackFetch(
-      `/api/shifts/${shiftId}`,
+      `/api/shifts/${id}`,
       {
         method: "PATCH",
         body: JSON.stringify({
-          inTime,
-          outTime,
+          intime,
+          outtime,
           type
         }),
         headers: {

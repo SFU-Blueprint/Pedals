@@ -10,9 +10,10 @@ export default function useFeedbackFetch() {
       params: RequestInit,
       options: {
         callback?: (data?: any) => void;
+        callbackOnWarning?: boolean;
         showSuccessFeedback?: boolean;
         warningPopup?: ReactNode;
-      } = { showSuccessFeedback: true }
+      } = { showSuccessFeedback: true, callbackOnWarning: true }
     ) => {
       const { callback, showSuccessFeedback = true, warningPopup } = options;
       setFeedback({ type: FeedbackType.Loading, message: "Loading" });
@@ -21,7 +22,10 @@ export default function useFeedbackFetch() {
         const result = await response.json();
         const { data, message } = result;
         if (response.ok) {
-          if (callback) {
+          if (
+            callback &&
+            (options.callbackOnWarning || response.status === 200)
+          ) {
             callback(data);
           }
           if (response.status !== 200 && warningPopup) {

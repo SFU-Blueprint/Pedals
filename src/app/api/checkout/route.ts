@@ -4,10 +4,10 @@ import { Tables } from "@/lib/supabase.types";
 import { isSameDate } from "@/utils/DateTime";
 
 export async function POST(req: NextRequest) {
-  const { shiftId, volunteerId } = await req.json();
+  const { sid, vid } = await req.json();
 
   // Handle missing required parameters
-  if (!shiftId || !volunteerId) {
+  if (!sid || !vid) {
     return NextResponse.json(
       { message: "Missing Shift ID and Volunteer ID" },
       { status: 400 }
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   const { data: user, error: userError } = await supabase
     .from("users")
     .select("*")
-    .eq("id", volunteerId)
+    .eq("id", vid)
     .single();
 
   // Handle network error
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   const { data: shift, error: shiftError } = await supabase
     .from("shifts")
     .select("*")
-    .eq("id", shiftId)
+    .eq("id", sid)
     .single();
 
   // Handle network error

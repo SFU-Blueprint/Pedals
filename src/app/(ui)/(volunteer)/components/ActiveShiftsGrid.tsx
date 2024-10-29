@@ -15,17 +15,14 @@ interface ActiveShiftCardProps {
 function ActiveShiftCard({ refreshShifts, shift }: ActiveShiftCardProps) {
   const feedbackFetch = useFeedbackFetch();
   const { loading } = useUIComponentsContext();
-  const executeCheckout = async (
-    shiftId: string,
-    volunteerId: string | null
-  ) => {
+  const executeCheckout = async (sid: string, vid: string | null) => {
     await feedbackFetch(
       "api/checkout",
       {
         method: "POST",
         body: JSON.stringify({
-          shiftId,
-          volunteerId
+          sid,
+          vid
         }),
         headers: {
           "Content-Type": "application/json"
@@ -49,13 +46,15 @@ function ActiveShiftCard({ refreshShifts, shift }: ActiveShiftCardProps) {
         <h3 className="w-[25rem]">{shift.volunteer_name}</h3>
         <div className="flex w-[25rem] justify-between">
           <p>
-            `Since $
-            {new Date(shift.checked_in_at).toLocaleTimeString("en-US", {
-              hour: "numeric",
-              minute: "numeric",
-              hour12: true
-            })}
-            `
+            {`Since ${new Date(shift.checked_in_at).toLocaleTimeString(
+              "en-US",
+              {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true
+              }
+            )}
+            `}
           </p>
           <p className="uppercase">{shift.shift_type}</p>
         </div>

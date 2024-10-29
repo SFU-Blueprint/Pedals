@@ -38,12 +38,12 @@ export default function ManagePeoplePage() {
     [feedbackFetch]
   );
 
-  const executeRemovePeople = async () =>
+  const executeRemovePeople = async (ids: Set<string>) =>
     feedbackFetch(
       "/api/people",
       {
         method: "DELETE",
-        body: JSON.stringify({ ids: selectedIDs }),
+        body: JSON.stringify({ ids: Array.from(ids) }),
         headers: {
           "Content-Type": "application/json"
         }
@@ -127,7 +127,7 @@ export default function ManagePeoplePage() {
                         lastSeen: person.last_seen
                       }))}
                     onCancel={() => setPopup(null)}
-                    onConfirm={async () => executeRemovePeople()}
+                    onConfirm={async () => executeRemovePeople(selectedIDs)}
                   />
                 )
               });

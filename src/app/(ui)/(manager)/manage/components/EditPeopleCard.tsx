@@ -7,6 +7,7 @@ import useFeedbackFetch from "@/hooks/FeedbackFetch";
 import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
 import EditConfirmation from "./EditConfirmation";
 import { FeedbackType } from "@/components/Feedback";
+import { validUsername } from "@/utils/Validators";
 
 interface EditPeopleCardProps {
   person: Tables<"users">;
@@ -35,19 +36,19 @@ export default function EditPeopleCard({
   const { setFeedback, setPopup, loading, popup } = useUIComponentsContext();
 
   const executeEditPeople = async (
-    personId: string,
+    id: string,
     uname: string,
-    dateOfBirth: Date | null,
-    dateLastSeen: Date
+    birthdate: Date | null,
+    lastdate: Date
   ) => {
     await feedbackFetch(
-      `/api/people/${personId}`,
+      `/api/people/${id}`,
       {
         method: "PATCH",
         body: JSON.stringify({
           uname,
-          dateOfBirth,
-          dateLastSeen
+          birthdate,
+          lastdate
         }),
         headers: {
           "Content-Type": "application/json"
@@ -105,34 +106,42 @@ export default function EditPeopleCard({
         return;
       }
       if (username && lastSeen) {
-        setPopup({
-          title: "Confirm new volunteer details",
-          component: (
-            <EditConfirmation
-              data={[
-                {
-                  key: "Name",
-                  value: person.name
-                },
-                {
-                  key: "Username",
-                  value: username
-                },
-                {
-                  key: "Date of Birth",
-                  value: formatDate(dob)
-                },
-                {
-                  key: "Last Seen",
-                  value: formatDate(lastSeen)
+        if (!validUsername(username)) {
+          setFeedback({
+            type: FeedbackType.Warning,
+            message:
+              "Username must be lowercase, alphanumeric, wihout spaces, and fewer than 30 characters."
+          });
+        } else {
+          setPopup({
+            title: "Confirm new volunteer details",
+            component: (
+              <EditConfirmation
+                data={[
+                  {
+                    key: "Name",
+                    value: person.name
+                  },
+                  {
+                    key: "Username",
+                    value: username
+                  },
+                  {
+                    key: "Date of Birth",
+                    value: formatDate(dob)
+                  },
+                  {
+                    key: "Last Seen",
+                    value: formatDate(lastSeen)
+                  }
+                ]}
+                onConfirm={() =>
+                  executeEditPeople(person.id, username, dob, lastSeen)
                 }
-              ]}
-              onConfirm={() =>
-                executeEditPeople(person.id, username, dob, lastSeen)
-              }
-            />
-          )
-        });
+              />
+            )
+          });
+        }
       } else {
         showMissingFieldsWarning();
       }
