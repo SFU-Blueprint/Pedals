@@ -2,13 +2,15 @@ import DatePicker from "react-datepicker";
 import "./dateselector.css";
 
 type DateSelectorProps = React.ComponentProps<typeof DatePicker> & {
-  // declared the type of onChange to prevent TS error 
-  // the error arises from using onSelect without prop of selectMulitple
-  onChange: (date: Date | null, event?: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void;
+  // declared the type of onChange to prevent TS error
+  onChange: (
+    date?: Date | null,
+    event?: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>
+  ) => void;
 };
 
 export default function DateSelector(props: DateSelectorProps) {
-  const { selected,onChange, maxDate, className } = props;
+  const { selected, onChange, maxDate, className } = props;
   return (
     <DatePicker
       showYearDropdown
@@ -23,7 +25,7 @@ export default function DateSelector(props: DateSelectorProps) {
       maxDate={maxDate}
       onChange={onChange}
       selected={selected}
-      isClearable 
+      isClearable
     />
   );
 }

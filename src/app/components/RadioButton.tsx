@@ -13,7 +13,7 @@ export default function RadioButton({ label, ...props }: RadioButtonProps) {
         type="checkbox"
         checked={props.checked}
         className={`${props.className} h-6 w-6 cursor-pointer appearance-none rounded-full bg-pedals-grey checked:bg-pedals-yellow`}
-        onClick={props.onClick}
+        onChange={props.onChange}
       />
       <label className="cursor-pointer font-mono uppercase" htmlFor={id}>
         {label}

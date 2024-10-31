@@ -23,7 +23,7 @@ export default function EditPeopleCard({
   setSelectedIDs
 }: EditPeopleCardProps) {
   const [username, setUsername] = useState<string>(person.username);
-  const [dob, setDob] = useState<Date | null>(
+  const [dob, setDOB] = useState<Date | null>(
     person.dob ? new Date(person.dob) : null
   );
   const [lastSeen, setLastSeen] = useState<Date | null>(
@@ -160,7 +160,7 @@ export default function EditPeopleCard({
       ) {
         setIsEditing(false);
         setUsername(person.username);
-        setDob(person.dob ? new Date(person.dob) : null);
+        setDOB(person.dob ? new Date(person.dob) : null);
         setLastSeen(new Date(person.last_seen));
       }
     };
@@ -211,7 +211,10 @@ export default function EditPeopleCard({
         )}
         {isEditing ? (
           <div className="-ml-[12px] w-80 pr-4">
-            <DateSelector selected={dob} onChange={(d) => setDob(d)} />
+            <DateSelector
+              selected={dob}
+              onChange={(d) => setDOB(d as Date | null)}
+            />
           </div>
         ) : (
           <p className="w-80 pr-4 uppercase">{formatDate(dob)}</p>
@@ -220,7 +223,7 @@ export default function EditPeopleCard({
           <div className="w-80 pr-4">
             <DateSelector
               selected={lastSeen}
-              onChange={(d) => setLastSeen(d)}
+              onChange={(d) => setLastSeen(d as Date | null)}
             />
           </div>
         ) : (

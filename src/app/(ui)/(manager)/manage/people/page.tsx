@@ -93,7 +93,7 @@ export default function ManagePeoplePage() {
             <RadioButton
               checked={setsEqual(selectedIDs, filteredIDs)}
               label="Select All"
-              onClick={() => {
+              onChange={() => {
                 setSelectedIDs(
                   setsEqual(selectedIDs, filteredIDs) ? new Set() : filteredIDs
                 );
@@ -101,11 +101,11 @@ export default function ManagePeoplePage() {
             />
             <RadioButton
               label="Inactive"
-              onClick={() => setSearchInactive(!searchInactive)}
+              onChange={() => setSearchInactive(!searchInactive)}
             />
             <RadioButton
               label="Under 18"
-              onClick={() => setSearchUnder18(!searchUnder18)}
+              onChange={() => setSearchUnder18(!searchUnder18)}
             />
           </div>
           <button

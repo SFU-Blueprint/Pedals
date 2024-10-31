@@ -250,7 +250,7 @@ h2.react-datepicker__current-month {
   .react-datepicker-time__input-container
   .react-datepicker-time__input
   input[type="time"] {
-  -moz-appearance: textfield;
+  appearance: textfield;
 }
 .react-datepicker__input-time-container
   .react-datepicker-time__input-container
@@ -883,12 +883,11 @@ h2.react-datepicker__current-month {
 }
 
 .react-datepicker__view-calendar-icon input {
-  padding: 6px 10px 5px 10px;
+  padding: 8px 12px 8px 12px;
 }
 
 .react-datepicker__close-icon {
   cursor: pointer;
-
   border: 0;
   outline: 0;
   position: absolute;
