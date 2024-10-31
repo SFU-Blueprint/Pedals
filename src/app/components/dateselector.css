@@ -684,7 +684,7 @@ h2.react-datepicker__current-month {
 }
 .react-datepicker__input-container .react-datepicker__calendar-icon {
   position: absolute;
-  right: 0;
+  right: 0.5rem;
   padding: 0.5rem;
   box-sizing: content-box;
 }
@@ -811,7 +811,7 @@ h2.react-datepicker__current-month {
   background-color: transparent;
   border: 0;
   outline: 0;
-  padding: 0 6px 0 0;
+  /* padding: 0 6px 0 0; */
   position: absolute;
   top: 0;
   right: 0;
@@ -821,14 +821,12 @@ h2.react-datepicker__current-month {
 }
 .react-datepicker__close-icon::after {
   cursor: pointer;
-  background-color: #216ba5;
-  color: #fff;
-  border-radius: 50%;
+  
   height: 16px;
-  width: 16px;
-  padding: 2px;
-  font-size: 12px;
-  line-height: 1;
+  width: 10px;
+  font-size: 40px;
+  font-weight: 200;
+  line-height: 16px;
   text-align: center;
   display: table-cell;
   vertical-align: middle;

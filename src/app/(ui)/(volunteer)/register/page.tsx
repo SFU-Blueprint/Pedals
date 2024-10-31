@@ -96,10 +96,11 @@ export default function RegisterPage() {
               label="(If Under 18) Date of Birth"
             >
               <DateSelector
-                className="w-full"
-                selected={dob}
-                onSelect={(date) => setDOB(date)}
-                maxDate={new Date()}
+              className="w-full"
+              selected={dob}
+              onChange={(date) => setDOB(date)}
+              maxDate={new Date()}
+              isClearable
               />
             </FormInput>
           </div>
