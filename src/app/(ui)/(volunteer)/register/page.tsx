@@ -165,7 +165,7 @@ export default function RegisterPage() {
           <DateSelector
             className="w-full"
             selected={dob}
-            onSelect={(date) => setDOB(date)}
+            onChange={(date) => setDOB(date)}
             maxDate={new Date()}
           />
         </FormInput>
