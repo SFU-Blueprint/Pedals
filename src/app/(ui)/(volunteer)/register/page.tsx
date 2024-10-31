@@ -100,7 +100,7 @@ export default function RegisterPage() {
               selected={dob}
               onChange={(date) => setDOB(date)}
               maxDate={new Date()}
-              isClearable
+              
               />
             </FormInput>
           </div>

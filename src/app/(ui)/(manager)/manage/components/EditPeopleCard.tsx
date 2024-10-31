@@ -106,7 +106,7 @@ export default function EditPeopleCard({
         )}
         {isEditing ? (
           <div className="-ml-[10px] w-80 pr-4">
-            <DateSelector selected={dob} onSelect={(d) => setDob(d)} />
+            <DateSelector selected={dob} onChange={(d) => setDob(d)} />
           </div>
         ) : (
           <p className="w-80 pr-4 uppercase">
@@ -117,7 +117,7 @@ export default function EditPeopleCard({
           <div className="w-80 pr-4">
             <DateSelector
               selected={lastSeen}
-              onSelect={(d) => setLastSeen(d)}
+              onChange={(d) => setLastSeen(d)}
             />
           </div>
         ) : (

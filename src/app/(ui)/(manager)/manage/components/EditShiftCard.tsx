@@ -89,7 +89,7 @@ export default function EditShiftCard({
           <DateSelector
             className="-ml-[10px] w-[298px]"
             selected={date}
-            onSelect={(d) => setDate(d)}
+            onChange={(d) => setDate(d)}
           />
         ) : (
           <p className="w-72 uppercase">{formatDate(date)}</p>

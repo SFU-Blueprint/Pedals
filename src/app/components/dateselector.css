@@ -682,16 +682,6 @@ h2.react-datepicker__current-month {
   display: inline-block;
   width: 100%;
 }
-.react-datepicker__input-container .react-datepicker__calendar-icon {
-  position: absolute;
-  right: 0.5rem;
-  padding: 0.5rem;
-  box-sizing: content-box;
-}
-
-.react-datepicker__view-calendar-icon input {
-  padding: 6px 10px 5px 10px;
-}
 
 .react-datepicker__year-read-view,
 .react-datepicker__month-read-view,
@@ -806,32 +796,6 @@ h2.react-datepicker__current-month {
   left: 15px;
 }
 
-.react-datepicker__close-icon {
-  cursor: pointer;
-  background-color: transparent;
-  border: 0;
-  outline: 0;
-  /* padding: 0 6px 0 0; */
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  display: table-cell;
-  vertical-align: middle;
-}
-.react-datepicker__close-icon::after {
-  cursor: pointer;
-  
-  height: 16px;
-  width: 10px;
-  font-size: 40px;
-  font-weight: 200;
-  line-height: 16px;
-  text-align: center;
-  display: table-cell;
-  vertical-align: middle;
-  content: "×";
-}
 .react-datepicker__close-icon--disabled {
   cursor: default;
 }
@@ -907,7 +871,46 @@ h2.react-datepicker__current-month {
 .react-datepicker__calendar-icon {
   width: 1em;
   height: 1em;
-  vertical-align: -0.125em;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-55%);
+}
+
+.react-datepicker__input-container .react-datepicker__calendar-icon {
+  position: absolute;
+  right: 0.5rem;
+  padding: 0.5rem;
+  box-sizing: content-box;
+}
+
+.react-datepicker__view-calendar-icon input {
+  padding: 6px 10px 5px 10px;
+}
+
+.react-datepicker__close-icon {
+  cursor: pointer;
+
+  border: 0;
+  outline: 0;
+  position: absolute;
+  padding: 0 !important;
+  top: 50%;
+  right: 1rem;
+  height: 1em;
+  width: 1em;
+  transform: translateY(-65%);
+  display: table-cell;
+  vertical-align: middle;
+}
+.react-datepicker__close-icon::after {
+  cursor: pointer;
+  background-color: white;
+  height: 25px;
+  width: 25px;
+  font-size: 40px;
+  font-weight: 200;
+  line-height: 25px;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+  content: "×";
 }
