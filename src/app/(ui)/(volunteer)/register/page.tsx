@@ -151,7 +151,7 @@ export default function RegisterPage() {
             label="Username"
             type="text"
             placeholder="TYPE"
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value.toLowerCase())}
           />
           <FormInput
             className="w-[25rem]"

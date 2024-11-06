@@ -159,7 +159,7 @@ export default function EditPeopleCard({
         !popup
       ) {
         setIsEditing(false);
-        setUsername(person.username);
+        setUsername(person.username.toLowerCase());
         setDOB(person.dob ? new Date(person.dob) : null);
         setLastSeen(new Date(person.last_seen));
       }
