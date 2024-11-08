@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
-function jsonToCsv(jsonData: any[]) {
+function jsonToCsv(jsonData: any[]): string {
   if (!jsonData || jsonData.length === 0) {
     return "";
   }
@@ -9,18 +9,21 @@ function jsonToCsv(jsonData: any[]) {
   // Extract headers (keys) from the first object
   const headers = Object.keys(jsonData[0]);
 
-  // Map through the data to create CSV rows
   const rows = jsonData.map((obj) =>
-    headers.map((header) => obj[header]).join(",")
+    headers.map((header) => {
+      const value = obj[header] ?? "";
+      return `"${String(value).replace(/"/g, '""')}"`;
+    }).join(",")
   );
 
-  // Combine headers and rows
-  return [headers.join(","), ...rows].join("\n");
+  return [headers.join(","), ...rows].join("\r\n");
 }
 
 export async function GET() {
   // get_volunteer_hour is a SQL function create in SQL Editor in supabase. To update this function, go to the SQL editor and drop this function first: DROP FUNCTION get_volunteer_hours(). Create another SQL function like you would with SQL
-  const { data, error } = await supabase.rpc("get_volunteer_hours");
+  const { data, error } = await supabase
+   .from("users")
+   .select("name,total_time")
 
   // Handle network error
   if (error?.message === "TypeError: fetch failed") {
