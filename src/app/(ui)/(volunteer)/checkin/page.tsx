@@ -70,7 +70,7 @@ export default function CheckinPage() {
           label="Username"
           type="text"
           placeholder="TYPE"
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => setUsername(e.target.value.toLowerCase())}
         />
         <ShiftSelect
           className="w-[25rem]"

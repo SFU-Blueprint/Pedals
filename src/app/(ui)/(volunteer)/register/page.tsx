@@ -151,7 +151,7 @@ export default function RegisterPage() {
             label="Username"
             type="text"
             placeholder="TYPE"
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value.toLowerCase())}
           />
           <FormInput
             className="w-[25rem]"
@@ -166,7 +166,6 @@ export default function RegisterPage() {
             className="w-full"
             selected={dob}
             onChange={(date) => setDOB(date as Date | null)} // Casting from undefined to Date | null to prevent type error
-            maxDate={new Date()}
           />
         </FormInput>
       </div>

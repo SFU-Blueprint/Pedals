@@ -10,7 +10,7 @@ type DateSelectorProps = React.ComponentProps<typeof DatePicker> & {
 };
 
 export default function DateSelector(props: DateSelectorProps) {
-  const { selected, onChange, maxDate, className } = props;
+  const { selected, onChange, className } = props;
   return (
     <DatePicker
       showYearDropdown
@@ -22,10 +22,10 @@ export default function DateSelector(props: DateSelectorProps) {
       showIcon
       placeholderText="Select Date"
       className={`${className} uppercase`}
-      maxDate={maxDate}
       onChange={onChange}
       selected={selected}
       isClearable
+      maxDate={new Date()}
     />
   );
 }
