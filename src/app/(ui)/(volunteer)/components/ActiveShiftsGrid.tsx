@@ -42,22 +42,18 @@ function ActiveShiftCard({ refreshShifts, shift }: ActiveShiftCardProps) {
   };
   return (
     <div className="flex w-full items-center justify-between border-y-[1px] border-pedals-stroke bg-pedals-grey px-20 py-3">
-      <div className="flex justify-start gap-96">
-        <h3 className="w-[25rem]">{shift.volunteer_name}</h3>
-        <div className="flex w-[25rem] justify-between">
-          <p>
-            {`Since ${new Date(shift.checked_in_at).toLocaleTimeString(
-              "en-US",
-              {
-                hour: "numeric",
-                minute: "numeric",
-                hour12: true
-              }
-            )}
+      <div className="flex justify-start">
+        <h3 className="mr-96 w-[25rem]">{shift.volunteer_name}</h3>
+
+        <p className="flex w-[25rem] justify-start">
+          {`Since ${new Date(shift.checked_in_at).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true
+          })}
             `}
-          </p>
-          <p className="uppercase">{shift.shift_type}</p>
-        </div>
+        </p>
+        <p className="uppercase">{shift.shift_type}</p>
       </div>
       <button
         type="button"
