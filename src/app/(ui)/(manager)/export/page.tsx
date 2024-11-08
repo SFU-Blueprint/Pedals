@@ -21,9 +21,8 @@ export default function ExportPage() {
         method: "GET"
       });
 
-      const data = await response.json();
-
       if (response.status === 200) {
+        const data = await response.text();
         const blob = new Blob([data], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -32,13 +31,17 @@ export default function ExportPage() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-      } else if (response.status >= 400 && response.status < 500) {
-        setFeedback([FeedbackType.Warning, data.message]);
-      } else if (response.status >= 500 && response.status < 600) {
-        setFeedback([FeedbackType.Error, data.message]);
+      } else {
+        const errorData = await response.json();
+        if (response.status >= 400 && response.status < 500) {
+          setFeedback([FeedbackType.Warning, errorData.message]);
+        } else if (response.status >= 500 && response.status < 600) {
+          setFeedback([FeedbackType.Error, errorData.message]);
+        }
       }
     } catch (error) {
       console.error("Error downloading CSV:", error);
+      setFeedback([FeedbackType.Error, "An error occurred while downloading the CSV. Please try again."]);
     } finally {
       setIsLoading(false);
     }
@@ -114,6 +117,7 @@ export default function ExportPage() {
             className={`${!isLoading ? "bg-pedals-yellow" : ""} rounded-xl px-4 py-2 uppercase`}
             onClick={downloadCsv}
             aria-disabled={isLoading}
+            type="reset"
           >
             {isLoading ? "Downloading..." : "Export"}
           </button>
