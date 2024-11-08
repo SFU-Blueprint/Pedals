@@ -114,7 +114,7 @@ export default function ChangeAccessCodePage() {
           <button
             type="submit"
             aria-disabled={!oldCode || !newCode || !confirmNewCode || loading}
-            className="mt-6 w-fit uppercase"
+            className="mt-6 w-fit"
           >
             Change Access Code
           </button>

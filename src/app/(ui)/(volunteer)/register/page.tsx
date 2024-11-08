@@ -60,7 +60,7 @@ export default function RegisterPage() {
             <div className="flex gap-5">
               <button
                 type="submit"
-                className="!w-fit !bg-pedals-grey px-10 uppercase"
+                className="!w-fit !bg-pedals-grey px-10"
                 aria-disabled={loading}
                 onClick={(e) => {
                   e.preventDefault();
@@ -73,7 +73,7 @@ export default function RegisterPage() {
               </button>
               <button
                 type="submit"
-                className="!w-fit px-10 uppercase"
+                className="!w-fit px-10"
                 aria-disabled={loading}
                 onClick={async (e) => {
                   e.preventDefault();
@@ -172,7 +172,7 @@ export default function RegisterPage() {
       <button
         aria-disabled={!username || !fullName || loading}
         type="submit"
-        className="mt-[34px] whitespace-nowrap uppercase"
+        className="mt-[34px] whitespace-nowrap"
       >
         Register
       </button>

@@ -58,11 +58,10 @@ function ActiveShiftCard({ refreshShifts, shift }: ActiveShiftCardProps) {
       <button
         type="button"
         aria-disabled={loading}
-        className="!rounded-full !px-5 uppercase"
+        className="!rounded-full !px-5"
         onClick={() => {
-          if (!loading) {
-            executeCheckout(shift.id, shift.volunteer_id);
-          }
+          if (loading) return;
+          executeCheckout(shift.id, shift.volunteer_id);
         }}
       >
         Check Out

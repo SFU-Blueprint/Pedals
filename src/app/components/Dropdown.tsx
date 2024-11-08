@@ -75,7 +75,7 @@ export default function Dropdown({
         >
           <button
             type="button"
-            className="flex w-full items-center justify-between uppercase hover:bg-pedals-grey"
+            className="flex w-full items-center justify-between hover:bg-pedals-grey"
             onClick={handleClickInside}
           >
             {placeholder}
@@ -87,7 +87,7 @@ export default function Dropdown({
               key={option}
               value={option}
               onClick={handleClickInside}
-              className={`flex w-full items-center justify-start uppercase ${option === currentOption && "font-bold"}`}
+              className={`flex w-full items-center justify-start ${option === currentOption && "font-bold"}`}
             >
               {option}
             </button>
@@ -96,7 +96,7 @@ export default function Dropdown({
       ) : (
         <button
           type="button"
-          className={`flex w-full items-center justify-between uppercase hover:ring-2 hover:ring-pedals-yellow hover:ring-offset-1 ${currentOption ? "!bg-pedals-yellow" : ""}`}
+          className={`flex w-full items-center justify-between hover:ring-2 hover:ring-pedals-yellow hover:ring-offset-1 ${currentOption ? "!bg-pedals-yellow" : ""}`}
           onClick={() => setIsOpen(true)}
         >
           {currentOption ?? placeholder}

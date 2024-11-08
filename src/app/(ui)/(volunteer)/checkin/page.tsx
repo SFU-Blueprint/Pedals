@@ -83,7 +83,7 @@ export default function CheckinPage() {
         <button
           aria-disabled={!username || !shiftType || loading}
           type="submit"
-          className="whitespace-nowrap uppercase"
+          className="whitespace-nowrap"
         >
           Check In
         </button>

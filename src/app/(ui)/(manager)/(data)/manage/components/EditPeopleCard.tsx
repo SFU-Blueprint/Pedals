@@ -233,7 +233,7 @@ export default function EditPeopleCard({
       <button
         aria-disabled={loading}
         type="button"
-        className={`!rounded-[30px] !px-12 uppercase ${isEditing && "hover:!bg-pedals-grey"}`}
+        className={`!rounded-[30px] !px-12 ${isEditing && "hover:!bg-pedals-grey"}`}
         onClick={handleButtonClick}
       >
         {isEditing ? "Done" : "Edit"}

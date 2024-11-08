@@ -35,7 +35,7 @@ export default function DeleteConfirmation({
       <div className="flex gap-5">
         <button
           type="submit"
-          className="!w-fit !bg-pedals-grey px-10 uppercase"
+          className="!w-fit !bg-pedals-grey px-10"
           aria-disabled={loading}
           onClick={(e) => {
             e.preventDefault();
@@ -47,7 +47,7 @@ export default function DeleteConfirmation({
         </button>
         <button
           type="submit"
-          className="!w-fit px-10 uppercase"
+          className="!w-fit px-10"
           aria-disabled={loading}
           onClick={(e) => {
             e.preventDefault();

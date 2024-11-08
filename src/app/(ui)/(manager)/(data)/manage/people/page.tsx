@@ -111,7 +111,7 @@ export default function ManagePeoplePage() {
           <button
             aria-disabled={selectedIDs.size === 0 || loading}
             type="submit"
-            className="rounded-full bg-yellow-400 uppercase"
+            className="rounded-full bg-yellow-400"
             onClick={(e) => {
               e.preventDefault();
               if (loading || selectedIDs.size === 0) return;

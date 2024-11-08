@@ -45,13 +45,12 @@ export default function EditConfirmation({
       </div>
       <button
         type="submit"
-        className="!w-fit px-10 uppercase"
+        className="!w-fit px-10"
         aria-disabled={loading}
         onClick={(e) => {
           e.preventDefault();
-          if (!loading) {
-            onConfirm();
-          }
+          if (loading) return;
+          onConfirm();
         }}
       >
         Confirm

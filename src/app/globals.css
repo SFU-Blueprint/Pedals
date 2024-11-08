@@ -52,17 +52,20 @@
     @apply text-lg;
   }
 
+  button {
+    @apply uppercase;
+  }
+
   button[type="submit"] {
     @apply rounded-full bg-pedals-yellow px-6 py-2 hover:bg-pedals-brown;
   }
 
-  button[type="submit"][aria-disabled="true"],
-  button[type="button"][aria-disabled="true"] {
-    @apply cursor-not-allowed bg-pedals-grey hover:bg-pedals-grey;
-  }
-
   button[type="button"] {
     @apply rounded-[3px] bg-white px-3 py-2 hover:bg-pedals-stroke;
+  }
+
+  button[aria-disabled="true"] {
+    @apply cursor-not-allowed bg-pedals-grey hover:bg-pedals-grey;
   }
 
   input[type="text"],

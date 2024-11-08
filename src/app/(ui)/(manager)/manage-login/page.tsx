@@ -57,14 +57,14 @@ export default function ManageLoginPage() {
           <button
             aria-disabled={!currentAccessCode || loading}
             type="submit"
-            className="!px-16 uppercase"
+            className="!px-16"
           >
             Go
           </button>
         </div>
         <button
           type="button"
-          className="mt-40 !h-fit w-fit !bg-transparent !pl-0 font-mono text-lg uppercase text-pedals-darkgrey hover:font-bold hover:text-pedals-black"
+          className="mt-40 !h-fit w-fit !bg-transparent !pl-0 font-mono text-lg text-pedals-darkgrey hover:font-bold hover:text-pedals-black"
           onClick={() =>
             setPopup({
               title: "Password Recovery",
@@ -76,7 +76,7 @@ export default function ManageLoginPage() {
                     code.
                   </p>
                   <button
-                    className="!w-fit !px-10 uppercase"
+                    className="!w-fit !px-10"
                     type="submit"
                     onClick={(e) => {
                       e.preventDefault();

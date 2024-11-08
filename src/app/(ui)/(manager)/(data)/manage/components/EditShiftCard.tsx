@@ -220,7 +220,7 @@ export default function EditShiftCard({
       <button
         aria-disabled={loading}
         type="button"
-        className="!rounded-[30px] !px-12 uppercase"
+        className="!rounded-[30px] !px-12"
         onClick={handleButtonClick}
       >
         {isEditing ? "Done" : "Edit"}
