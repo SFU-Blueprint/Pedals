@@ -159,7 +159,7 @@ export default function EditPeopleCard({
         !popup
       ) {
         setIsEditing(false);
-        setUsername(person.username);
+        setUsername(person.username.toLowerCase());
         setDOB(person.dob ? new Date(person.dob) : null);
         setLastSeen(new Date(person.last_seen));
       }
@@ -204,7 +204,7 @@ export default function EditPeopleCard({
             type="text"
             className="-ml-[12px] mr-[12px] w-80 pr-10"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value.toLowerCase())}
           />
         ) : (
           <p className="w-80 uppercase">{username}</p>
