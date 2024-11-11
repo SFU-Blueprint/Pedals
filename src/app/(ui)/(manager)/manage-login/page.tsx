@@ -17,7 +17,7 @@ export default function ManageLoginPage() {
     e.preventDefault();
     if (loading) return;
     await feedbackFetch(
-      "/api/validate-access-code",
+      "/api/access-code",
       {
         method: "POST",
         body: JSON.stringify({
