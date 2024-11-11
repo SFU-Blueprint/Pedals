@@ -56,9 +56,9 @@ export default function ChangeAccessCodePage() {
       setFeedback({ type: FeedbackType.Warning, message });
     } else {
       await feedbackFetch(
-        "/api/change-access-code",
+        "/api/access-code",
         {
-          method: "POST",
+          method: "PATCH",
           body: JSON.stringify({
             oldCode,
             newCode
