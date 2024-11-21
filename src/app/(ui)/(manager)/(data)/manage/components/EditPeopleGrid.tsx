@@ -21,6 +21,7 @@ export default function EditPeopleGrid({
       if (
         ref.current &&
         !ref.current.contains(event.target as Node) &&
+        (event.target as HTMLElement).textContent !== "Select All" && // Fix for double toggle issue
         selectedIDs.size > 0
       ) {
         setSelectedIDs(new Set());
@@ -41,7 +42,7 @@ export default function EditPeopleGrid({
         <p className="w-80">Last Seen</p>
         <p className="ml-[340px]">{`Total: ${people.length}`}</p>
       </div>
-      <div className="h-full overflow-y-scroll border-y-[2px] bg-pedals-grey">
+      <div className="h-full overflow-y-scroll border-y-[2px] border-y-pedals-darkgrey bg-pedals-grey">
         {people?.map((person) => (
           <EditPeopleCard
             key={person.id}

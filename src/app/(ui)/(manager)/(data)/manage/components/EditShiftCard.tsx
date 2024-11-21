@@ -166,7 +166,7 @@ export default function EditShiftCard({
   return (
     <div
       ref={ref}
-      className={`edit-card flex w-full justify-between border-y-[1px] border-y-pedals-darkgrey px-20 py-4 ${isEditing || isHighlighted ? "bg-pedals-lightgrey" : "bg-pedals-grey"}`}
+      className={`edit-card flex w-full justify-between border-b-[1px] border-y-pedals-darkgrey px-20 py-4 ${isEditing || isHighlighted ? "bg-pedals-lightgrey" : "bg-pedals-grey"}`}
     >
       <div className="flex items-center justify-start">
         <h3 className="w-96">{shift.volunteer_name}</h3>

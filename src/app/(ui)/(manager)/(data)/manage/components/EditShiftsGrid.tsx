@@ -21,7 +21,7 @@ export default function EditShiftsGrid({
         </div>
         <p className="ml-40">Shift</p>
       </div>
-      <div className="h-full overflow-y-scroll border-y-[2px] bg-pedals-grey">
+      <div className="h-full overflow-y-scroll border-y-[2px] border-y-pedals-darkgrey bg-pedals-grey">
         {shifts?.map((shift) => (
           <EditShiftCard
             key={shift.id}
