@@ -6,7 +6,7 @@ export default function ManagerLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex h-screen w-screen flex-col bg-pedals-lightgrey">
+    <>
       <NavBar
         className="fixed left-20 top-20 z-30"
         links={[
@@ -15,6 +15,6 @@ export default function ManagerLayout({
         ]}
       />
       {children}
-    </section>
+    </>
   );
 }

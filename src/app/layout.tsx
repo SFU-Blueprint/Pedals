@@ -41,7 +41,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${supply.variable}`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${supply.variable} h-screen w-screen bg-pedals-lightgrey`}
+    >
       <body>{children}</body>
     </html>
   );

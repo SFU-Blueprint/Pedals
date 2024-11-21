@@ -73,19 +73,19 @@ export default function ChangeAccessCodePage() {
   };
 
   return (
-    <div className="h-screen bg-pedals-lightgrey">
+    <div className="ml-28 mt-48 h-full">
       <Link
-        className="flex items-start gap-2 pl-24 pt-48 font-medium hover:font-bold"
+        className="flex items-start gap-2 font-medium hover:font-bold"
         href="/manage/shift"
       >
         <ChevronLeft />
         <span className="text-lg">BACK</span>
       </Link>
       {success ? (
-        <h3 className="pl-24 pt-9">Access Code Successfully Changed</h3>
+        <h3 className="mt-10">Access Code Successfully Changed</h3>
       ) : (
         <form
-          className="flex w-fit flex-col justify-center gap-6 bg-pedals-lightgrey pl-24 pt-9"
+          className="mt-10 flex w-fit flex-col justify-center gap-6"
           onSubmit={handleChangeAccessCode}
         >
           <FormInput

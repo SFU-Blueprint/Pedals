@@ -6,7 +6,7 @@ export default function ManagerLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex h-screen w-screen flex-col bg-pedals-lightgrey">
+    <section className="flex h-screen w-screen flex-col">
       <NavBar
         className="fixed left-20 top-36 z-30 !gap-2"
         customLinkStyles="px-3 py-2 text-lg bg-white hover:bg-pedals-grey"

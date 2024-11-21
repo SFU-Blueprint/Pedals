@@ -77,7 +77,7 @@ export default function ManagePeoplePage() {
 
   return (
     <>
-      <div className="z-10 flex w-full flex-col bg-pedals-lightgrey">
+      <div className="z-10 flex w-full flex-col">
         <FormInput
           className="mb-6 ml-auto mr-20 mt-36 flex w-80"
           type="text"

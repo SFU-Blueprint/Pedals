@@ -39,11 +39,9 @@ export default function VolunteerLayout({
     <VolunteerContext.Provider
       value={useMemo(() => ({ fetchActiveShifts }), [fetchActiveShifts])}
     >
-      <div className="flex h-screen w-screen flex-col overflow-y-hidden">
-        <div className="sticky top-0 bg-pedals-lightgrey">
-          <TimeDisplay className="pl-20 pt-20" />
-          {children}
-        </div>
+      <div className="flex h-screen w-screen flex-col">
+        <TimeDisplay className="ml-20 mt-20" />
+        {children}
         <ActiveShiftsGrid
           shifts={activeShifts}
           refreshShifts={() =>

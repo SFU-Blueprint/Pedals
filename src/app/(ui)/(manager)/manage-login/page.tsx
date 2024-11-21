@@ -41,9 +41,9 @@ export default function ManageLoginPage() {
   }, []);
 
   return isLargeScreen ? (
-    <div className="h-screen bg-pedals-lightgrey">
+    <div className="mx-28 mt-80 h-full">
       <form
-        className="flex h-full w-fit flex-col justify-center gap-3 pl-28 pt-32 uppercase"
+        className="flex h-full w-fit flex-col justify-center gap-3 uppercase"
         onSubmit={handleSubmitAccessCode}
       >
         <h1>Enter Access Code</h1>
@@ -95,7 +95,7 @@ export default function ManageLoginPage() {
       </form>
     </div>
   ) : (
-    <h3 className="flex h-screen items-center px-10 font-semibold">
+    <h3 className="mx-28 mt-80 font-semibold">
       To view the Manage page, please use a device with a bigger screen. Thank
       you!
     </h3>

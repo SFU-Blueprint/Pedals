@@ -12,7 +12,7 @@ export default function EditShiftsGrid({
 }: EditShiftsGridProps) {
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      <div className="z-10 flex items-center justify-start border-b-2 border-pedals-black bg-pedals-lightgrey px-20 py-2">
+      <div className="z-10 flex items-center justify-start border-pedals-black px-20 py-2">
         <p className="w-96">Name</p>
         <p className="w-72">Date</p>
         <div className="flex justify-between gap-3">
@@ -21,7 +21,7 @@ export default function EditShiftsGrid({
         </div>
         <p className="ml-40">Shift</p>
       </div>
-      <div className="h-full overflow-y-scroll">
+      <div className="h-full overflow-y-scroll border-y-[2px] bg-pedals-grey">
         {shifts?.map((shift) => (
           <EditShiftCard
             key={shift.id}

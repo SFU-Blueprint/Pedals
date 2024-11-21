@@ -75,7 +75,7 @@ export default function ActiveShiftsGrid({
   refreshShifts
 }: ActiveShiftsGridProps) {
   return (
-    <div className="flex h-full flex-col overflow-y-scroll bg-pedals-grey">
+    <div className="h-full overflow-y-scroll bg-pedals-grey">
       {shifts?.map((shift) => (
         <ActiveShiftCard
           key={shift.id}
