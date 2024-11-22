@@ -69,19 +69,27 @@ export default function ManagePeoplePage() {
         (searchUnder18 ? isUnder18(person.dob) : true) &&
         (searchInactive ? isInactive(person.last_seen) : true)
     )
-    ?.sort(
-      (a, b) =>
-        new Date(a.last_seen).getTime() - new Date(b.last_seen).getTime()
-    );
+    ?.sort((a, b) => {
+      const lastSeenComparison =
+        new Date(b.last_seen).getTime() - new Date(a.last_seen).getTime();
+      if (lastSeenComparison !== 0) return lastSeenComparison;
+      const nameComparison = a.name.localeCompare(b.name);
+      if (nameComparison !== 0) return nameComparison;
+      if (a.dob && b.dob) {
+        return new Date(a.dob).getTime() - new Date(b.dob).getTime();
+      }
+      return 0;
+    });
   const filteredIDs = new Set(filteredPeople.map((p) => p.id));
 
   return (
     <>
       <div className="z-10 flex w-full flex-col">
         <FormInput
-          className="mb-6 ml-auto mr-20 mt-36 flex w-80"
+          uppercase
+          className="mb-6 ml-auto mr-20 mt-36 flex w-80 uppercase"
           type="text"
-          placeholder="SEARCH NAME"
+          placeholder="Search Name"
           onChange={(e) => setSearchName(e.target.value)}
         />
         <hr

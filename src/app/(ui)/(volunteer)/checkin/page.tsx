@@ -39,7 +39,7 @@ export default function CheckinPage() {
       setFeedback({
         type: FeedbackType.Warning,
         message:
-          "Username must be lowercase, alphanumeric, and less than 30 characters."
+          "Username must be alphanumeric, wihout spaces, and contains 5-15 characters."
       });
       return;
     }

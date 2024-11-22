@@ -123,7 +123,7 @@ export default function RegisterPage() {
       setFeedback({
         type: FeedbackType.Warning,
         message:
-          "Username must be lowercase, alphanumeric, wihout spaces, and fewer than 30 characters."
+          "Username must be alphanumeric, wihout spaces, and contains 5-15 characters."
       });
       return;
     }

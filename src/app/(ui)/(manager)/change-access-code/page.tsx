@@ -97,7 +97,7 @@ export default function ChangeAccessCodePage() {
           <p>
             Your new code must be 8-15 characters long,
             <br />
-            and must include both numbers and letters.
+            and must include at least one number and one letter.
           </p>
           <FormInput
             label="New access code:"

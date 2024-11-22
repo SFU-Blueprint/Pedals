@@ -61,6 +61,15 @@ export default function EditShiftCard({
           await refreshShifts();
           setPopup(null);
           setIsEditing(false);
+          if (ref.current) {
+            window.scrollTo({
+              top:
+                window.scrollY +
+                ref.current.getBoundingClientRect().top +
+                ref.current.offsetHeight / 2 -
+                window.innerHeight / 2
+            });
+          }
           setIsHighlighted(true);
           setTimeout(() => setIsHighlighted(false), 3000);
         }

@@ -4,7 +4,7 @@ export const setsEqual = (set1: Set<string>, set2: Set<string>) => {
 };
 
 export const validUsername = (username: string) =>
-  /^[a-z0-9]{1,30}$/.test(username);
+  /^[a-z0-9]{5,15}$/.test(username);
 
 export const validFullName = (name: string) => {
   const trimmedName = name.trim();
