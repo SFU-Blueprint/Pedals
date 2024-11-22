@@ -106,13 +106,17 @@ export default function ManageShiftPage() {
             e.preventDefault();
             setSearchShiftType((e.target as HTMLButtonElement).value || null);
           }}
-          // centerParentFix="-translate-y-[22px]"
         />
       </div>
-      <EditShiftsGrid
-        shifts={filteredShifts}
-        refreshShifts={() => fetchShifts({ showSuccessFeedback: false })}
-      />
+      {filteredShifts.length === 0 &&
+      (searchName || searchMonth || searchYear || searchShiftType) ? (
+        <h3 className="flex w-full justify-center">No Results Found</h3>
+      ) : (
+        <EditShiftsGrid
+          shifts={filteredShifts}
+          refreshShifts={() => fetchShifts({ showSuccessFeedback: false })}
+        />
+      )}
     </>
   );
 }

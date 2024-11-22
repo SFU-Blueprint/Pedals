@@ -19,9 +19,12 @@ export default function UILayout({
 
   useEffect(() => {
     if (feedback !== null && feedback.type !== FeedbackType.Loading) {
-      const timer = setTimeout(() => {
-        setFeedback(null);
-      }, 3000);
+      const timer = setTimeout(
+        () => {
+          setFeedback(null);
+        },
+        Math.min(10000, Math.max(3000, feedback.message.length * 100))
+      );
       return () => clearTimeout(timer);
     }
     return undefined;

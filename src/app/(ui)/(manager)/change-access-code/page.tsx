@@ -50,7 +50,7 @@ export default function ChangeAccessCodePage() {
     ) {
       message = `Access code must be ${minCodeLength}-${maxCodeLength} characters long.`;
     } else if (!/\d/.test(newCode) || !/[a-zA-Z]/.test(newCode)) {
-      message = "Access code must include at least one letter and one number.";
+      message = "Access code must include at least one number and one letter.";
     }
     if (message) {
       setFeedback({ type: FeedbackType.Warning, message });

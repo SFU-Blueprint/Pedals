@@ -8,14 +8,14 @@ import RadioButton from "@/components/RadioButton";
 import { Tables } from "@/lib/supabase.types";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
 import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
-import { isInactive, isUnder18 } from "@/utils/DateTime";
+import { isInactive, isUnder24 } from "@/utils/DateTime";
 import { setsEqual } from "@/utils/Validators";
 
 export default function ManagePeoplePage() {
   const [people, setPeople] = useState<Tables<"users">[]>([]);
   const [searchName, setSearchName] = useState("");
   const [searchInactive, setSearchInactive] = useState(false);
-  const [searchUnder18, setSearchUnder18] = useState(false);
+  const [searchUnder24, setSearchUnder24] = useState(false);
   const [selectedIDs, setSelectedIDs] = useState<Set<string>>(new Set());
   const feedbackFetch = useFeedbackFetch();
   const { setPopup, loading } = useUIComponentsContext();
@@ -66,7 +66,7 @@ export default function ManagePeoplePage() {
         (searchName
           ? person.name?.toLowerCase().includes(searchName.toLowerCase())
           : true) &&
-        (searchUnder18 ? isUnder18(person.dob) : true) &&
+        (searchUnder24 ? isUnder24(person.dob) : true) &&
         (searchInactive ? isInactive(person.last_seen) : true)
     )
     ?.sort((a, b) => {
@@ -112,8 +112,8 @@ export default function ManagePeoplePage() {
               onChange={() => setSearchInactive(!searchInactive)}
             />
             <RadioButton
-              label="Under 18"
-              onChange={() => setSearchUnder18(!searchUnder18)}
+              label="Under 24"
+              onChange={() => setSearchUnder24(!searchUnder24)}
             />
           </div>
           <button
@@ -145,12 +145,17 @@ export default function ManagePeoplePage() {
           </button>
         </div>
       </div>
-      <EditPeopleGrid
-        people={filteredPeople}
-        refreshPeople={() => fetchPeople({ showSuccessFeedback: false })}
-        selectedIDs={selectedIDs}
-        setSelectedIDs={setSelectedIDs}
-      />
+      {filteredPeople.length === 0 &&
+      (searchName || searchInactive || searchUnder24) ? (
+        <h3 className="flex w-full justify-center">No Results Found</h3>
+      ) : (
+        <EditPeopleGrid
+          people={filteredPeople}
+          refreshPeople={() => fetchPeople({ showSuccessFeedback: false })}
+          selectedIDs={selectedIDs}
+          setSelectedIDs={setSelectedIDs}
+        />
+      )}
     </>
   );
 }

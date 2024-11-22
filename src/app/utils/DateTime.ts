@@ -38,14 +38,14 @@ export const isInMonth = (time: string, month: string): boolean =>
 export const isInYear = (time: string, year: number): boolean =>
   new Date(time).getFullYear() === year;
 
-export const isUnder18 = (dob: string | null): boolean => {
+export const isUnder24 = (dob: string | null): boolean => {
   if (dob) {
     const today = new Date();
     const birthDate = new Date(dob);
     const age = today.getFullYear() - birthDate.getFullYear();
     const isBirthdayPassed =
       today >= new Date(birthDate.setFullYear(today.getFullYear()));
-    return age < 18 || (age === 18 && !isBirthdayPassed);
+    return age < 24 || (age === 24 && !isBirthdayPassed);
   }
   return false;
 };
