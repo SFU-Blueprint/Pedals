@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 import { formatDate, formatDuration } from "@/utils/DateTime";
+import { Tables } from "@/lib/supabase.types";
 
-function JSONToCSV(
-  jsonData: Array<any> | null
-): string {
+function JSONToCSV(jsonData: Array<any> | undefined): string {
   if (!jsonData || jsonData.length === 0) return "";
 
   const headers = Object.keys(jsonData[0])
@@ -37,50 +36,45 @@ function JSONToCSV(
 }
 
 async function getPeople() {
-  const { data, error } = await supabase
-    .from("users")
-    .select("name, dob, username, total_time, last_seen");
+  const { data, error } = await supabase.from("users").select("*");
 
-  data?.map((item) => {
-    item.total_time = formatDuration(item.total_time);
-    item.dob = formatDate(
-      item.dob ? new Date(item.dob) : null,
-      "Not Available"
-    ); // dob can be null
-    item.last_seen = formatDate(new Date(item.last_seen));
-  });
+  const processedData = (data as Tables<"users">[])?.map((item) => ({
+    name: item.name,
+    dob: formatDate(item.dob ? new Date(item.dob) : null, "Not Available"),
+    username: item.username,
+    total_time: formatDuration(item.total_time),
+    last_seen: formatDate(new Date(item.last_seen))
+  }));
 
   return {
-    data,
+    data: processedData,
     error
   };
 }
 
 export async function POST(req: NextRequest) {
   const { selectedExportOption } = await req.json();
-  // console.log(selectedExportOption);
 
   // Handle missing required parameters
   if (!selectedExportOption) {
     return NextResponse.json(
       {
-        message: "You have not yet selected an export option"
+        message: "Please select an export option."
       },
       { status: 400 }
     );
   }
-  let data, error;
-
+  let data;
+  let error;
   switch (selectedExportOption) {
     case "People":
       ({ data, error } = await getPeople());
       break;
     case "Shift Type":
+      break;
     case "Hours":
-
+      break;
     default:
-      console.log("Not supported yet");
-      return;
   }
 
   // Handle network error
@@ -93,13 +87,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const csv = JSONToCSV(
-	data
-  );
+  const csv = JSONToCSV(data);
 
   return NextResponse.json(
     {
-      data: csv
+      data: csv,
+      message: "Export successful!"
     },
     { status: 200 }
   );
