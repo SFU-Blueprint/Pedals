@@ -3,6 +3,15 @@ export const isSameDate = (date1: Date, date2: Date): boolean =>
   date1.getMonth() === date2.getMonth() &&
   date1.getDate() === date2.getDate();
 
+export const formatDuration = (mili: number) => {
+  // Convert duration (in seconds) to hours and minutes
+  const hours = Math.floor(mili / 3600); // 1 hour = 3600 seconds
+  const minutes = Math.floor((mili % 3600) / 60); // 1 minute = 60 seconds
+
+  // Return the formatted string
+  return `${hours} hour${hours !== 1 ? "s" : ""} and ${minutes} minute${minutes !== 1 ? "s" : ""}`;
+};
+
 export const formatDate = (
   timestamp: Date | null,
   fallbackText: string = "N/A"
