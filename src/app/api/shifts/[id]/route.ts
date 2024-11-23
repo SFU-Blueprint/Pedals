@@ -92,7 +92,8 @@ export const PATCH = async (req: NextRequest) => {
       checked_in_at: intime,
       checked_out_at: outtime,
       shift_type: type,
-      duration: duration
+      duration: duration,
+      is_active: false
     })
     .eq("id", id);
 
