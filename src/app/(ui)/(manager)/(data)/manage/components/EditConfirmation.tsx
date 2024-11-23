@@ -8,11 +8,15 @@ interface EditConfirmationProps {
     { key: string; value: string }
   ];
   onConfirm: () => void;
+  warning?: string;
+  onCancel?: () => void;
 }
 
 export default function EditConfirmation({
   data,
-  onConfirm
+  onConfirm,
+  warning,
+  onCancel
 }: EditConfirmationProps) {
   const { loading } = useUIComponentsContext();
   const [
@@ -43,18 +47,35 @@ export default function EditConfirmation({
           <h3>{value4}</h3>
         </div>
       </div>
-      <button
-        type="submit"
-        className="!w-fit px-10"
-        aria-disabled={loading}
-        onClick={(e) => {
-          e.preventDefault();
-          if (loading) return;
-          onConfirm();
-        }}
-      >
-        Confirm
-      </button>
+      {warning && <h3>WARNING: {warning}</h3>}
+      <div className="flex w-full justify-between">
+        {onCancel && (
+          <button
+            type="submit"
+            className="!w-fit !bg-pedals-grey px-10"
+            aria-disabled={loading}
+            onClick={(e) => {
+              e.preventDefault();
+              if (loading) return;
+              onCancel();
+            }}
+          >
+            Cancel
+          </button>
+        )}
+        <button
+          type="submit"
+          className="!w-fit px-10"
+          aria-disabled={loading}
+          onClick={(e) => {
+            e.preventDefault();
+            if (loading) return;
+            onConfirm();
+          }}
+        >
+          {onCancel ? "Continue" : "Confirm"}
+        </button>
+      </div>
     </div>
   );
 }

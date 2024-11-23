@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
     : null;
   const duration =
     checkOutTime &&
-    Math.floor((currentTime.getTime() - checkOutTime.getTime()) / 1000);
+    Math.floor((checkOutTime.getTime() - checkInTime.getTime()) / 1000);
 
   // Update the current shift to check out
   const { error: shiftUpdateError } = await supabase

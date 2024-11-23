@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import DateSelector from "@/components/DateSelector";
 import { Tables } from "@/lib/supabase.types";
@@ -101,6 +101,21 @@ export default function EditShiftCard({
     });
   };
 
+  const resetCard = useCallback(() => {
+    setIsEditing(false);
+    setDate(new Date(shift.checked_in_at));
+    setCheckinTime(formatTime(shift.checked_in_at));
+    setCheckoutTime(formatTime(shift.checked_out_at));
+    setShiftType(shift.shift_type);
+  }, [
+    shift,
+    setIsEditing,
+    setDate,
+    setCheckinTime,
+    setCheckoutTime,
+    setShiftType
+  ]);
+
   const handleButtonClick = () => {
     if (loading) return;
     if (isEditing) {
@@ -134,6 +149,19 @@ export default function EditShiftCard({
                   shiftType
                 )
               }
+              warning={
+                shift.is_active
+                  ? "This shift is currently active. Editing it will end the shift automatically. Do you want to proceed?"
+                  : undefined
+              }
+              onCancel={
+                shift.is_active
+                  ? () => {
+                      resetCard();
+                      setPopup(null);
+                    }
+                  : undefined
+              }
             />
           )
         });
@@ -153,24 +181,14 @@ export default function EditShiftCard({
         !loading &&
         !popup
       ) {
-        setIsEditing(false);
-        setDate(new Date(shift.checked_in_at));
-        setCheckinTime(formatTime(shift.checked_in_at));
-        setCheckoutTime(formatTime(shift.checked_out_at));
-        setShiftType(shift.shift_type);
+        resetCard();
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [
-    shift.checked_in_at,
-    shift.checked_out_at,
-    shift.shift_type,
-    loading,
-    popup
-  ]);
+  }, [resetCard, loading, popup]);
 
   return (
     <div

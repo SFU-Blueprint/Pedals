@@ -32,7 +32,7 @@ export default function DeleteConfirmation({
           </div>
         ))}
       </div>
-      <div className="flex gap-5">
+      <div className="flex w-full justify-between">
         <button
           type="submit"
           className="!w-fit !bg-pedals-grey px-10"
