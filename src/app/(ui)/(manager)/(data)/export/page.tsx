@@ -20,7 +20,13 @@ export default function ExportPage() {
     e.preventDefault();
     feedbackFetch(
       "/api/export",
-      { method: "GET" },
+      {
+        method: "POST",
+        body: JSON.stringify({ selectedExportOption }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      },
       {
         callback: (data) => {
           if (data) {
