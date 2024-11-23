@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 import { formatDate, formatDuration } from "@/utils/DateTime";
 
-function JSONToCSV(
-  jsonData: Array<any> | null
-): string {
+function JSONToCSV(jsonData: Array<any> | null): string {
   if (!jsonData || jsonData.length === 0) return "";
 
   const headers = Object.keys(jsonData[0])
@@ -19,6 +17,10 @@ function JSONToCSV(
           return "User Name";
         case "total_time":
           return "Total Time";
+        case "total_duration":
+          return "Total Time";
+        case "shift_type":
+          return "Shift Type";
         case "name":
           return "Name";
         default:
@@ -56,8 +58,36 @@ async function getPeople() {
   };
 }
 
+async function getHours(input_year: string) {
+  let { data, error } = await supabase.rpc("get_total_duration_by_year", {
+    input_year
+  });
+
+  data?.map((item) => {
+    item.total_duration = formatDuration(item.total_duration);
+  });
+
+  return {
+    data,
+    error
+  };
+}
+
+async function getShiftType() {
+  const { data, error } = await supabase.rpc("get_total_duration_per_shift"); // Check supabase for function
+
+  data?.map((item) => {
+    item.total_duration = formatDuration(item.total_duration);
+  });
+
+  return {
+    data,
+    error
+  };
+}
+
 export async function POST(req: NextRequest) {
-  const { selectedExportOption } = await req.json();
+  const { selectedExportOption, selectedYear } = await req.json();
   // console.log(selectedExportOption);
 
   // Handle missing required parameters
@@ -76,11 +106,27 @@ export async function POST(req: NextRequest) {
       ({ data, error } = await getPeople());
       break;
     case "Shift Type":
+      ({ data, error } = await getShiftType());
+      break;
     case "Hours":
+      if (!selectedYear) {
+        return NextResponse.json(
+          {
+            message: "Client error"
+          },
+          { status: 401 }
+        );
+      }
+      ({ data, error } = await getHours(selectedYear));
+      break;
 
     default:
-      console.log("Not supported yet");
-      return;
+      return NextResponse.json(
+        {
+          message: "Client error"
+        },
+        { status: 401 }
+      );
   }
 
   // Handle network error
@@ -93,9 +139,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const csv = JSONToCSV(
-	data
-  );
+  const csv = JSONToCSV(data);
+  if (!csv) {
+    return NextResponse.json(
+      {
+        message: "Data is not avaialble"
+      },
+      { status: 402 }
+    );
+  }
 
   return NextResponse.json(
     {

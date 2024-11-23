@@ -22,7 +22,7 @@ export default function ExportPage() {
       "/api/export",
       {
         method: "POST",
-        body: JSON.stringify({ selectedExportOption }),
+        body: JSON.stringify({ selectedExportOption, selectedYear }),
         headers: {
           "Content-Type": "application/json"
         }
