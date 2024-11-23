@@ -3,7 +3,7 @@ import supabase from "@/lib/supabase";
 import { formatDate, formatDuration } from "@/utils/DateTime";
 import { Tables } from "@/lib/supabase.types";
 
-function JSONToCSV(jsonData: Array<any> | undefined): string {
+function JSONToCSV(jsonData: Array<any> | null): string {
   if (!jsonData || jsonData.length === 0) return "";
 
   const headers = Object.keys(jsonData[0])
@@ -18,7 +18,13 @@ function JSONToCSV(jsonData: Array<any> | undefined): string {
           return "User Name";
         case "total_time":
           return "Total Time";
+        case "total_duration":
+          return "Total Time";
+        case "shift_type":
+          return "Shift Type";
         case "name":
+          return "Name";
+        case "volunteer_name":
           return "Name";
         default:
           return header; // Return the original header if no mapping
@@ -52,9 +58,42 @@ async function getPeople() {
   };
 }
 
-export async function POST(req: NextRequest) {
-  const { selectedExportOption } = await req.json();
+async function getShiftType() {
+  const { data, error } = await supabase.rpc("get_total_duration_per_shift");
 
+  const processedData = (
+    data as { shift_type: string; total_duration: number }[]
+  )?.map((item) => ({
+    shift_type: item.shift_type,
+    total_duration: formatDuration(item.total_duration)
+  }));
+
+  return {
+    data: processedData,
+    error
+  };
+}
+
+async function getHours(input_year: string) {
+  const { data, error } = await supabase.rpc("get_total_duration_by_year", {
+    input_year
+  });
+
+  const processedData = (
+    data as { volunteer_name: string; total_duration: number }[]
+  )?.map((item) => ({
+    volunteer_name: item.volunteer_name,
+    total_duration: formatDuration(item.total_duration)
+  }));
+
+  return {
+    data: processedData,
+    error
+  };
+}
+
+export async function POST(req: NextRequest) {
+  const { selectedExportOption, selectedYear } = await req.json();
   // Handle missing required parameters
   if (!selectedExportOption) {
     return NextResponse.json(
@@ -71,10 +110,27 @@ export async function POST(req: NextRequest) {
       ({ data, error } = await getPeople());
       break;
     case "Shift Type":
+      ({ data, error } = await getShiftType());
       break;
     case "Hours":
+      if (!selectedYear) {
+        return NextResponse.json(
+          {
+            message: "Client error"
+          },
+          { status: 401 }
+        );
+      }
+      ({ data, error } = await getHours(selectedYear));
       break;
+
     default:
+      return NextResponse.json(
+        {
+          message: "Client error"
+        },
+        { status: 401 }
+      );
   }
 
   // Handle network error
@@ -88,6 +144,14 @@ export async function POST(req: NextRequest) {
   }
 
   const csv = JSONToCSV(data);
+  if (!csv) {
+    return NextResponse.json(
+      {
+        message: "Data is not avaialble"
+      },
+      { status: 402 }
+    );
+  }
 
   return NextResponse.json(
     {
