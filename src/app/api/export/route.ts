@@ -10,10 +10,12 @@ function jsonToCsv(jsonData: any[]): string {
   const headers = Object.keys(jsonData[0]);
 
   const rows = jsonData.map((obj) =>
-    headers.map((header) => {
-      const value = obj[header] ?? "";
-      return `"${String(value).replace(/"/g, '""')}"`;
-    }).join(",")
+    headers
+      .map((header) => {
+        const value = obj[header] ?? "";
+        return `"${String(value).replace(/"/g, '""')}"`;
+      })
+      .join(",")
   );
 
   return [headers.join(","), ...rows].join("\r\n");
@@ -22,8 +24,8 @@ function jsonToCsv(jsonData: any[]): string {
 export async function GET() {
   // get_volunteer_hour is a SQL function create in SQL Editor in supabase. To update this function, go to the SQL editor and drop this function first: DROP FUNCTION get_volunteer_hours(). Create another SQL function like you would with SQL
   const { data, error } = await supabase
-   .from("users")
-   .select("name,total_time")
+    .from("users")
+    .select("name,total_time");
 
   // Handle network error
   if (error?.message === "TypeError: fetch failed") {

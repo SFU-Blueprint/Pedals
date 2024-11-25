@@ -56,6 +56,66 @@ export default function ManagePeoplePage() {
       }
     );
 
+    
+
+    const removalCheck = async (ids: Set<string>, options: { callbackOnWarning: boolean, showSuccessFeedback: boolean } = { callbackOnWarning: true, showSuccessFeedback:false }) =>
+      feedbackFetch(
+        "/api/people",
+        {
+          method: "POST",
+          body: JSON.stringify({ ids: Array.from(ids), flag: "delete_users" }),
+          headers: {
+            "Content-Type": "application/json"
+          }
+          
+        },
+        {
+          callback: async (input) => {
+            if (input.length === 0){
+              await executeRemovePeople(input);
+            }
+            else{
+              setPopup({
+                title: "Error in users' shifts",
+                component: (
+                  <div className="flex h-full flex-col items-center justify-between gap-10 px-10 py-10">
+                    <div>
+                    The following user(s) have active shifts that have not been checked out.
+                      {
+                        input[0].map((user: any, key: number) => (
+                          <p>{user.name}</p>
+                        ))
+                      }
+                    </div>
+                    <div>
+                      The following user(s) have error shifts that has to be resolved first.
+                      {
+                        input[1].map((user: any, key: number) => (
+                          <p>{user.name}</p>
+                        ))
+                      }
+                    </div>
+                    <button
+                      className="!w-fit !px-10 uppercase"
+                      type="submit"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPopup(null);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )
+              })
+            }
+          },
+          callbackOnWarning: options.callbackOnWarning,
+          showSuccessFeedback: options.showSuccessFeedback
+        }
+      );
+
+
   useEffect(() => {
     fetchPeople();
   }, [fetchPeople]);
@@ -127,7 +187,11 @@ export default function ManagePeoplePage() {
                         lastSeen: person.last_seen
                       }))}
                     onCancel={() => setPopup(null)}
-                    onConfirm={async () => executeRemovePeople(selectedIDs)}
+                    onConfirm={async () => {
+                      setPopup(null)
+                      removalCheck(selectedIDs);
+                    }
+                    }
                   />
                 )
               });

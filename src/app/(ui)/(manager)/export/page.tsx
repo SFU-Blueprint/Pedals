@@ -41,7 +41,10 @@ export default function ExportPage() {
       }
     } catch (error) {
       console.error("Error downloading CSV:", error);
-      setFeedback([FeedbackType.Error, "An error occurred while downloading the CSV. Please try again."]);
+      setFeedback([
+        FeedbackType.Error,
+        "An error occurred while downloading the CSV. Please try again."
+      ]);
     } finally {
       setIsLoading(false);
     }
