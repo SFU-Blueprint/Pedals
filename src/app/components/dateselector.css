@@ -47,9 +47,13 @@
 }
 
 .react-datepicker-popper {
-  z-index: 1;
   line-height: 0;
 }
+
+.react-datepicker-popper[data-placement^="top"] {
+  z-index: 11;
+}
+
 .react-datepicker-popper .react-datepicker__triangle {
   stroke: transparent;
 }
@@ -59,6 +63,7 @@
 }
 .react-datepicker-popper[data-placement^="top"] .react-datepicker__triangle {
   fill: transparent;
+
   color: transparent;
 }
 

@@ -67,7 +67,7 @@ export default function ManageShiftPage() {
 
   return (
     <>
-      <div className="sticky top-0 z-20 flex justify-end gap-2 pb-9 pr-20 pt-36">
+      <div className="sticky top-0 z-20 flex justify-end gap-2 pb-9 pr-20 pt-36 bg-white">
         <FormInput
           uppercase
           className="w-80 uppercase"

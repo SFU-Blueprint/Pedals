@@ -35,14 +35,14 @@ export default function EditPeopleGrid({
 
   return (
     <div className="flex h-full select-none flex-col overflow-y-auto" ref={ref}>
-      <div className="z-10 flex items-center justify-start border-pedals-black px-20 py-2">
+      <div className="z-10 flex items-center justify-start border-pedals-black border-b-[2px] bg-white px-20 py-2">
         <p className="w-80">Name</p>
         <p className="w-80">Username</p>
         <p className="w-80">Date of Birth</p>
         <p className="w-80">Last Seen</p>
         <p className="ml-[340px]">{`Total: ${people.length}`}</p>
       </div>
-      <div className="h-full overflow-y-scroll border-y-[2px] border-y-pedals-darkgrey bg-pedals-grey">
+      <div className="h-full overflow-y-scroll bg-pedals-grey">
         {people?.map((person) => (
           <EditPeopleCard
             key={person.id}
