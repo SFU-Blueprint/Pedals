@@ -84,7 +84,7 @@ export default function ManagePeoplePage() {
 
   return (
     <>
-      <div className="z-10 flex w-full flex-col">
+      <div className="z-10 flex w-full flex-col bg-pedals-lightgrey">
         <FormInput
           uppercase
           className="mb-6 ml-auto mr-20 mt-36 flex w-80 uppercase"

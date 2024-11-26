@@ -12,7 +12,7 @@ export default function EditShiftsGrid({
 }: EditShiftsGridProps) {
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      <div className="z-10 flex items-center justify-start border-pedals-black border-b-[2px] bg-white px-20 py-2">
+      <div className="z-10 flex items-center justify-start border-b-[2px] border-pedals-black bg-pedals-lightgrey px-20 py-2">
         <p className="w-96">Name</p>
         <p className="w-72">Date</p>
         <div className="flex justify-between gap-3">
