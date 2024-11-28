@@ -1,12 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
+import { randomBytes, scrypt, scryptSync } from "crypto";
+
+
+
+// Return the salt and hash code in form ${salt}:${hashCode}
+function hash(code: string) : string {
+  const salt = randomBytes(16).toString("hex");
+  const hashCode = scryptSync(code, salt, 64).toString("hex");
+  return `${salt}:${hashCode}`;
+}
+
+// verify the input value is equal to the access code
+function verify(input: string, hashCode: string) : boolean {
+  const[salt, accessCode] = hashCode.split(":");
+  const hashInput = scryptSync(input, salt, 64).toString("hex");
+  return hashInput == accessCode;
+}
 
 /**
  * Handles access code validation and updates
  * POST: Validates the provided access code
  * PATCH: Updates the access code if old code matches the current active code
  */
-
 export async function POST(req: NextRequest) {
   try {
     const { code } = await req.json();
@@ -20,7 +36,6 @@ export async function POST(req: NextRequest) {
     const { data, error } = await supabase
       .from("access_codes")
       .select("code, is_active")
-      .eq("code", code)
       .eq("is_active", true)
       .single();
 
@@ -33,7 +48,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Handle invalid or inactive access code
-    if (!data) {
+    if (!data || !verify(code, data.code)) {
       return NextResponse.json({ message: "Invalid or inactive access code. Please try again." }, { status: 401 });
     }
 
@@ -70,7 +85,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Handle mismatch of provided old code and current active code
-    if (currentCode?.code !== oldCode) {
+    if (!currentCode || !verify(oldCode, currentCode.code)) {
       return NextResponse.json({ message: "The current access code does not match. Please try again." }, { status: 409 });
     }
 
@@ -79,54 +94,23 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ message: "The new access code is the same as the current active code." }, { status: 409 });
     }
 
-    // Check if the new code was a past code and reactivate if it exists
-    const { data: pastCode, error: pastCodeError } = await supabase
+    // Hash the new access code
+    const newCodeHash = hash(newCode);
+
+    // Delete all previous access codes from the database (ensures only one active code)
+    const { error: deleteError } = await supabase
       .from("access_codes")
-      .select("code")
-      .eq("code", newCode)
-      .eq("is_active", false)
-      .single();
+      .delete()
+      .neq("code", newCode); // Delete all codes except the new one
 
-    if (pastCodeError) {
-      return NextResponse.json({ message: "Database error occurred while checking past codes. Please try again." }, { status: 500 });
+    if (deleteError) {
+      return NextResponse.json({ message: "Error occurred while deleting old access codes. Please try again." }, { status: 500 });
     }
 
-    if (pastCode) {
-      // Reactivate the past code and deactivate the current one
-      const { error: reactivateError } = await supabase
-        .from("access_codes")
-        .update({ is_active: true })
-        .eq("code", newCode);
-
-      if (reactivateError) {
-        return NextResponse.json({ message: "Error occurred while reactivating the past code. Please try again." }, { status: 500 });
-      }
-
-      const { error: deactivateError } = await supabase
-        .from("access_codes")
-        .update({ is_active: false })
-        .eq("code", oldCode);
-
-      if (deactivateError) {
-        return NextResponse.json({ message: "Error occurred while deactivating the old access code. Please try again." }, { status: 500 });
-      }
-
-      return NextResponse.json({ message: "Access code reactivated successfully." }, { status: 200 });
-    }
-
-    // If not a past code, deactivate old code and insert new one
-    const { error: deactivateError } = await supabase
-      .from("access_codes")
-      .update({ is_active: false })
-      .eq("code", oldCode);
-
-    if (deactivateError) {
-      return NextResponse.json({ message: "Error occurred while deactivating the old access code. Please try again." }, { status: 500 });
-    }
-
+    // Insert the new access code and mark it as active
     const { error: insertError } = await supabase
       .from("access_codes")
-      .insert({ code: newCode, is_active: true });
+      .insert({ code: newCodeHash, is_active: true });
 
     if (insertError) {
       return NextResponse.json({ message: "Error occurred while inserting the new access code. Please try again." }, { status: 500 });
@@ -139,3 +123,4 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ message: "Unexpected server error. Please try again later." }, { status: 500 });
   }
 }
+
