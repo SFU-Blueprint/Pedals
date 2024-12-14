@@ -8,14 +8,34 @@ import { Tables } from "@/lib/supabase.types";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
 import { isInMonth, isInYear } from "@/utils/DateTime";
 import { MONTHS_SHORT, SHIFT_TYPES, YEARS_RANGE } from "@/utils/Constants";
+import { validateTokenAndRedirect } from "../utils/authRedirect";
+import { useRouter } from "next/navigation";
 
 export default function ManageShiftPage() {
+  const router = useRouter();
   const [searchName, setSearchName] = useState("");
   const [searchMonth, setSearchMonth] = useState<string | null>(null);
   const [searchYear, setSearchYear] = useState<number | null>(null);
   const [searchShiftType, setSearchShiftType] = useState<string | null>(null);
   const [shifts, setShifts] = useState<Tables<"shifts">[]>([]);
   const feedbackFetch = useFeedbackFetch();
+
+  useEffect(() => {
+    const checkTokenPeriodically = async () => {
+      const result = await validateTokenAndRedirect();
+      if (!result.isValid) {
+        router.push("/manage-login");
+      }
+    };
+
+    // Run token check immediately and set interval
+    checkTokenPeriodically();
+    const intervalId = setInterval(() => {
+      checkTokenPeriodically();
+    }, 5 * 60 * 1000); 
+
+    return () => clearInterval(intervalId);
+  }, [router]);
 
   const fetchShifts = useCallback(
     async (

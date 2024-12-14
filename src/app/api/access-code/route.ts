@@ -147,7 +147,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Verify the token
     jwt.verify(token, JWT_SECRET);
     return NextResponse.json({ message: "Token is valid." }, { status: 200 });
   } catch (error) {
