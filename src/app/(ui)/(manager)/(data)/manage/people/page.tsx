@@ -10,8 +10,11 @@ import useFeedbackFetch from "@/hooks/FeedbackFetch";
 import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
 import { isInactive, isUnder24 } from "@/utils/DateTime";
 import { setsEqual } from "@/utils/Validators";
+import { validateTokenAndRedirect } from "../utils/authRedirect";
+import { useRouter } from "next/navigation";
 
 export default function ManagePeoplePage() {
+  const router = useRouter();
   const [people, setPeople] = useState<Tables<"users">[]>([]);
   const [searchName, setSearchName] = useState("");
   const [searchInactive, setSearchInactive] = useState(false);
@@ -19,6 +22,22 @@ export default function ManagePeoplePage() {
   const [selectedIDs, setSelectedIDs] = useState<Set<string>>(new Set());
   const feedbackFetch = useFeedbackFetch();
   const { setPopup, loading } = useUIComponentsContext();
+
+  useEffect(() => {
+    const checkTokenPeriodically = async () => {
+      const result = await validateTokenAndRedirect();
+      if (!result.isValid) {
+        router.push("/manage-login");
+      }
+    };
+
+    checkTokenPeriodically();
+    const intervalId = setInterval(() => {
+      checkTokenPeriodically();
+    }, 5 * 60 *1000); 
+
+    return () => clearInterval(intervalId);
+  }, [router]);
 
   const fetchPeople = useCallback(
     async (
