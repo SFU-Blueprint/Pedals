@@ -13,6 +13,22 @@ export default function ManageLoginPage() {
   const feedbackFetch = useFeedbackFetch();
   const { setPopup, loading } = useUIComponentsContext();
 
+  useEffect(() => {
+    const checkToken = async () => {
+      const res = await fetch("/api/access-code", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // 
+      });
+
+      if (res.ok) {
+        router.push("/manage/shift"); // Redirect if token is valid
+      }
+    };
+
+    checkToken();
+  }, [router]);
+
   const handleSubmitAccessCode = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (loading) return;
