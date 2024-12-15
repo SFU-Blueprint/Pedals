@@ -18,7 +18,7 @@ export default function ManagePeoplePage() {
   const [searchUnder24, setSearchUnder24] = useState(false);
   const [selectedIDs, setSelectedIDs] = useState<Set<string>>(new Set());
   const feedbackFetch = useFeedbackFetch();
-  const { setPopup, loading } = useUIComponentsContext();
+  const { setFeedback, setPopup, loading } = useUIComponentsContext();
 
   const fetchPeople = useCallback(
     async (
@@ -53,6 +53,70 @@ export default function ManagePeoplePage() {
           await fetchPeople({ showSuccessFeedback: false });
           setPopup(null);
         }
+      }
+    );
+
+  const removalCheck = async (
+    ids: Set<string>,
+    options: { callbackOnWarning: boolean; showSuccessFeedback: boolean } = {
+      callbackOnWarning: true,
+      showSuccessFeedback: false
+    }
+  ) =>
+    feedbackFetch(
+      "/api/people",
+      {
+        method: "POST",
+        body: JSON.stringify({ ids: Array.from(ids), flag: "delete_users" }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      },
+      {
+        callback: async (data) => {
+          if (data.length === 0) {
+            await executeRemovePeople(data);
+          } else {
+            setFeedback(null);
+            setPopup({
+              title: "Error",
+              component: (
+                <div className="flex h-full flex-col items-center justify-between gap-10 px-10 py-10">
+                  <div>
+                    <h3>
+                      The following user(s) have active shifts that have not
+                      been checked out.
+                    </h3>
+                    {data[0].map((user: any) => (
+                      <p>{user.name}</p>
+                    ))}
+                  </div>
+                  <div>
+                    <h3>
+                      The following user(s) have error shifts that has to be
+                      resolved first.
+                    </h3>
+                    {data[1].map((user: any) => (
+                      <p>{user.name}</p>
+                    ))}
+                  </div>
+                  <button
+                    className="!w-fit !px-10 uppercase"
+                    type="submit"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPopup(null);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )
+            });
+          }
+        },
+        callbackOnWarning: options.callbackOnWarning,
+        showSuccessFeedback: options.showSuccessFeedback
       }
     );
 
@@ -135,7 +199,10 @@ export default function ManagePeoplePage() {
                         lastSeen: person.last_seen
                       }))}
                     onCancel={() => setPopup(null)}
-                    onConfirm={async () => executeRemovePeople(selectedIDs)}
+                    onConfirm={async () => {
+                      setPopup(null);
+                      removalCheck(selectedIDs);
+                    }}
                   />
                 )
               });
