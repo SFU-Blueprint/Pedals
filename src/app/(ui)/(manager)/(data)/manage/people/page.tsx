@@ -10,11 +10,8 @@ import useFeedbackFetch from "@/hooks/FeedbackFetch";
 import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
 import { isInactive, isUnder24 } from "@/utils/DateTime";
 import { setsEqual } from "@/utils/Validators";
-import { validateTokenAndRedirect } from "../utils/authRedirect";
-import { useRouter } from "next/navigation";
 
 export default function ManagePeoplePage() {
-  const router = useRouter();
   const [people, setPeople] = useState<Tables<"users">[]>([]);
   const [searchName, setSearchName] = useState("");
   const [searchInactive, setSearchInactive] = useState(false);
@@ -22,22 +19,6 @@ export default function ManagePeoplePage() {
   const [selectedIDs, setSelectedIDs] = useState<Set<string>>(new Set());
   const feedbackFetch = useFeedbackFetch();
   const { setFeedback, setPopup, loading } = useUIComponentsContext();
-
-  useEffect(() => {
-    const checkTokenPeriodically = async () => {
-      const result = await validateTokenAndRedirect();
-      if (!result.isValid) {
-        router.push("/manage-login");
-      }
-    };
-
-    checkTokenPeriodically();
-    const intervalId = setInterval(() => {
-      checkTokenPeriodically();
-    }, 5 * 60 *1000); 
-
-    return () => clearInterval(intervalId);
-  }, [router]);
 
   const fetchPeople = useCallback(
     async (
@@ -106,8 +87,13 @@ export default function ManagePeoplePage() {
                       The following user(s) have active shifts that have not
                       been checked out.
                     </h3>
-                    {data[0].map((user: any) => (
-                      <p>{user.name}</p>
+                    {data[0].map((person: any) => (
+                      <div
+                        key={person.id}
+                        className="flex w-full justify-start border-y-[1px] border-pedals-stroke bg-pedals-grey px-5 py-5"
+                      >
+                        <h3>{person.name}</h3>
+                      </div>
                     ))}
                   </div>
                   <div>
@@ -115,8 +101,13 @@ export default function ManagePeoplePage() {
                       The following user(s) have error shifts that has to be
                       resolved first.
                     </h3>
-                    {data[1].map((user: any) => (
-                      <p>{user.name}</p>
+                    {data[1].map((person: any) => (
+                      <div
+                        key={person.id}
+                        className="flex w-full justify-start border-y-[1px] border-pedals-stroke bg-pedals-grey px-5 py-5"
+                      >
+                        <h3>{person.name}</h3>
+                      </div>
                     ))}
                   </div>
                   <button
@@ -233,7 +224,7 @@ export default function ManagePeoplePage() {
       </div>
       {filteredPeople.length === 0 &&
       (searchName || searchInactive || searchUnder24) ? (
-        <h3 className="flex w-full justify-center">No Results Found</h3>
+        <h3 className="mt-40 flex w-full justify-center">No Results Found</h3>
       ) : (
         <EditPeopleGrid
           people={filteredPeople}
