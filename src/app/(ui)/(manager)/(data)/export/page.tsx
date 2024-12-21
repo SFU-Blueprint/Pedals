@@ -8,7 +8,7 @@ import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
 
 export default function ExportPage() {
-  const availableExportOptions = ["Hours", "People", "Shift Type"];
+  const availableExportOptions = ["Hours", "People", "Shift Type", "Hours Log"];
   const [selectedExportOption, setSelectedExportOption] = useState<string>(
     availableExportOptions[0]
   );
@@ -97,6 +97,9 @@ export default function ExportPage() {
             Export the total hours volunteered for each shift category in CSV
             format.
           </p>
+        )}
+        {selectedExportOption === "Hours Log" && (
+          <p>Export format according to cavan excel sheet</p>
         )}
       </div>
       <button
