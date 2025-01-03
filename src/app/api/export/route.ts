@@ -1,61 +1,163 @@
-import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import supabase from "@/lib/supabase";
+import { formatDate, formatDuration } from "@/utils/DateTime";
+import { Tables } from "@/lib/supabase.types";
 
-function convertToCSV(arr: any[]): string {
-  if (arr.length === 0) return "";
+function JSONToCSV(jsonData: Array<any> | null): string {
+  if (!jsonData || jsonData.length === 0) return "";
 
-  const headers = Object.keys(arr[0]);
-  const csvRows = [
-    headers.join(","), // CSV header row
-    ...arr.map((row) =>
-      headers.map((fieldName) => JSON.stringify(row[fieldName] ?? "")).join(",")
-    )
-  ];
+  const headers = Object.keys(jsonData[0])
+    .map((header) => {
+      // Mapping specific headers to human-readable formats
+      switch (header) {
+        case "dob":
+          return "Date of Birth";
+        case "last_seen":
+          return "Last seen Date";
+        case "username":
+          return "User Name";
+        case "total_time":
+          return "Total Time";
+        case "total_duration":
+          return "Total Time";
+        case "shift_type":
+          return "Shift Type";
+        case "name":
+          return "Name";
+        case "volunteer_name":
+          return "Name";
+        default:
+          return header; // Return the original header if no mapping
+      }
+    })
+    .join(",");
 
-  return csvRows.join("\n");
+  const rows = jsonData.map((obj) =>
+    Object.values(obj)
+      .map((value) => `"${String(value).replace(/"/g, '""')}"`)
+      .join(",")
+  );
+
+  return `${headers}\r\n${rows.join("\r\n")}`;
 }
 
-export default async function GET() {
-  const supabaseUrl = process.env.NEXT_APP_SUPABASE_URL as string;
-  const key = process.env.SUPABASE_KEY as string;
+async function getPeople() {
+  const { data, error } = await supabase.from("users").select("*");
 
-  try {
-    const supabase = createClient(supabaseUrl, key);
-    const { data, error } = await supabase.from("access_codes").select("*");
+  const processedData = (data as Tables<"users">[])?.map((item) => ({
+    name: item.name,
+    dob: formatDate(item.dob ? new Date(item.dob) : null, "Not Available"),
+    username: item.username,
+    total_time: formatDuration(item.total_time),
+    last_seen: formatDate(new Date(item.last_seen))
+  }));
 
-    if (error) {
-      return NextResponse.json({ message: error.message }, { status: 500 });
-    }
+  return {
+    data: processedData,
+    error
+  };
+}
 
-    if (!data) {
-      return NextResponse.json({ message: "No data found" }, { status: 404 });
-    }
+async function getShiftType() {
+  const { data, error } = await supabase.rpc("get_total_duration_per_shift");
 
-    // Convert data to CSV
-    const csv = convertToCSV(data);
+  const processedData = (
+    data as { shift_type: string; total_duration: number }[]
+  )?.map((item) => ({
+    shift_type: item.shift_type,
+    total_duration: formatDuration(item.total_duration)
+  }));
 
-    // // Set headers for CSV download
-    const headers = new Headers();
-    headers.append("Content-Type", "text/csv");
-    headers.append(
-      "Content-Disposition",
-      "attachment; filename=volunteers.csv"
-    );
+  return {
+    data: processedData,
+    error
+  };
+}
 
-    // Return the CSV data
-    return new NextResponse(csv, {
-      /* eslint-disable-next-line object-shorthand */
-      status: 200,
-      /* eslint-disable-next-line object-shorthand */
-      headers: headers
-    });
+async function getHours(input_year: string) {
+  const { data, error } = await supabase.rpc("get_total_duration_by_year", {
+    input_year
+  });
 
-    // return NextResponse.json({ message: "Success"}, { status: 200});
-  } catch (error) {
-    // console.error("Error:", error);
+  const processedData = (
+    data as { volunteer_name: string; total_duration: number }[]
+  )?.map((item) => ({
+    volunteer_name: item.volunteer_name,
+    total_duration: formatDuration(item.total_duration)
+  }));
+
+  return {
+    data: processedData,
+    error
+  };
+}
+
+export async function POST(req: NextRequest) {
+  const { selectedExportOption, selectedYear } = await req.json();
+  // Handle missing required parameters
+  if (!selectedExportOption) {
     return NextResponse.json(
-      { message: "An unexpected error occurred" },
-      { status: 500 }
+      {
+        message: "Please select an export option."
+      },
+      { status: 400 }
     );
   }
+  let data;
+  let error;
+  switch (selectedExportOption) {
+    case "People":
+      ({ data, error } = await getPeople());
+      break;
+    case "Shift Type":
+      ({ data, error } = await getShiftType());
+      break;
+    case "Hours":
+      if (!selectedYear) {
+        return NextResponse.json(
+          {
+            message: "Client error"
+          },
+          { status: 401 }
+        );
+      }
+      ({ data, error } = await getHours(selectedYear));
+      break;
+
+    default:
+      return NextResponse.json(
+        {
+          message: "Client error"
+        },
+        { status: 401 }
+      );
+  }
+
+  // Handle network error
+  if (error?.message === "TypeError: fetch failed") {
+    return NextResponse.json(
+      {
+        message: "Network error. Please check your connection and try again."
+      },
+      { status: 503 }
+    );
+  }
+
+  const csv = JSONToCSV(data);
+  if (!csv) {
+    return NextResponse.json(
+      {
+        message: "Data is not avaialble"
+      },
+      { status: 402 }
+    );
+  }
+
+  return NextResponse.json(
+    {
+      data: csv,
+      message: "Export successful!"
+    },
+    { status: 200 }
+  );
 }

@@ -13,6 +13,8 @@
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react/require-default-props": "off",
-    "import/extensions": "off"
+    "import/extensions": "off",
+    "import/prefer-default-export": "off",
+    "object-shorthand": "off"
   }
 }

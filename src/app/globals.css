@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 16px;
+  }
+
+  @media (max-width: 1600px) {
+    html {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 1440px) {
+    html {
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 1280px) {
+    html {
+      font-size: 10px;
+    }
+  }
+
+  body {
+    @apply text-pedals-black;
+  }
+
+  h1,
+  h2 {
+    @apply font-mono font-extralight tracking-tight;
+  }
+
+  h1 {
+    @apply text-[4rem];
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply font-inter text-2xl tracking-tight;
+  }
+
+  p,
+  label {
+    @apply font-inter;
+  }
+
+  label {
+    @apply text-pedals-darkgrey;
+  }
+
+  button,
+  a,
+  input,
+  ::placeholder,
+  .edit-card p {
+    @apply font-mono tracking-wide;
+  }
+
+  a {
+    @apply text-base hover:font-bold;
+  }
+
+  button,
+  input,
+  p,
+  label {
+    @apply text-lg;
+  }
+
+  button {
+    @apply uppercase;
+  }
+
+  button[type="submit"] {
+    @apply rounded-full bg-pedals-yellow px-6 py-2 hover:bg-pedals-brown;
+  }
+
+  button[type="button"] {
+    @apply rounded-[3px] bg-white px-3 py-2 hover:bg-pedals-stroke;
+  }
+
+  button[aria-disabled="true"] {
+    @apply cursor-not-allowed bg-pedals-grey hover:bg-pedals-grey;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="time"] {
+    @apply flex items-center justify-start rounded-[3px] px-3 py-2 outline-none focus:ring-2 focus:ring-pedals-yellow focus:ring-offset-1;
+  }
+
+  input[type="time"]:disabled {
+    @apply bg-transparent;
+  }
+
+  ::placeholder {
+    @apply text-pedals-stroke;
+  }
+}

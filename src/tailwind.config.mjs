@@ -10,7 +10,9 @@ export default {
         "pedals-darkgrey": "#727272",
         "pedals-black": "#252525",
         "pedals-yellow": "#FCC300",
-        "pedals-brown": "#AE8330"
+        "pedals-brown": "#AE8330",
+        "pedals-green": "#16A34A",
+        "pedals-red": "#DC2626"
       },
       fontFamily: {
         inter: "var(--font-inter)",

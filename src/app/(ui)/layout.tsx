@@ -1,52 +1,73 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import localFont from "next/font/local";
-import "./globals.css";
-import NavBar from "@/components/layouts/NavBar";
+"use client";
 
-const inter = Inter({
-  weight: ["400"],
-  subsets: ["latin"],
-  variable: "--font-inter"
-});
-const supply = localFont({
-  src: [
-    {
-      path: "../../public/font/PPSupplyMono-Ultralight.woff",
-      weight: "200"
-    },
-    {
-      path: "../../public/font/PPSupplyMono-Regular.woff",
-      weight: "400"
-    },
-    {
-      path: "../../public/font/PPSupplyMono-Medium.woff",
-      weight: "500"
-    },
-    {
-      path: "../../public/font/PPSupplyMono-Bold.woff",
-      weight: "700"
-    }
-  ],
-  variable: "--font-supply"
-});
+import { useEffect, useMemo, useState } from "react";
+import UIComponentsContext from "@/contexts/UIComponentsContext";
+import Feedback, {
+  FeedbackInterface,
+  FeedbackType
+} from "@/components/Feedback";
+import NavBar from "@/components/NavBar";
+import Popup, { PopupInterface } from "@/components/Popup";
 
-export const metadata: Metadata = {
-  title: "PEDALS",
-  description: "Volunteer Management System"
-};
-
-export default function RootLayout({
+export default function UILayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [feedback, setFeedback] = useState<FeedbackInterface | null>(null);
+  const [popup, setPopup] = useState<PopupInterface | null>(null);
+
+  useEffect(() => {
+    if (feedback !== null && feedback.type !== FeedbackType.Loading) {
+      const timer = setTimeout(
+        () => {
+          setFeedback(null);
+        },
+        Math.min(10000, Math.max(3000, feedback.message.length * 100))
+      );
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [feedback]);
+
   return (
-    <html lang="en" className={`${inter.variable} ${supply.variable}`}>
-      <body>
-        <NavBar className="fixed right-20 top-20" />
-        {children}
-      </body>
-    </html>
+    <UIComponentsContext.Provider
+      value={useMemo(
+        () => ({
+          setFeedback,
+          setPopup,
+          loading: feedback !== null && feedback.type === FeedbackType.Loading,
+          popup: popup !== null
+        }),
+        [feedback, popup]
+      )}
+    >
+      <NavBar
+        className="fixed right-20 top-20 z-30"
+        links={[
+          { href: "/checkin", label: "CHECK IN" },
+          { href: "/register", label: "REGISTER" },
+          { href: "/manage-login", label: "MANAGE", highlight: "/manage" }
+        ]}
+      />
+      {children}
+      {feedback && (
+        <Feedback
+          className="fixed bottom-10 right-1/2 z-30 translate-x-1/2"
+          type={feedback.type}
+        >
+          {feedback.message}
+        </Feedback>
+      )}
+      {popup && (
+        <Popup
+          className="fixed left-0 top-0 z-30"
+          title={popup.title}
+          closeAction={() => setPopup(null)}
+        >
+          {popup.component}
+        </Popup>
+      )}
+    </UIComponentsContext.Provider>
   );
 }
