@@ -4,365 +4,470 @@ import { formatDate, formatDuration } from "@/utils/DateTime";
 import { Tables } from "@/lib/supabase.types";
 
 interface VolunteerShiftReport {
-	username: string;
-	name: string;
-	total_wtq_time: number;
-	total_ptft_time: number;
-	total_other_time: number;
-	[key: string]: any; // Allow dynamic properties like `total_wtq_time_${monthName}`
+  username: string;
+  name: string;
+  total_wtq_time: number;
+  total_ptft_time: number;
+  total_other_time: number;
+  [key: string]: any; // Allow dynamic properties like `total_wtq_time_${monthName}`
 }
 
-function CavanExcelFormat(
-	jsonData: { [key: string]: Array<VolunteerShiftReport> | null },
-	monthRange: string[]
-): string {
-	if (!jsonData || Object.keys(jsonData).length === 0) return "";
+const monthMap: Record<string, number> = {
+  January: 1,
+  February: 2,
+  March: 3,
+  April: 4,
+  May: 5,
+  June: 6,
+  July: 7,
+  August: 8,
+  September: 9,
+  October: 10,
+  November: 11,
+  December: 12
+};
 
-	const transformedData: { [username: string]: VolunteerShiftReport } = {};
+const getDaysInMonth = (month: number, year: number): number =>
+  new Date(year, month, 0).getDate();
 
-	monthRange.forEach(monthName => {
-		const records = jsonData[monthName];
-		if (records) {
-			records.forEach((record) => {
-				if (!transformedData[record.username]) {
-					transformedData[record.username] = {
-						username: record.username,
-						name: record.name,
-						total_wtq_time: 0,
-						total_ptft_time: 0,
-						total_other_time: 0
-					};
-				}
+async function CavanExcelFormat(
+  jsonData: { [key: string]: Array<VolunteerShiftReport> | null },
+  monthRange: string[],
+  year: number
+): Promise<string> {
+  if (!jsonData || Object.keys(jsonData).length === 0) return "";
 
-				// Update properties with the respective month's values
-				transformedData[record.username][`total_wtq_time_${monthName}`] =
-					record.total_wtq_time;
-				transformedData[record.username][`total_ptft_time_${monthName}`] =
-					record.total_ptft_time;
-				transformedData[record.username][`total_other_time_${monthName}`] =
-					record.total_other_time;
-			})
-		}
+  const transformedData: { [username: string]: VolunteerShiftReport } = {};
 
-	})
+  // Process each month's data
+  monthRange.forEach((monthName) => {
+    const records = jsonData[monthName];
+    if (records) {
+      records.forEach((record) => {
+        if (!transformedData[record.username]) {
+          transformedData[record.username] = {
+            username: record.username,
+            name: record.name,
+            total_wtq_time: 0,
+            total_ptft_time: 0,
+            total_other_time: 0,
+            total_time: 0
+          };
+        }
 
-	const result: VolunteerShiftReport[] = Object.values(transformedData);
+        // Update transformed data
+        const userRecord = transformedData[record.username];
+        userRecord[`total_wtq_time_${monthName}`] = record.total_wtq_time;
+        userRecord[`total_ptft_time_${monthName}`] = record.total_ptft_time;
+        userRecord[`total_other_time_${monthName}`] = record.total_other_time;
+        userRecord.is_youth = record.is_youth;
+        userRecord.date_registered = record.date_registered;
+      });
+    }
+  });
 
-	// Generate headers dynamically with the new names
-	const headers = [
-		"Name",
-		"Date Registered",
-		"Youth",
-		"Totals",
-		"OCB & WTQ",
-		"PFTP"
-	];
+  const result: VolunteerShiftReport[] = Object.values(transformedData);
 
-	monthRange.forEach((monthName) => {
-		// Maintain the right order when push to csvContent
-		headers.push(`${monthName}`);
-		headers.push(`PFTP ${monthName}`);
-		headers.push(`WTQ ${monthName}`);
+  // Generate dynamic headers
+  const headers = [
+    "Name",
+    "Date Registered",
+    "Youth",
+    "Totals",
+    "OCB & WTQ",
+    "PFTP",
+    ...monthRange.flatMap((monthName) => [
+      `${monthName}`,
+      `PFTP ${monthName}`,
+      `WTQ ${monthName}`
+    ])
+  ];
 
-	})
+  let totalHour = 0;
 
-	// Start building the CSV string with the headers
-	let csvContent = `${headers.join(",")}\r\n`;
-	const dynamicColumns = monthRange.length * 3;
-	const spacer = ",".repeat(dynamicColumns);
+  const data = await Promise.all(
+    monthRange.map(async (monthName) => {
+      const month = monthMap[monthName];
+      if (!month) throw new Error(`Unsupported month: ${monthName}`);
 
-	csvContent += `Total Hours,,,,,${spacer}\r\n`;
-	csvContent += `Unique Youth,,,,,${spacer}\r\n`;
-	csvContent += `Youth Hours,,,,,${spacer}\r\n`;
-	csvContent += `Average,,,,,${spacer}\r\n`;
+      const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+      const endDate = `${year}-${String(month).padStart(2, "0")}-${getDaysInMonth(month, year)}`;
 
-	const sortedData = result.sort(
-		(a: VolunteerShiftReport, b: VolunteerShiftReport) =>
-			a.name.localeCompare(b.name)
-	);
+      const { data: monthData, error: fetchError } = await supabase.rpc(
+        "get_volunteer_hour_log_total",
+        { start_date: startDate, end_date: endDate }
+      );
 
-	// Variable to keep track of the last first letter
-	let lastFirstLetter = "";
+      if (fetchError) {
+        let errorMessage: string;
 
-	// Add the rows based on the sorted JSON data
-	sortedData.forEach((row: VolunteerShiftReport) => {
-		const currentFirstLetter = row.name.charAt(0).toUpperCase(); // Get the first letter of the name
+        if (fetchError instanceof Error) {
+          errorMessage = fetchError.message;
+        } else if (typeof fetchError === "string") {
+          errorMessage = fetchError;
+        } else {
+          errorMessage = "Unknown error";
+        }
 
-		// Insert the "blocker" row if the first letter changes
-		if (currentFirstLetter !== lastFirstLetter) {
-			// Add blocker row with the first letter
-			csvContent += `"${currentFirstLetter}",,,,,,,\r\n`;
-			lastFirstLetter = currentFirstLetter; // Update last first letter
-		}
+        throw new Error(errorMessage);
+      }
 
-		// Add the actual data row
-		const rowData = [
-			row.name || "",
-			row.dateRegistered || "",
-			row.youth || "",
-			row.totals || "",
-			row.ocbWfq || "",
-			row.pftp || "",
-			...monthRange
-				.map((monthName) => [
-					row[`total_other_time_${monthName}`] || "",
-					row[`total_ptft_time_${monthName}`] || "",
-					row[`total_wtq_time_${monthName}`] || ""
-				])
-				.flat()
-		];
+      const reshapedData = monthData.reduce((acc: any, entry: any) => {
+        acc[`total_pftp_${monthName}`] = entry.total_pftp_time_all_users;
+        acc[`total_wtq_${monthName}`] = entry.total_wtq_time_all_users;
+        acc[`total_other_shift_${monthName}`] =
+          entry.total_other_shift_time_all_users;
+        acc[`unique_youth_pftp_${monthName}`] = entry.unique_youth_pftp;
+        acc[`unique_youth_wtq_${monthName}`] = entry.unique_youth_wtq;
+        acc[`unique_youth_other_shift_${monthName}`] =
+          entry.unique_youth_other_shift_time;
+        acc[`youth_hour_pftp_${monthName}`] = entry.youth_hour_pftp;
+        acc[`youth_hour_wtq_${monthName}`] = entry.youth_hour_wtq;
+        acc[`youth_hour_other_shift_${monthName}`] =
+          entry.youth_hour_other_shift_time;
+        return acc;
+      }, {});
 
-		csvContent += `${rowData
-			.map((value) => `"${String(value).replace(/"/g, '""')}"`)
-			.join(",")}\r\n`;
-	});
+      // Update total hours
+      totalHour += reshapedData[`total_pftp_${monthName}`] || 0;
+      totalHour += reshapedData[`total_wtq_${monthName}`] || 0;
+      totalHour += reshapedData[`total_other_shift_${monthName}`] || 0;
 
-	return csvContent;
+      return reshapedData;
+    })
+  ).then((results) => results.reduce((acc, item) => ({ ...acc, ...item }), {}));
+
+  const average = totalHour / 9;
+
+  const spacer = ",".repeat(monthRange.length * 3);
+
+  // Generate CSV rows for summary data
+  const summaryRows = [
+    `Total Hours,,,${totalHour},,,${monthRange
+      .map((monthName) =>
+        [
+          `total_other_shift_${monthName}`,
+          `total_pftp_${monthName}`,
+          `total_wtq_${monthName}`
+        ]
+          .map((key) => (data[key] !== 0 ? data[key] : ""))
+          .join(",")
+      )
+      .join(",")}\r\n`,
+    `Unique Youth,,,,,,${monthRange
+      .map((monthName) =>
+        [
+          `unique_youth_other_shift_${monthName}`,
+          `unique_youth_pftp_${monthName}`,
+          `unique_youth_wtq_${monthName}`
+        ]
+          .map((key) => (data[key] !== 0 ? data[key] : ""))
+          .join(",")
+      )
+      .join(",")}\r\n`,
+    `Youth Hours,,,,,,${monthRange
+      .map((monthName) =>
+        [
+          `youth_hour_other_shift_${monthName}`,
+          `youth_hour_pftp_${monthName}`,
+          `youth_hour_wtq_${monthName}`
+        ]
+          .map((key) => (data[key] !== 0 ? data[key] : ""))
+          .join(",")
+      )
+      .join(",")}\r\n`,
+    `Average,,,${average},,${spacer}\r\n`
+  ];
+
+  // Generate CSV content for individual users
+  const rows = result
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((row) => {
+      const totalHours = monthRange.reduce(
+        (total, monthName) =>
+          total +
+          (row[`total_other_time_${monthName}`] || 0) +
+          (row[`total_ptft_time_${monthName}`] || 0) +
+          (row[`total_wtq_time_${monthName}`] || 0),
+        0
+      );
+
+      const totalHoursPtft = monthRange.reduce(
+        (total, monthName) =>
+          total + (row[`total_ptft_time_${monthName}`] || 0),
+        0
+      );
+
+      const rowData = [
+        row.name || "",
+        row.date_registered || "",
+        row.is_youth || "",
+        totalHours || "",
+        totalHours - totalHoursPtft || "",
+        totalHoursPtft || "",
+        ...monthRange
+          .map((monthName) => [
+            row[`total_other_time_${monthName}`] || "",
+            row[`total_ptft_time_${monthName}`] || "",
+            row[`total_wtq_time_${monthName}`] || ""
+          ])
+          .flat()
+      ];
+
+      return `"${rowData
+        .map((value) => String(value).replace(/"/g, '""'))
+        .join('","')}"`;
+    });
+
+  // Combine headers, summary, and rows
+  const csvContent = [headers.join(","), ...summaryRows, ...rows].join("\r\n");
+
+  return csvContent;
 }
 
 function JSONToCSV(jsonData: Array<string> | null): string {
-	if (!jsonData || jsonData.length === 0) return "";
+  if (!jsonData || jsonData.length === 0) return "";
 
-	const headers = Object.keys(jsonData[0])
-		.map((header) => {
-			// Mapping specific headers to human-readable formats
-			switch (header) {
-				case "dob":
-					return "Date of Birth";
-				case "last_seen":
-					return "Last seen Date";
-				case "username":
-					return "User Name";
-				case "total_time":
-					return "Total Time";
-				case "total_duration":
-					return "Total Time";
-				case "shift_type":
-					return "Shift Type";
-				case "name":
-					return "Name";
-				case "volunteer_name":
-					return "Name";
-				default:
-					return header; // Return the original header if no mapping
-			}
-		})
-		.join(",");
+  const headers = Object.keys(jsonData[0])
+    .map((header) => {
+      // Mapping specific headers to human-readable formats
+      switch (header) {
+        case "dob":
+          return "Date of Birth";
+        case "last_seen":
+          return "Last seen Date";
+        case "username":
+          return "User Name";
+        case "total_time":
+          return "Total Time";
+        case "total_duration":
+          return "Total Time";
+        case "shift_type":
+          return "Shift Type";
+        case "name":
+          return "Name";
+        case "volunteer_name":
+          return "Name";
+        default:
+          return header; // Return the original header if no mapping
+      }
+    })
+    .join(",");
 
-	const rows = jsonData.map((obj: any) =>
-		Object.values(obj)
-			.map((value) => `"${String(value).replace(/"/g, '""')}"`)
-			.join(",")
-	);
+  const rows = jsonData.map((obj: any) =>
+    Object.values(obj)
+      .map((value) => `"${String(value).replace(/"/g, '""')}"`)
+      .join(",")
+  );
 
-	return `${headers}\r\n${rows.join("\r\n")}`;
+  return `${headers}\r\n${rows.join("\r\n")}`;
 }
 
 // Function to fetch the report
 // get_volunteer_hour_log  query all the volunteer and return there total wtq, pftp and other shift type within a startDate, endDate
 // Function to fetch the report
 async function getLogHour(startDate: string, endDate: string) {
-	const { data, error } = await supabase.rpc("get_volunteer_hour_log", {
-		start_date: startDate,
-		end_date: endDate
-	});
+  const { data, error } = await supabase.rpc("get_volunteer_hour_log", {
+    start_date: startDate,
+    end_date: endDate
+  });
 
-	const processedData = (data as VolunteerShiftReport[])?.map((item) => ({
-		name: item.name,
-		username: item.username,
-		total_wtq_time: (item.total_wtq_time / 3600).toFixed(2),
-		total_ptft_time: (item.total_pftp_time / 3600).toFixed(2),
-		total_time: (
-			(item.total_wtq_time +
-				item.total_pftp_time +
-				item.total_other_shift_time) /
-			3600
-		).toFixed(2),
-		total_other_time: (item.total_other_shift_time / 3600).toFixed(2)
-	}));
+  const processedData = (data as VolunteerShiftReport[])?.map((item) => ({
+    name: item.name,
+    username: item.username,
+    date_registered: formatDate(
+      item.date_registered ? new Date(item.date_registered) : null,
+      "Not Available"
+    ),
+    is_youth: item.is_youth,
+    total_wtq_time: item.total_wtq_time,
+    total_ptft_time: item.total_pftp_time,
+    total_other_time: item.total_other_shift_time
+  }));
 
-	return {
-		data: processedData,
-		error
-	};
+  return {
+    data: processedData,
+    error
+  };
 }
 
 async function getPeople() {
-	const { data, error } = await supabase.from("users").select("*");
+  const { data, error } = await supabase.from("users").select("*");
 
-	const processedData = (data as Tables<"users">[])?.map((item) => ({
-		name: item.name,
-		dob: formatDate(item.dob ? new Date(item.dob) : null, "Not Available"),
-		username: item.username,
-		total_time: formatDuration(item.total_time),
-		last_seen: formatDate(new Date(item.last_seen))
-	}));
+  const processedData = (data as Tables<"users">[])?.map((item) => ({
+    name: item.name,
+    dob: formatDate(item.dob ? new Date(item.dob) : null, "Not Available"),
+    username: item.username,
+    total_time: formatDuration(item.total_time),
+    last_seen: formatDate(new Date(item.last_seen))
+  }));
 
-	return {
-		data: processedData,
-		error
-	};
+  return {
+    data: processedData,
+    error
+  };
 }
 
 async function getShiftType() {
-	const { data, error } = await supabase.rpc("get_total_duration_per_shift");
+  const { data, error } = await supabase.rpc("get_total_duration_per_shift");
 
-	const processedData = (
-		data as { shift_type: string; total_duration: number }[]
-	)?.map((item) => ({
-		shift_type: item.shift_type,
-		total_duration: formatDuration(item.total_duration)
-	}));
+  const processedData = (
+    data as { shift_type: string; total_duration: number }[]
+  )?.map((item) => ({
+    shift_type: item.shift_type,
+    total_duration: formatDuration(item.total_duration)
+  }));
 
-	return {
-		data: processedData,
-		error
-	};
+  return {
+    data: processedData,
+    error
+  };
 }
 
 async function getHours(input_year: string) {
-	const { data, error } = await supabase.rpc("get_total_duration_by_year", {
-		input_year
-	});
+  const { data, error } = await supabase.rpc("get_total_duration_by_year", {
+    input_year
+  });
 
-	const processedData = (
-		data as { volunteer_name: string; total_duration: number }[]
-	)?.map((item) => ({
-		volunteer_name: item.volunteer_name,
-		total_duration: formatDuration(item.total_duration)
-	}));
+  const processedData = (
+    data as { volunteer_name: string; total_duration: number }[]
+  )?.map((item) => ({
+    volunteer_name: item.volunteer_name,
+    total_duration: formatDuration(item.total_duration)
+  }));
 
-	return {
-		data: processedData,
-		error
-	};
+  return {
+    data: processedData,
+    error
+  };
 }
 
-const getDaysInMonth = (month: number, year: number): number => new Date(year, month, 0).getDate();
-
-
 export async function POST(req: NextRequest) {
-	const { selectedExportOption, selectedYear } = await req.json();
+  const { selectedExportOption, selectedYear } = await req.json();
 
-	const monthRange = ["November", "December"];
-	const year = 2024;
+  const monthRange = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
 
-	// Handle missing required parameters
-	if (!selectedExportOption) {
-		return NextResponse.json(
-			{ message: "Please select an export option." },
-			{ status: 400 }
-		);
-	}
+  // Handle missing required parameters
+  if (!selectedExportOption) {
+    return NextResponse.json(
+      { message: "Please select an export option." },
+      { status: 400 }
+    );
+  }
 
-	let data: any;
-	let error = null;
+  let data: any;
+  let error = null;
 
-	const monthMap: Record<string, number> = {
-		January: 1,
-		February: 2,
-		March: 3,
-		April: 4,
-		May: 5,
-		June: 6,
-		July: 7,
-		August: 8,
-		September: 9,
-		October: 10,
-		November: 11,
-		December: 12
-	};
+  switch (selectedExportOption) {
+    case "People":
+      ({ data, error } = await getPeople());
+      break;
 
-	switch (selectedExportOption) {
-		case "People":
-			({ data, error } = await getPeople());
-			break;
+    case "Shift Type":
+      ({ data, error } = await getShiftType());
+      break;
 
-		case "Shift Type":
-			({ data, error } = await getShiftType());
-			break;
+    case "Hours Log":
+      if (!selectedYear) {
+        return NextResponse.json(
+          { message: "Please select a year for Hours." },
+          { status: 400 }
+        );
+      }
+      data = await Promise.all(
+        monthRange.map(async (monthName) => {
+          const month = monthMap[monthName];
+          if (!month) throw new Error(`Unsupported month: ${monthName}`);
 
-		case "Hours Log":
-			data = await Promise.all(
-				monthRange.map(async (monthName) => {
-					const month = monthMap[monthName];
-					if (!month) throw new Error(`Unsupported month: ${monthName}`);
+          const startDate = `${selectedYear}-${String(month).padStart(2, "0")}-01`;
+          const endDate = `${selectedYear}-${String(month).padStart(2, "0")}-${getDaysInMonth(month, selectedYear)}`;
 
-					const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
-					const endDate = `${year}-${String(month).padStart(2, "0")}-${getDaysInMonth(month, year)}`;
+          const { data: monthData, error: fetchError } = await getLogHour(
+            startDate,
+            endDate
+          );
 
-					const { data: monthData, error: fetchError } = await getLogHour(
-						startDate,
-						endDate
-					);
+          if (fetchError) {
+            let errorMessage = "Unknown error occurred";
 
+            if (typeof fetchError === "string") {
+              errorMessage = fetchError;
+            } else if (fetchError instanceof Error) {
+              errorMessage = fetchError.message;
+            }
 
-					if (fetchError) {
-						let errorMessage = 'Unknown error occurred';
+            throw new Error(errorMessage);
+          }
 
-						if (typeof fetchError === 'string') {
-							errorMessage = fetchError;
-						} else if (fetchError instanceof Error) {
-							errorMessage = fetchError.message;
-						}
+          return {
+            [monthName]: monthData
+          };
+        })
+      ).then((results) =>
+        results.reduce(
+          (acc, item) => ({
+            ...acc,
+            ...item
+          }),
+          {}
+        )
+      );
+      break;
 
-						throw new Error(errorMessage);
-					}
+    case "Hours":
+      if (!selectedYear) {
+        return NextResponse.json(
+          { message: "Please select a year for Hours." },
+          { status: 400 }
+        );
+      }
+      ({ data, error } = await getHours(selectedYear));
+      if (data?.length === 0) {
+        return NextResponse.json(
+          { message: "There is no data" },
+          { status: 200 }
+        );
+      }
+      break;
 
-					return {
-						[monthName]: monthData
-					};
-				})
-			).then(results =>
-				results.reduce((acc, item) => ({
-					...acc,
-					...item
-				}), {})
-			)
-			break;
+    default:
+      return NextResponse.json(
+        { message: "Invalid export option selected." },
+        { status: 400 }
+      );
+  }
 
-		case "Hours":
-			;
-			if (!selectedYear) {
-				return NextResponse.json(
-					{ message: "Please select a year for Hours." },
-					{ status: 400 }
-				);
-			}
-			({ data, error } = await getHours(selectedYear));
-			if (data?.length === 0) {
-				return NextResponse.json(
-					{ message: "There is no data" },
-					{ status: 200 }
-				);
-			}
-			break;
+  if (error) throw new Error("An error occurred while fetching data.");
 
-		default:
-			return NextResponse.json(
-				{ message: "Invalid export option selected." },
-				{ status: 400 }
-			);
-	}
+  let csv = "";
+  if (selectedExportOption === "Hours Log") {
+    csv = await CavanExcelFormat(data, monthRange, selectedYear);
+  } else {
+    csv = JSONToCSV(data);
+  }
 
-	if (error) throw new Error("An error occurred while fetching data.");
+  if (!csv) {
+    return NextResponse.json(
+      { message: "No data available for export." },
+      { status: 204 }
+    );
+  }
 
-	let csv = "";
-	if (selectedExportOption === "Hours Log") {
-		csv = CavanExcelFormat(data, monthRange);
-	} else {
-		csv = JSONToCSV(data);
-	}
-
-	if (!csv) {
-		return NextResponse.json(
-			{ message: "No data available for export." },
-			{ status: 204 }
-		);
-	}
-
-	return NextResponse.json(
-		{ data: csv, message: "Export successful!" },
-		{ status: 200 }
-	);
+  return NextResponse.json(
+    { data: csv, message: "Export successful!" },
+    { status: 200 }
+  );
 }

@@ -65,7 +65,8 @@ export default function ExportPage() {
         ))}
       </div>
       <div className="mb-20 flex h-32 flex-col justify-between">
-        {selectedExportOption === "Hours" && (
+        {(selectedExportOption === "Hours" ||
+          selectedExportOption === "Hours Log") && (
           <div>
             <p className="mb-4">
               Export yearly hours by volunteer in CSV format.
