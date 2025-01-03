@@ -62,13 +62,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     const token = jwt.sign({ accessCode: data.code }, JWT_SECRET, {
-      expiresIn: "1h"
+      expiresIn: "12h"
     });
 
     const cookieHeader = serialize("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 1,
+      maxAge: 60 * 60 * 12,
       path: "/", // Cookie accessible to the whole site
       sameSite: "strict"
     });

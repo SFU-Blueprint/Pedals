@@ -172,7 +172,7 @@ export default function RegisterPage() {
       <button
         aria-disabled={!username || !fullName || loading}
         type="submit"
-        className="mt-[34px] whitespace-nowrap"
+        className="mt-[2.125rem] whitespace-nowrap"
       >
         Register
       </button>
