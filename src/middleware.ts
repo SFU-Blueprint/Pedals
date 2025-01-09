@@ -20,13 +20,8 @@ export async function middleware(req: NextRequest) {
         new TextEncoder().encode(process.env.JWT_SECRET)
       );
     } catch (error) {
-      console.log(error);
       return NextResponse.redirect(new URL("/manage-login", req.url));
     }
-  } else if (token) {
-    const response = NextResponse.next();
-    response.cookies.delete("token");
-    return response;
   }
   return NextResponse.next();
 }

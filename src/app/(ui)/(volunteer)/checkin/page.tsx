@@ -60,7 +60,7 @@ export default function CheckinPage() {
 
   return (
     <form
-      className="flex items-end justify-between gap-96 px-20 py-10"
+      className="flex items-end justify-between px-20 py-10"
       onSubmit={handleCheckin}
     >
       <div className="flex justify-start gap-96">

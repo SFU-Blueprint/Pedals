@@ -199,7 +199,7 @@ export default function EditShiftCard({
         <h3 className="w-96">{shift.volunteer_name}</h3>
         {isEditing ? (
           <DateSelector
-            className="-ml-[12px] w-[300px]"
+            className="-ml-[0.75rem] w-[18.75rem]"
             selected={date}
             onChange={(d) => setDate(d as Date | null)}
           />

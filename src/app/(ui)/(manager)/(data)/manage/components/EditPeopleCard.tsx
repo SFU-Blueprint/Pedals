@@ -211,7 +211,7 @@ export default function EditPeopleCard({
           <FormInput
             uppercase
             type="text"
-            className="-ml-[12px] mr-[12px] w-80 pr-10"
+            className="-ml-[0.75rem] mr-[0.75rem] w-80 pr-10"
             value={username}
             onChange={(e) => setUsername(e.target.value.toLowerCase())}
           />
@@ -219,7 +219,7 @@ export default function EditPeopleCard({
           <p className="w-80 uppercase">{username}</p>
         )}
         {isEditing ? (
-          <div className="-ml-[12px] w-80 pr-4">
+          <div className="-ml-[0.75rem] w-80 pr-4">
             <DateSelector
               selected={dob}
               onChange={(d) => setDOB(d as Date | null)}
