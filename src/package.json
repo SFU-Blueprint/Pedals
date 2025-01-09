@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "format": "prettier . --write",
-    "test": "DOTENV_CONFIG_PATH=.env.local jest --setupFiles=dotenv/config --passWithNoTests"
+   "dev": "next dev",
+   "build": "next build",
+   "vercel-build": "npm run lint && npm run test && next build",
+   "start": "next start",
+   "lint": "next lint",
+   "format": "prettier . --write",
+   "test": "DOTENV_CONFIG_PATH=.env.local jest --setupFiles=dotenv/config --passWithNoTests"
   },
   "jest": {
     "preset": "ts-jest",
