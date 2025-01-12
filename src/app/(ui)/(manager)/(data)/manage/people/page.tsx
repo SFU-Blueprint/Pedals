@@ -75,7 +75,7 @@ export default function ManagePeoplePage() {
       {
         callback: async (data) => {
           if (data.length === 0) {
-            await executeRemovePeople(data);
+            await executeRemovePeople(ids);
           } else {
             setFeedback(null);
             setPopup({
