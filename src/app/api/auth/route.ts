@@ -42,7 +42,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       const { error: insertError } = await supabase.from("auth_codes").insert({
         username: newUsernameHash,
         password: newPasswordHash,
-        is_active: true,
+        is_active: true
       });
 
       if (insertError) {
@@ -60,7 +60,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     // Validate the credentials
-    if (!verifyHash(username, data.username) || !verifyHash(password, data.password)) {
+    if (
+      !verifyHash(username, data.username) ||
+      !verifyHash(password, data.password)
+    ) {
       return NextResponse.json(
         { message: "Invalid credentials." },
         { status: 401 }
@@ -73,9 +76,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   } catch (err) {
     console.error("Unexpected server error:", err);
-    return NextResponse.json(
-      { message: "Server error." },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Server error." }, { status: 500 });
   }
 }

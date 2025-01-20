@@ -8,7 +8,7 @@ export async function middleware(req: NextRequest) {
     "/manage/people",
     "/manage/shift",
     "/change-access-code",
-    "/export",
+    "/export"
   ];
 
   const basicAuthRoutes = ["/checkin", "/register"];
@@ -22,8 +22,8 @@ export async function middleware(req: NextRequest) {
       return new NextResponse("Unauthorized", {
         status: 401,
         headers: {
-          "WWW-Authenticate": 'Basic realm="Secure Area"',
-        },
+          "WWW-Authenticate": 'Basic realm="Secure Area"'
+        }
       });
     }
   }
@@ -44,17 +44,21 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-async function isValidPassword(authHeader: string, origin: string): Promise<boolean> {
+async function isValidPassword(
+  authHeader: string,
+  origin: string
+): Promise<boolean> {
   const encodedCredentials = authHeader.split(" ")[1];
-  const [username, password] = atob(encodedCredentials).split(":");
-  console.log(username + " " + password);
+  const decoded = Buffer.from(encodedCredentials, "base64").toString();
+  const [username, password] = decoded.split(":");
+
   try {
     const response = await fetch(`${origin}/api/auth`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password })
     });
     if (!response.ok) {
       return false;
@@ -69,5 +73,5 @@ async function isValidPassword(authHeader: string, origin: string): Promise<bool
 // Apply middleware only for these routes
 export const config = {
   matcher:
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)"
 };
