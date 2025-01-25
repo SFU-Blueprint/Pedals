@@ -129,15 +129,21 @@ async function CavanExcelFormat(
       }, {});
 
       // Update total hours
-      totalHour += reshapedData[`total_pftp_${monthName}`] || 0;
-      totalHour += reshapedData[`total_wtq_${monthName}`] || 0;
-      totalHour += reshapedData[`total_other_shift_${monthName}`] || 0;
+      totalHour +=
+        parseFloat(reshapedData[`total_pftp_${monthName}`].toFixed(2)) || 0;
+      totalHour +=
+        parseFloat(reshapedData[`total_wtq_${monthName}`].toFixed(2)) || 0;
+      totalHour +=
+        parseFloat(reshapedData[`total_other_shift_${monthName}`].toFixed(2)) ||
+        0;
 
       return reshapedData;
     })
   ).then((results) => results.reduce((acc, item) => ({ ...acc, ...item }), {}));
 
-  const average = totalHour / 9;
+  // Round numbers
+  const average = parseFloat((totalHour / 9).toFixed(2));
+  totalHour = parseFloat(totalHour.toFixed(2));
 
   const spacer = ",".repeat(monthRange.length * 3);
 
@@ -202,9 +208,9 @@ async function CavanExcelFormat(
         row.name || "",
         row.date_registered || "",
         row.is_youth || "",
-        totalHours || "",
-        totalHours - totalHoursPtft || "",
-        totalHoursPtft || "",
+        parseFloat(totalHours.toFixed(2)) || "",
+        parseFloat((totalHours - totalHoursPtft).toFixed(2)) || "",
+        parseFloat(totalHoursPtft.toFixed(2)) || "",
         ...monthRange
           .map((monthName) => [
             row[`total_other_time_${monthName}`] || "",
