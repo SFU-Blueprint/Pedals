@@ -23,12 +23,15 @@ export default function VolunteerLayout({
         "/api/shifts/active",
         { method: "GET" },
         {
-          callback: (data) => setActiveShifts(data.sort((a: any,b: any)=>{
-            if (a.checked_in_at > b.checked_in_at){
-              return -1;
-            }
-              return 1;
-          }) as Tables<"shifts">[]),
+          callback: (data) =>
+            setActiveShifts(
+              data.sort((a: any, b: any) => {
+                if (a.checked_in_at > b.checked_in_at) {
+                  return -1;
+                }
+                return 1;
+              }) as Tables<"shifts">[]
+            ),
           showSuccessFeedback: options.showSuccessFeedback
         }
       );
