@@ -56,7 +56,8 @@ async function isValidPassword(
     const response = await fetch(`${origin}/api/auth`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache"
       },
       body: JSON.stringify({ username, password })
     });
@@ -72,6 +73,5 @@ async function isValidPassword(
 
 // Apply middleware only for these routes
 export const config = {
-  matcher:
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)"
+  matcher: ["/manage/:path*", "/checkin", "/register"],
 };

@@ -24,7 +24,10 @@ export default function ManageShiftPage() {
       await feedbackFetch(
         "/api/shifts",
         {
-          method: "GET"
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
         },
         {
           callback: (data) => setShifts(data as Tables<"shifts">[]),

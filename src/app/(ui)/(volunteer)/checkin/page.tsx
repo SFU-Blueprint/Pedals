@@ -49,7 +49,8 @@ export default function CheckinPage() {
         method: "POST",
         body: JSON.stringify({ username, shiftType }),
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
         }
       },
       {

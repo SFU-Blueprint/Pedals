@@ -24,7 +24,8 @@ export default function ExportPage() {
         method: "POST",
         body: JSON.stringify({ selectedExportOption, selectedYear }),
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
         }
       },
       {

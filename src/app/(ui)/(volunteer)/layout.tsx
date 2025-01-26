@@ -7,6 +7,7 @@ import { Tables } from "@/lib/supabase.types";
 import TimeDisplay from "./components/TimeDisplay";
 import VolunteerContext from "@/contexts/VolunteerPagesContext";
 
+
 export default function VolunteerLayout({
   children
 }: {
@@ -21,7 +22,12 @@ export default function VolunteerLayout({
     ) => {
       await feedbackFetch(
         "/api/shifts/active",
-        { method: "GET" },
+        { 
+          method: "GET" ,
+          headers: {
+            "Cache-Control": "no-cache",
+          }
+        },
         {
           callback: (data) => setActiveShifts(data as Tables<"shifts">[]),
           showSuccessFeedback: options.showSuccessFeedback

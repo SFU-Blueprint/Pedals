@@ -2,7 +2,10 @@ export const validateTokenAndRedirect = async () => {
   try {
     const res = await fetch("/api/access-code", {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json", 
+        "Cache-Control": "no-cache"
+      },
       credentials: "include"
     });
 
