@@ -83,8 +83,8 @@ export default function ManagePeoplePage() {
               component: (
                 <div className="flex h-full flex-col items-center justify-between gap-10 px-10 py-10">
                   <div>
-                    <h3>
-                      The following user(s) have active shifts that have not
+                    <h3 className = "mb-3">
+                      The following user(s) have {data[0].length} active shifts that have not
                       been checked out.
                     </h3>
                     {data[0].map((person: any) => (
@@ -97,8 +97,8 @@ export default function ManagePeoplePage() {
                     ))}
                   </div>
                   <div>
-                    <h3>
-                      The following user(s) have error shifts that has to be
+                    <h3 className = "mb-3">
+                      The following user(s) have {data[1].length} shifts with errors that has to be
                       resolved first.
                     </h3>
                     {data[1].map((person: any) => (

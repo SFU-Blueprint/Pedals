@@ -19,7 +19,7 @@ export default function DeleteConfirmation({
         <p className="w-2/5">Name</p>
         <p className="w-2/5">Last Seen</p>
       </div>
-      <div className="max-h-[222px] w-full overflow-y-auto">
+      <div className="mb-[20px] max-h-[222px] w-full overflow-y-auto">
         {data.map((person) => (
           <div
             key={person.id}
