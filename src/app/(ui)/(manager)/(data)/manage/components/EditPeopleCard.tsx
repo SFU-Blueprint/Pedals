@@ -189,7 +189,7 @@ export default function EditPeopleCard({
   return (
     <div
       ref={ref}
-      className={`edit-card flex w-full justify-between border-b-[1px] border-y-pedals-darkgrey px-20 py-4 ${background}`}
+      className={`edit-card flex w-full justify-between border-b-[1.5px] border-y-pedals-stroke px-20 py-4 ${background}`}
       onClick={() => {
         if (!isEditing) {
           setSelectedIDs((prev) => {

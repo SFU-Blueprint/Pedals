@@ -35,7 +35,7 @@ export default function EditPeopleGrid({
 
   return (
     <div className="flex h-full select-none flex-col overflow-y-auto" ref={ref}>
-      <div className="flex justify-between border-b-[2px] border-pedals-black bg-pedals-lightgrey px-20 py-2">
+      <div className="flex justify-between border-b border-pedals-stroke bg-pedals-lightgrey px-20 py-2">
         <div className="z-10 flex items-center justify-start">
           <p className="w-80">Name</p>
           <p className="w-80">Username</p>
