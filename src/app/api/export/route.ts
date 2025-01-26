@@ -330,23 +330,6 @@ async function getShiftType() {
 	};
 }
 
-async function getHours(input_year: string) {
-	const { data, error } = await supabase.rpc("get_total_duration_by_year", {
-		input_year
-	});
-
-	const processedData = (
-		data as { volunteer_name: string; total_duration: number }[]
-	)?.map((item) => ({
-		volunteer_name: item.volunteer_name,
-		total_duration: formatDuration(item.total_duration)
-	}));
-
-	return {
-		data: processedData,
-		error
-	};
-}
 
 export async function POST(req: NextRequest) {
 	const { selectedExportOption, selectedYear } = await req.json();
@@ -386,7 +369,7 @@ export async function POST(req: NextRequest) {
 			({ data, error } = await getShiftType());
 			break;
 
-		case "Hours Log":
+		case "Hours":
 			if (!selectedYear) {
 				return NextResponse.json(
 					{ message: "Please select a year for Hours." },
@@ -433,22 +416,6 @@ export async function POST(req: NextRequest) {
 			);
 			break;
 
-		case "Hours":
-			if (!selectedYear) {
-				return NextResponse.json(
-					{ message: "Please select a year for Hours." },
-					{ status: 400 }
-				);
-			}
-			({ data, error } = await getHours(selectedYear));
-			if (data?.length === 0) {
-				return NextResponse.json(
-					{ message: "There is no data" },
-					{ status: 200 }
-				);
-			}
-			break;
-
 		default:
 			return NextResponse.json(
 				{ message: "Invalid export option selected." },
@@ -459,7 +426,7 @@ export async function POST(req: NextRequest) {
 	if (error) throw new Error("An error occurred while fetching data.");
 
 	let csv = "";
-	if (selectedExportOption === "Hours Log") {
+	if (selectedExportOption === "Hours") {
 		csv = await CavanExcelFormat(data, monthRange, selectedYear);
 	} else {
 		csv = JSONToCSV(data);
