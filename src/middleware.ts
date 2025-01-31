@@ -4,12 +4,12 @@ import * as jose from "jose";
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get("token");
-  // const routes = [
-  //   "/manage/people",
-  //   "/manage/shift",
-  //   "/change-access-code",
-  //   "/export"
-  // ];
+  const routes = [
+    "/manage/people",
+    "/manage/shift",
+    "/change-access-code",
+    "/export"
+  ];
 
   const authHeader = req.headers.get("authorization");
   const origin = req.nextUrl.origin;
@@ -24,20 +24,20 @@ export async function middleware(req: NextRequest) {
     });
   }
 
-  // if (routes.includes(req.nextUrl.pathname)) {
-  //   if (!token) {
-  //     return NextResponse.redirect(new URL("/manage-login", req.url));
-  //   }
-  //   try {
-  //     await jose.jwtVerify(
-  //       token.value,
-  //       new TextEncoder().encode(process.env.JWT_SECRET)
-  //     );
-  //   } catch (error) {
-  //     return NextResponse.redirect(new URL("/manage-login", req.url));
-  //   }
-  // }
-  // return NextResponse.next();
+  if (routes.includes(req.nextUrl.pathname)) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/manage-login", req.url));
+    }
+    try {
+      await jose.jwtVerify(
+        token.value,
+        new TextEncoder().encode(process.env.JWT_SECRET)
+      );
+    } catch (error) {
+      return NextResponse.redirect(new URL("/manage-login", req.url));
+    }
+  }
+  return NextResponse.next();
 }
 
 async function isValidPassword(
