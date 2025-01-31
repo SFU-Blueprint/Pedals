@@ -9,6 +9,7 @@ import useFeedbackFetch from "@/hooks/FeedbackFetch";
 import { isInMonth, isInYear } from "@/utils/DateTime";
 import { MONTHS_SHORT, SHIFT_TYPES, YEARS_RANGE } from "@/utils/Constants";
 
+
 export default function ManageShiftPage() {
   const [searchName, setSearchName] = useState("");
   const [searchMonth, setSearchMonth] = useState<string | null>(null);
@@ -24,7 +25,8 @@ export default function ManageShiftPage() {
       await feedbackFetch(
         "/api/shifts",
         {
-          method: "GET"
+          method: "GET",
+          headers: { "Cache-Control": "no-cache" }
         },
         {
           callback: (data) => setShifts(data as Tables<"shifts">[]),

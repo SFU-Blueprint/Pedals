@@ -27,7 +27,8 @@ export default function ManagePeoplePage() {
       await feedbackFetch(
         "/api/people",
         {
-          method: "GET"
+          method: "GET",
+          headers: { "Cache-Control": "no-cache" }
         },
         {
           callback: (data) => setPeople(data as Tables<"users">[]),
@@ -45,7 +46,8 @@ export default function ManagePeoplePage() {
         method: "DELETE",
         body: JSON.stringify({ ids: Array.from(ids) }),
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
         }
       },
       {
@@ -69,7 +71,8 @@ export default function ManagePeoplePage() {
         method: "POST",
         body: JSON.stringify({ ids: Array.from(ids), flag: "delete_users" }),
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
         }
       },
       {
@@ -83,9 +86,9 @@ export default function ManagePeoplePage() {
               component: (
                 <div className="flex h-full flex-col items-center justify-between gap-10 px-10 py-10">
                   <div>
-                    <h3>
-                      The following user(s) have active shifts that have not
-                      been checked out.
+                    <h3 className="mb-3">
+                      The following user(s) have {data[0].length} active shifts
+                      that have not been checked out.
                     </h3>
                     {data[0].map((person: any) => (
                       <div
@@ -97,9 +100,9 @@ export default function ManagePeoplePage() {
                     ))}
                   </div>
                   <div>
-                    <h3>
-                      The following user(s) have error shifts that has to be
-                      resolved first.
+                    <h3 className="mb-3">
+                      The following user(s) have {data[1].length} shifts with
+                      errors that has to be resolved first.
                     </h3>
                     {data[1].map((person: any) => (
                       <div

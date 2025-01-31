@@ -21,9 +21,17 @@ export default function VolunteerLayout({
     ) => {
       await feedbackFetch(
         "/api/shifts/active",
-        { method: "GET" },
+        { method: "GET", headers: { "Cache-Control": "no-cache" } },
         {
-          callback: (data) => setActiveShifts(data as Tables<"shifts">[]),
+          callback: (data) =>
+            setActiveShifts(
+              data.sort((a: any, b: any) => {
+                if (a.checked_in_at > b.checked_in_at) {
+                  return -1;
+                }
+                return 1;
+              }) as Tables<"shifts">[]
+            ),
           showSuccessFeedback: options.showSuccessFeedback
         }
       );

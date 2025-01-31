@@ -64,7 +64,8 @@ export default function ChangeAccessCodePage() {
             newCode
           }),
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache"
           }
         },
         { callback: () => setSuccess(true) }

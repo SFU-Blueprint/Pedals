@@ -21,7 +21,7 @@ export default function NavBar({
       {links.map(({ href, label, highlight }) => (
         <Link
           key={href}
-          className={`${customLinkStyles} uppercase ${path.includes(highlight ?? href) ? customHighlightStyles ?? "font-bold" : ""}`}
+          className={`${customLinkStyles} uppercase ${path.includes(highlight ?? href) ? (customHighlightStyles ?? "font-bold") : ""}`}
           href={href}
         >
           {label}

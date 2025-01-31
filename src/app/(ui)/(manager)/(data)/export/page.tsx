@@ -8,7 +8,7 @@ import { useUIComponentsContext } from "@/contexts/UIComponentsContext";
 import useFeedbackFetch from "@/hooks/FeedbackFetch";
 
 export default function ExportPage() {
-  const availableExportOptions = ["Hours", "People", "Shift Type", "Hours Log"];
+  const availableExportOptions = ["Hours", "People", "Shift Type"];
   const [selectedExportOption, setSelectedExportOption] = useState<string>(
     availableExportOptions[0]
   );
@@ -24,7 +24,8 @@ export default function ExportPage() {
         method: "POST",
         body: JSON.stringify({ selectedExportOption, selectedYear }),
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
         }
       },
       {
@@ -66,7 +67,7 @@ export default function ExportPage() {
       </div>
       <div className="mb-20 flex h-32 flex-col justify-between">
         {(selectedExportOption === "Hours" ||
-          selectedExportOption === "Hours Log") && (
+          selectedExportOption === "Hours") && (
           <div>
             <p className="mb-4">
               Export yearly hours by volunteer in CSV format.
@@ -99,7 +100,7 @@ export default function ExportPage() {
             format.
           </p>
         )}
-        {selectedExportOption === "Hours Log" && (
+        {selectedExportOption === "Hours" && (
           <p>Export format according to cavan excel sheet</p>
         )}
       </div>

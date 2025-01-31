@@ -10,6 +10,7 @@ import { FeedbackType } from "@/components/Feedback";
 import { validUsername } from "@/utils/Validators";
 import { SHIFT_TYPES } from "@/utils/Constants";
 
+
 export default function CheckinPage() {
   const [username, setUsername] = useState("");
   const [shiftType, setShiftType] = useState<string | null>(null);
@@ -49,7 +50,8 @@ export default function CheckinPage() {
         method: "POST",
         body: JSON.stringify({ username, shiftType }),
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
         }
       },
       {
