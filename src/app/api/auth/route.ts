@@ -33,8 +33,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       .single();
 
     if (error || !data) {
-      console.log("No active code found or database query error:", error);
-
       // Generate and insert new credentials
       const newUsernameHash = generateHash(username);
       const newPasswordHash = generateHash(password);
@@ -46,7 +44,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       });
 
       if (insertError) {
-        console.error("Error inserting new credentials:", insertError);
         return NextResponse.json(
           { message: "Failed to set new credentials." },
           { status: 500 }
@@ -75,7 +72,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       { status: 200 }
     );
   } catch (err) {
-    console.error("Unexpected server error:", err);
     return NextResponse.json({ message: "Server error." }, { status: 500 });
   }
 }

@@ -10,7 +10,6 @@ import { FeedbackType } from "@/components/Feedback";
 import { validUsername } from "@/utils/Validators";
 import { SHIFT_TYPES } from "@/utils/Constants";
 
-
 export default function CheckinPage() {
   const [username, setUsername] = useState("");
   const [shiftType, setShiftType] = useState<string | null>(null);
@@ -40,7 +39,7 @@ export default function CheckinPage() {
       setFeedback({
         type: FeedbackType.Warning,
         message:
-          "Username must be alphanumeric, wihout spaces, and contains 5-15 characters."
+          "Username must be alphanumeric, without spaces, and contains 5-15 characters."
       });
       return;
     }

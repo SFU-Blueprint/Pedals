@@ -9,7 +9,6 @@ import useFeedbackFetch from "@/hooks/FeedbackFetch";
 import { isInMonth, isInYear } from "@/utils/DateTime";
 import { MONTHS_SHORT, SHIFT_TYPES, YEARS_RANGE } from "@/utils/Constants";
 
-
 export default function ManageShiftPage() {
   const [searchName, setSearchName] = useState("");
   const [searchMonth, setSearchMonth] = useState<string | null>(null);

@@ -120,7 +120,7 @@ export default function EditPeopleCard({
           setFeedback({
             type: FeedbackType.Warning,
             message:
-              "Username must be alphanumeric, wihout spaces, and contains 5-15 characters."
+              "Username must be alphanumeric, without spaces, and contains 5-15 characters."
           });
         } else {
           setPopup({

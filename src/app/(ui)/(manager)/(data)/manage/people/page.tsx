@@ -85,34 +85,38 @@ export default function ManagePeoplePage() {
               title: "Error",
               component: (
                 <div className="flex h-full flex-col items-center justify-between gap-10 px-10 py-10">
-                  <div>
-                    <h3 className="mb-3">
-                      The following user(s) have {data[0].length} active shifts
-                      that have not been checked out.
-                    </h3>
-                    {data[0].map((person: any) => (
-                      <div
-                        key={person.id}
-                        className="flex w-full justify-start border-y-[1px] border-pedals-stroke bg-pedals-grey px-5 py-5"
-                      >
-                        <h3>{person.name}</h3>
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <h3 className="mb-3">
-                      The following user(s) have {data[1].length} shifts with
-                      errors that has to be resolved first.
-                    </h3>
-                    {data[1].map((person: any) => (
-                      <div
-                        key={person.id}
-                        className="flex w-full justify-start border-y-[1px] border-pedals-stroke bg-pedals-grey px-5 py-5"
-                      >
-                        <h3>{person.name}</h3>
-                      </div>
-                    ))}
-                  </div>
+                  {data[0]?.length > 0 && (
+                    <div>
+                      <h3 className="mb-3">
+                        The following user(s) have active shifts that has to be
+                        checked out first.
+                      </h3>
+                      {data[0].map((person: any) => (
+                        <div
+                          key={person.id}
+                          className="flex w-full justify-start border-y-[1px] border-pedals-stroke bg-pedals-grey px-5 py-5"
+                        >
+                          <h3>{person.name}</h3>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {data[1]?.length > 0 && (
+                    <div>
+                      <h3 className="mb-3">
+                        The following user(s) have shifts with errors that has
+                        to be resolved first.
+                      </h3>
+                      {data[1].map((person: any) => (
+                        <div
+                          key={person.id}
+                          className="flex w-full justify-start border-y-[1px] border-pedals-stroke bg-pedals-grey px-5 py-5"
+                        >
+                          <h3>{person.name}</h3>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <button
                     className="!w-fit !px-10 uppercase"
                     type="submit"

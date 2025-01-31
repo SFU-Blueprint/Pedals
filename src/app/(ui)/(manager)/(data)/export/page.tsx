@@ -66,8 +66,7 @@ export default function ExportPage() {
         ))}
       </div>
       <div className="mb-20 flex h-32 flex-col justify-between">
-        {(selectedExportOption === "Hours" ||
-          selectedExportOption === "Hours") && (
+        {selectedExportOption === "Hours" && (
           <div>
             <p className="mb-4">
               Export yearly hours by volunteer in CSV format.
@@ -99,9 +98,6 @@ export default function ExportPage() {
             Export the total hours volunteered for each shift category in CSV
             format.
           </p>
-        )}
-        {selectedExportOption === "Hours" && (
-          <p>Export format according to cavan excel sheet</p>
         )}
       </div>
       <button
