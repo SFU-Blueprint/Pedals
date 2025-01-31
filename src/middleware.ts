@@ -68,5 +68,5 @@ async function isValidPassword(
 }
 // Apply middleware only for these routes
 export const config = {
-  matcher: ["/manage/:path*", "/checkin", "/register"],
+  matcher: ["/manage/:path*", "/checkin", "/register", "/manage-login"],
 };
