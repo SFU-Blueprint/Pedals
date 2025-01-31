@@ -24,7 +24,7 @@ export default function ManageLoginPage() {
           code: currentAccessCode
         }),
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         }
       },
       {
