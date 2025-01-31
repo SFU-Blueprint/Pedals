@@ -36,7 +36,6 @@ export async function middleware(req: NextRequest) {
     }
     return true;
   }
-
   const authHeader = req.headers.get("authorization");
   const { origin } = req.nextUrl;
 
