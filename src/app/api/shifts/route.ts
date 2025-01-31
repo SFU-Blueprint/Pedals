@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import supabase from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   // Fetch all shifts from the database
   const { data, error } = await supabase.from("shifts").select("*");

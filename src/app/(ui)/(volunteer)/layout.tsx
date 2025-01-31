@@ -21,7 +21,7 @@ export default function VolunteerLayout({
     ) => {
       await feedbackFetch(
         "/api/shifts/active",
-        { method: "GET" },
+        { method: "GET", headers: { "Cache-Control": "no-cache" } },
         {
           callback: (data) =>
             setActiveShifts(

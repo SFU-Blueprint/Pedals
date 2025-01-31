@@ -27,7 +27,8 @@ export default function ManagePeoplePage() {
       await feedbackFetch(
         "/api/people",
         {
-          method: "GET"
+          method: "GET",
+          headers: { "Cache-Control": "no-cache" }
         },
         {
           callback: (data) => setPeople(data as Tables<"users">[]),
@@ -45,7 +46,8 @@ export default function ManagePeoplePage() {
         method: "DELETE",
         body: JSON.stringify({ ids: Array.from(ids) }),
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
         }
       },
       {
@@ -69,7 +71,8 @@ export default function ManagePeoplePage() {
         method: "POST",
         body: JSON.stringify({ ids: Array.from(ids), flag: "delete_users" }),
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
         }
       },
       {

@@ -30,7 +30,8 @@ export default function RegisterPage() {
           birthdate
         }),
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
         }
       },
       {
@@ -45,7 +46,8 @@ export default function RegisterPage() {
               birthdate
             }),
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Cache-Control": "no-cache"
             }
           });
         },
@@ -87,7 +89,8 @@ export default function RegisterPage() {
                       birthdate
                     }),
                     headers: {
-                      "Content-Type": "application/json"
+                      "Content-Type": "application/json",
+                      "Cache-Control": "no-cache"
                     }
                   });
                 }}

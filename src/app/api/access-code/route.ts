@@ -92,13 +92,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 /**
  * PATCH request handler for updating the access code
- * Expects JSON body with { "existingCode": string, "newCode": string }
+ * Expects JSON body with { "oldCode": string, "newCode": string }
  */
 export async function PATCH(req: NextRequest): Promise<NextResponse> {
   try {
-    const { existingCode, newCode } = await req.json();
+    const { oldCode, newCode } = await req.json();
 
-    if (!existingCode || !newCode) {
+    if (!oldCode || !newCode) {
       return NextResponse.json(
         { message: "Please provide both the current and new access codes." },
         { status: 400 }
@@ -115,7 +115,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     if (currentCodeError) return handleDatabaseError(currentCodeError);
 
     // Verify the provided existing code against the current active code
-    if (!currentCode || !verifyHash(existingCode, currentCode.code)) {
+    if (!currentCode || !verifyHash(oldCode, currentCode.code)) {
       return NextResponse.json(
         {
           message: "The current access code does not match. Please try again."
@@ -125,7 +125,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     }
 
     // Prevent using the same code for the new code
-    if (existingCode === newCode) {
+    if (oldCode === newCode) {
       return NextResponse.json(
         {
           message: "The new access code is the same as the current active code."
@@ -140,7 +140,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     const { error: deleteError } = await supabase
       .from("access_codes")
       .delete()
-      .neq("code", newCode);
+      .neq("code", newCodeHash);
 
     if (deleteError) {
       return NextResponse.json(
